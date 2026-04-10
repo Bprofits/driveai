@@ -241,6 +241,82 @@ body::before {
 @media(min-width:1920px) {
   html { font-size:23px; }
 }
+
+/* ─── PREMIUM: PARTICLE CANVAS ─── */
+#particleCanvas { position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+
+/* ─── PREMIUM: GRADIENT SHIMMER TEXT ─── */
+.shimmer-text {
+  background:linear-gradient(90deg, var(--orange) 0%, #FF8C00 20%, var(--cream) 40%, #FF8C00 60%, var(--orange) 80%, var(--orange) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:textShimmer 4s linear infinite;
+}
+@keyframes textShimmer { to { background-position:200% center; } }
+
+/* ─── PREMIUM: 3D TILT CARD ─── */
+.tilt-card {
+  transition:transform 0.15s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transform-style:preserve-3d; will-change:transform;
+}
+.tilt-card:hover {
+  border-color:rgba(232,122,0,0.2);
+  box-shadow:0 20px 50px rgba(0,0,0,0.4), 0 0 60px rgba(232,122,0,0.06);
+}
+/* Mouse spotlight */
+.tilt-card::after {
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(500px circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(232,122,0,0.08), transparent 40%);
+  opacity:0; transition:opacity 0.3s;
+}
+.tilt-card:hover::after { opacity:1; }
+
+/* ─── PREMIUM: SCAN BEAM ─── */
+.scan-beam { position:relative; overflow:hidden; }
+.scan-beam::before {
+  content:''; position:absolute; left:0; right:0; height:1px; z-index:10;
+  background:linear-gradient(90deg, transparent 0%, rgba(232,122,0,0.3) 20%, rgba(232,122,0,0.6) 50%, rgba(232,122,0,0.3) 80%, transparent 100%);
+  box-shadow:0 0 12px rgba(232,122,0,0.3), 0 0 30px rgba(232,122,0,0.15);
+  animation:scanBeam 4s ease-in-out infinite;
+}
+@keyframes scanBeam {
+  0%,100% { top:-1px; opacity:0; }
+  10% { opacity:1; }
+  90% { opacity:1; }
+  100% { top:calc(100% + 1px); opacity:0; }
+}
+
+/* ─── PREMIUM: SHINE SWEEP ON HOVER ─── */
+.shine-sweep { position:relative; overflow:hidden; }
+.shine-sweep::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 55%, transparent 60%);
+  background-size:200% 100%; background-position:200% 0;
+  transition:background-position 0.6s ease;
+}
+.shine-sweep:hover::before { background-position:-200% 0; }
+
+/* ─── PREMIUM: PULSE DOT ─── */
+.pulse-dot { position:relative; width:6px; height:6px; background:var(--orange); border-radius:50%; display:inline-block; }
+.pulse-dot::before {
+  content:''; position:absolute; inset:-3px; border-radius:50%; border:1px solid var(--orange);
+  animation:pulseRing 2s ease-out infinite;
+}
+@keyframes pulseRing { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2.5);opacity:0} }
+
+/* ─── PREMIUM: MAGNETIC BUTTON ─── */
+.btn-magnetic { position:relative; overflow:hidden; transition:transform 0.2s ease, box-shadow 0.3s ease; }
+.btn-magnetic:hover { box-shadow:0 0 30px rgba(232,122,0,0.3), 0 0 60px rgba(232,122,0,0.1); }
+.btn-magnetic::after {
+  content:''; position:absolute; inset:-2px; background:linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  border-radius:inherit; opacity:0; transition:opacity 0.3s;
+}
+.btn-magnetic:hover::after { opacity:1; }
+
+/* ─── PREMIUM: COUNTER ANIMATION ─── */
+.counter-up { opacity:0; transform:translateY(0.3em); transition:opacity 0.6s, transform 0.6s var(--ease); }
+.counter-up.visible { opacity:1; transform:translateY(0); }
 </style>
 </head>
 <body>
@@ -264,7 +340,7 @@ body::before {
 
 <!-- ─── HERO ─── -->
 <section class="hero">
-  <div class="hero__bg"></div>
+  <div class="hero__bg"><canvas id="particleCanvas"></canvas></div>
   <div class="hero__gradient"></div>
   <div class="hero__content">
     <div class="hero__logo">
@@ -275,12 +351,12 @@ body::before {
       <span class="word"><span class="word-inner d1">Your Leads</span></span><br>
       <span class="word"><span class="word-inner d2">Are Calling</span></span>
       <span class="word"><span class="word-inner d3">Back.</span></span><br>
-      <span class="word"><span class="word-inner d4"><span>Just Not You.</span></span></span>
+      <span class="word"><span class="word-inner d4"><span class="shimmer-text">Just Not You.</span></span></span>
     </h1>
     <p class="hero__sub">78% of buyers purchase from the first dealership to respond. The average dealer takes 47 minutes. Drive AI responds in under 60 seconds — text, email, voice — 24 hours a day.</p>
     <div class="hero__bottom">
       <div class="hero__cta-row">
-        <a href="diagnostic.html" class="btn-primary">Take the Free Diagnostic &rarr;</a>
+        <a href="diagnostic.html" class="btn-primary btn-magnetic">Take the Free Diagnostic &rarr;</a>
         <a href="#solution" class="btn-outline">How It Works</a>
       </div>
       <div class="hero__scroll-hint">
@@ -292,7 +368,7 @@ body::before {
 </section>
 
 <!-- ─── STATS ─── -->
-<div class="stats-band">
+<div class="stats-band scan-beam">
   <div class="stats-grid">
     <div class="stat-cell wp"><div class="stat-num">&lt;60s</div><div class="stat-label">Lead Response Time</div></div>
     <div class="stat-cell wp wp-d1"><div class="stat-num">24/7</div><div class="stat-label">Coverage, No Off Hours</div></div>
@@ -315,19 +391,19 @@ body::before {
       </div>
       <div class="split__right">
         <div class="problem-stack wp wp-d1">
-          <div class="problem-card">
+          <div class="problem-card tilt-card shine-sweep">
             <div class="problem-card__title">Leads Die After Hours</div>
             <div class="problem-card__desc">62% of leads come in after your team goes home. Those leads sit in the CRM until morning. By morning, they're someone else's customer.</div>
           </div>
-          <div class="problem-card">
+          <div class="problem-card tilt-card shine-sweep">
             <div class="problem-card__title">Follow-Up Falls Apart</div>
             <div class="problem-card__desc">80% of sales require 5+ follow-ups. Most salespeople give up after 2. Not because they're lazy — because they're juggling 40 other things.</div>
           </div>
-          <div class="problem-card">
+          <div class="problem-card tilt-card shine-sweep">
             <div class="problem-card__title">Appointments Don't Show</div>
             <div class="problem-card__desc">Industry average show rate: 40-50%. Every no-show is a booked deal that was prepped for and lost. That's wasted floor time and wasted gross.</div>
           </div>
-          <div class="problem-card">
+          <div class="problem-card tilt-card shine-sweep">
             <div class="problem-card__title">Scaling Means Hiring</div>
             <div class="problem-card__desc">If growth requires more headcount, you don't have a system. You have a headcount problem. And headcount doesn't scale — it breaks.</div>
           </div>
@@ -546,6 +622,148 @@ body::before {
 (function() {
   var ticker = document.querySelector('.prefooter__ticker');
   if (ticker) ticker.innerHTML += ticker.innerHTML;
+})();
+
+// ─── PREMIUM: PARTICLE FIELD ───
+(function() {
+  var canvas = document.getElementById('particleCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var w, h, particles = [], mouse = { x: null, y: null, radius: 150 };
+  var PARTICLE_COUNT = 120;
+  var CONNECTION_DIST = 100;
+
+  function resize() {
+    var rect = canvas.parentElement.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    w = canvas.width = rect.width * dpr;
+    h = canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function Particle() {
+    this.x = Math.random() * (w / (window.devicePixelRatio||1));
+    this.y = Math.random() * (h / (window.devicePixelRatio||1));
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.vy = (Math.random() - 0.5) * 0.4;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.opacity = Math.random() * 0.4 + 0.1;
+  }
+  Particle.prototype.update = function() {
+    if (mouse.x !== null) {
+      var dx = this.x - mouse.x, dy = this.y - mouse.y;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < mouse.radius) {
+        var force = (mouse.radius - dist) / mouse.radius;
+        this.vx += (dx/dist) * force * 0.3;
+        this.vy += (dy/dist) * force * 0.3;
+      }
+    }
+    this.vx *= 0.99; this.vy *= 0.99;
+    this.x += this.vx; this.y += this.vy;
+    var bw = w/(window.devicePixelRatio||1), bh = h/(window.devicePixelRatio||1);
+    if (this.x < 0) this.x = bw; if (this.x > bw) this.x = 0;
+    if (this.y < 0) this.y = bh; if (this.y > bh) this.y = 0;
+  };
+  Particle.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(232, 160, 80, ' + this.opacity + ')';
+    ctx.fill();
+  };
+
+  function init() {
+    resize();
+    particles = [];
+    for (var i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+  }
+
+  function drawConnections() {
+    for (var i = 0; i < particles.length; i++) {
+      for (var j = i+1; j < particles.length; j++) {
+        var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < CONNECTION_DIST) {
+          var opacity = (1 - dist/CONNECTION_DIST) * 0.1;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(232, 122, 0, ' + opacity + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    if (mouse.x !== null) {
+      for (var k = 0; k < particles.length; k++) {
+        var dx2 = particles[k].x - mouse.x, dy2 = particles[k].y - mouse.y;
+        var dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
+        if (dist2 < mouse.radius) {
+          var op = (1 - dist2/mouse.radius) * 0.25;
+          ctx.beginPath();
+          ctx.moveTo(particles[k].x, particles[k].y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = 'rgba(232, 122, 0, ' + op + ')';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    var bw = w/(window.devicePixelRatio||1), bh = h/(window.devicePixelRatio||1);
+    ctx.clearRect(0, 0, bw, bh);
+    for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
+    drawConnections();
+    requestAnimationFrame(animate);
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  canvas.addEventListener('mouseleave', function() { mouse.x = null; mouse.y = null; });
+  window.addEventListener('resize', resize);
+  init();
+  animate();
+})();
+
+// ─── PREMIUM: 3D TILT + SPOTLIGHT ───
+(function() {
+  document.querySelectorAll('.tilt-card').forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      var cx = rect.width/2, cy = rect.height/2;
+      var rotX = (y - cy) / cy * -4;
+      var rotY = (x - cx) / cx * 4;
+      card.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.01)';
+      card.style.setProperty('--mouse-x', (x/rect.width*100) + '%');
+      card.style.setProperty('--mouse-y', (y/rect.height*100) + '%');
+    });
+    card.addEventListener('mouseleave', function() {
+      card.style.transform = 'perspective(600px) rotateX(0) rotateY(0) scale(1)';
+    });
+  });
+})();
+
+// ─── PREMIUM: MAGNETIC BUTTONS ───
+(function() {
+  document.querySelectorAll('.btn-magnetic').forEach(function(btn) {
+    btn.addEventListener('mousemove', function(e) {
+      var rect = btn.getBoundingClientRect();
+      var x = e.clientX - rect.left - rect.width/2;
+      var y = e.clientY - rect.top - rect.height/2;
+      btn.style.transform = 'translate(' + x*0.15 + 'px, ' + y*0.15 + 'px)';
+    });
+    btn.addEventListener('mouseleave', function() {
+      btn.style.transform = 'translate(0, 0)';
+    });
+  });
 })();
 </script>
 </body>
