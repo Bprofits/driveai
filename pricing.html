@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drive AI Sales — Plans & Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #070707;
+    --dark: #0E0E0E;
+    --card: #131313;
+    --card2: #181818;
+    --border: #242424;
+    --border2: #2E2E2E;
+    --orange: #E87A00;
+    --orange-dim: #B85E00;
+    --cream: #F4DEC9;
+    --cream-dim: #B8956F;
+    --white: #FAFAFA;
+    --muted: #5A5550;
+    --muted2: #3D3A38;
+    --gold: #D4A942;
+    --gold-dim: #8B6E1A;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  /* 3D canvas background */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:10px 40px; background:rgba(7,7,7,0.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .nav-links { display:flex; gap:28px; list-style:none; }
+  .nav-links a { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--orange); }
+  .nav-cta { background:var(--orange) !important; color:var(--black) !important; padding:7px 18px; font-weight:700 !important; }
+
+  /* HERO */
+  .hero { position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:160px 24px 100px; overflow:hidden; z-index:1; }
+  .hero-bg { position:absolute; inset:0; background: radial-gradient(ellipse 55% 50% at 50% 30%, rgba(232,122,0,0.09) 0%, transparent 70%), radial-gradient(ellipse 35% 35% at 20% 80%, rgba(232,122,0,0.04) 0%, transparent 60%); }
+  .hero-lines { position:absolute; inset:0; background-image: repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(232,122,0,0.016) 40px, rgba(232,122,0,0.016) 41px); pointer-events:none; }
+  .hero-logo { margin-bottom:36px; position:relative; z-index:1; animation:fadeUp 0.55s ease both; }
+  .hero-logo img { height:390px; width:auto; filter:drop-shadow(0 0 40px rgba(232,122,0,0.35)); }
+  .hero-badge { display:inline-flex; align-items:center; gap:10px; background:rgba(232,122,0,0.1); border:1px solid rgba(232,122,0,0.3); padding:5px 16px; font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:600; letter-spacing:3px; color:var(--orange); text-transform:uppercase; margin-bottom:26px; position:relative; z-index:1; animation:fadeUp 0.6s ease 0.05s both; }
+  .hero-badge::before { content:''; width:6px; height:6px; background:var(--orange); border-radius:50%; animation:pulse 2s ease infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+  .hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(64px,10vw,126px); line-height:0.9; letter-spacing:2px; color:var(--white); position:relative; z-index:1; animation:fadeUp 0.7s ease 0.1s both; }
+  .hero-title span { color:var(--orange); display:block; }
+  .hero-sub { max-width:540px; font-size:15px; font-weight:300; line-height:1.75; color:var(--cream-dim); margin:26px auto 0; position:relative; z-index:1; animation:fadeUp 0.75s ease 0.18s both; }
+  .hero-divider { width:1px; height:56px; background:linear-gradient(to bottom,transparent,var(--orange),transparent); margin:50px auto 0; position:relative; z-index:1; animation:fadeIn 1s ease 0.4s both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* SECTION */
+  .section { position:relative; z-index:1; padding:80px 24px; max-width:1340px; margin:0 auto; }
+  .sec-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:600; letter-spacing:4px; color:var(--orange); text-transform:uppercase; margin-bottom:10px; }
+  .sec-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(38px,5vw,60px); line-height:1; color:var(--white); margin-bottom:12px; }
+  .sec-sub { font-size:14.5px; font-weight:300; color:var(--cream-dim); line-height:1.7; }
+
+  /* PLANS */
+  .plans-hd { text-align:center; margin-bottom:52px; }
+  .plans-hd .sec-sub { max-width:500px; margin:0 auto; }
+  .plans-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  @media(max-width:960px){.plans-grid{grid-template-columns:1fr;}}
+
+  .plan-card { background:var(--card); padding:34px 28px; position:relative; overflow:hidden; display:flex; flex-direction:column; transition:background 0.3s; }
+  .plan-card:hover{background:#161616;}
+  .plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border2);transition:background 0.3s;}
+  .plan-card.featured::before{background:var(--orange);}
+  .plan-card.featured::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 35% at 50% 0%,rgba(232,122,0,0.05) 0%,transparent 70%);pointer-events:none;}
+
+  .plan-badge { display:inline-flex;align-items:center;gap:5px;background:var(--orange);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;margin-bottom:18px;align-self:flex-start; }
+  .plan-num { font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:5px; }
+  .plan-name { font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:var(--white);line-height:1;margin-bottom:4px; }
+  .featured .plan-name{}
+  .plan-tag { font-size:10px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px; }
+  .price-row{display:flex;align-items:flex-end;gap:4px;margin-bottom:4px;}
+  .price-amt{font-family:'Bebas Neue',sans-serif;font-size:50px;color:var(--white);line-height:1;}
+  .featured .price-amt{color:var(--orange);}
+  .price-per{font-size:12px;color:var(--muted);padding-bottom:7px;font-weight:500;}
+  .price-setup{font-size:11px;color:var(--muted);margin-bottom:18px;}
+  .price-setup strong{color:var(--cream-dim);}
+
+  .divider{height:1px;background:var(--border);margin:18px 0;}
+
+  .usage-box{background:rgba(232,122,0,0.05);border:1px solid rgba(232,122,0,0.12);padding:13px;margin-bottom:18px;}
+  .ub-title{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:9px;}
+  .ub-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--cream-dim);padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .ub-row:last-child{border-bottom:none;}
+  .ub-row strong{color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;}
+
+  .feat-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;flex:1;}
+  .feat-list li{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--cream-dim);line-height:1.5;}
+  .feat-list li::before{content:'—';color:var(--orange);font-weight:700;flex-shrink:0;margin-top:1px;}
+  .feat-list li strong{color:var(--cream);}
+
+  .cta-btn{display:block;width:100%;padding:12px;background:transparent;border:1px solid var(--border2);color:var(--cream-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all 0.25s;text-decoration:none;text-align:center;margin-top:auto;}
+  .cta-btn:hover{border-color:var(--orange);color:var(--orange);}
+  .cta-btn.primary{background:var(--orange);border-color:var(--orange);color:var(--black);font-weight:700;}
+  .cta-btn.primary:hover{background:#FF8C00;border-color:#FF8C00;}
+  .cta-btn.gold{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:700;font-size:12px;padding:14px;}
+  .cta-btn.gold:hover{background:#E8BB55;border-color:#E8BB55;}
+
+  /* ENTERPRISE */
+  .enterprise-wrap{background:1px solid var(--border);border:1px solid var(--border);margin-top:1px;}
+  .enterprise-card{background:linear-gradient(160deg,#100900 0%,#0D0800 50%,#080808 100%);padding:40px 36px;position:relative;overflow:hidden;z-index:1;}
+  .enterprise-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold),var(--gold-dim));}
+  .enterprise-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(212,169,66,0.06) 0%,transparent 70%);pointer-events:none;}
+
+  .ent-badge{display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;margin-bottom:18px;}
+  .ent-name{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--gold);letter-spacing:1px;line-height:1;margin-bottom:4px;}
+  .ent-tag{font-size:11px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:0;}
+
+  .zero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,169,66,0.12);border:1px solid rgba(212,169,66,0.3);color:var(--gold);padding:4px 12px;font-size:10px;letter-spacing:2px;font-weight:700;text-transform:uppercase;}
+
+  .ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;}
+  @media(max-width:760px){.ent-grid{grid-template-columns:1fr;}}
+
+  .ent-usage-box{background:rgba(212,169,66,0.05);border:1px solid rgba(212,169,66,0.15);padding:14px;margin-bottom:18px;}
+  .ent-ub-title{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:9px;}
+  .ent-ub-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--cream-dim);padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .ent-ub-row:last-child{border-bottom:none;}
+  .ent-ub-row strong{color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;}
+
+  .ent-feat-list{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .ent-feat-list li{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--cream-dim);line-height:1.5;}
+  .ent-feat-list li::before{content:'—';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px;}
+  .ent-feat-list li strong{color:var(--cream);}
+
+
+  .add-rooftop-note{background:rgba(212,169,66,0.08);border:1px solid rgba(212,169,66,0.2);padding:12px 16px;margin-top:20px;font-size:12.5px;color:var(--cream-dim);line-height:1.6;}
+  .add-rooftop-note strong{color:var(--gold);}
+
+  /* USAGE BAND */
+  .usage-band{background:#090909;border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;z-index:1;}
+  .ub-inner{max-width:1340px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+  @media(max-width:700px){.ub-inner{grid-template-columns:repeat(2,1fr);}}
+  .usb{background:#090909;padding:34px 24px;text-align:center;}
+  .usb-num{font-family:'Bebas Neue',sans-serif;font-size:50px;color:var(--orange);line-height:1;margin-bottom:4px;}
+  .usb-lbl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+
+  /* ADDONS */
+  .addon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);}
+  @media(max-width:860px){.addon-grid{grid-template-columns:1fr;}}
+  .addon-card{background:var(--card);padding:30px 26px;position:relative;overflow:hidden;transition:background 0.3s;display:flex;flex-direction:column;}
+  .addon-card:hover{background:#151515;}
+  .addon-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border2);transition:background 0.3s;}
+  .addon-card:hover::before{background:var(--orange-dim);}
+  .addon-icon{font-size:24px;margin-bottom:12px;}
+  .addon-num{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+  .addon-name{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:1px;line-height:1.1;margin-bottom:16px;}
+  .addon-prices{display:flex;gap:22px;margin-bottom:14px;flex-wrap:wrap;}
+  .addon-price-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+  .addon-price-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--cream);line-height:1;}
+  .addon-price-per{font-size:10px;color:var(--muted);}
+  .addon-desc{font-size:12.5px;font-weight:300;color:var(--muted);line-height:1.65;margin-bottom:14px;}
+
+  /* MASTERMIND */
+  .mm-section{position:relative;background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;z-index:1;}
+  .mm-bg{position:absolute;inset:0;background: radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,122,0,0.055) 0%,transparent 70%), repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(232,122,0,0.012) 60px,rgba(232,122,0,0.012) 61px);}
+  .mm-inner{position:relative;z-index:1;max-width:1340px;margin:0 auto;padding:96px 24px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  @media(max-width:880px){.mm-inner{grid-template-columns:1fr;gap:44px;}}
+  .mm-crown{font-size:42px;margin-bottom:18px;display:block;}
+  .mm-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--orange);text-transform:uppercase;margin-bottom:10px;}
+  .mm-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,6vw,74px);line-height:0.95;color:var(--white);margin-bottom:20px;}
+  .mm-title em{font-style:normal;color:var(--gold);}
+  .mm-desc{font-size:14px;font-weight:300;color:var(--cream-dim);line-height:1.75;margin-bottom:30px;}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-gold{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--gold);color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background 0.25s;border:none;}
+  .btn-gold:hover{background:#E8BB55;}
+  .btn-outline{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:transparent;border:1px solid var(--border2);color:var(--cream-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all 0.25s;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+  .tier-list{display:flex;flex-direction:column;gap:2px;}
+  .tier-row{background:var(--card);border:1px solid var(--border);padding:18px 22px;display:flex;align-items:center;gap:16px;transition:border-color 0.3s;cursor:default;}
+  .tier-row:hover{border-color:var(--border2);}
+  .tier-row.gold{background:linear-gradient(135deg,#130D00,#100B00);border-color:rgba(212,169,66,0.22);}
+  .tier-row.gold:hover{border-color:var(--gold);}
+  .tier-icon{font-size:22px;min-width:34px;text-align:center;}
+  .tier-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--white);line-height:1;margin-bottom:2px;}
+  .tier-row.gold .tier-name{color:var(--gold);}
+  .tier-desc{font-size:11px;color:var(--muted);}
+  .tier-arrow{margin-left:auto;color:var(--muted2);font-size:14px;transition:color 0.2s,transform 0.2s;}
+  .tier-row:hover .tier-arrow{color:var(--orange);transform:translateX(3px);}
+  .tier-row.gold:hover .tier-arrow{color:var(--gold);}
+
+  .benefit-list{margin-top:14px;}
+  .ben-row{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+  .ben-row:first-child{border-top:1px solid var(--border);}
+  .ben-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--orange);line-height:1;min-width:26px;padding-top:1px;}
+  .ben-title{font-size:12px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+  .ben-desc{font-size:11.5px;font-weight:300;color:var(--muted);line-height:1.55;}
+
+  /* COMPARE */
+  /* ── COMPARE TABLE ── */
+  .cmp-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:2px;box-shadow:0 0 60px rgba(0,0,0,0.6);}
+  .cmp-table{width:100%;border-collapse:collapse;min-width:860px;}
+  /* Category header rows */
+  .cmp-table tr.cat-row td{background:#0A0A0A;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);border-top:1px solid var(--border);}
+  .cmp-table tr.cat-row td.fc{background:#0C0A07;}
+  .cmp-table tr.cat-row td.gc{background:#0C0900;}
+  /* Column headers */
+  .cmp-table th{background:#0D0D0D;padding:22px 20px 18px;text-align:center;border-bottom:1px solid var(--border);border-right:1px solid rgba(255,255,255,0.05);}
+  .cmp-table th:first-child{text-align:left;padding-left:24px;}
+  .cmp-table th.fc{background:linear-gradient(180deg,#120D06 0%,#0D0D0D 100%);border-top:3px solid var(--orange);}
+  .cmp-table th.gc{background:linear-gradient(180deg,#130E00 0%,#0D0D0D 100%);border-top:3px solid var(--gold);}
+  .th-tier{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:3px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px;}
+  .th-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--white);display:block;line-height:1;}
+  .th-price{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;color:var(--muted);display:block;margin-top:4px;}
+  .fc .th-name{color:var(--orange);}
+  .gc .th-name{color:var(--gold);}
+  .fc .th-price{color:var(--orange-dim);}
+  .gc .th-price{color:var(--gold-dim);}
+  /* Data rows */
+  .cmp-table td{padding:14px 20px;font-size:13.5px;color:var(--cream-dim);border-bottom:1px solid rgba(36,36,36,0.45);border-right:1px solid rgba(36,36,36,0.25);vertical-align:middle;text-align:center;}
+  .cmp-table td:first-child{text-align:left;font-weight:500;color:var(--white);background:rgba(255,255,255,0.012);padding-left:24px;font-size:14px;}
+  .cmp-table td.fc{background:rgba(232,122,0,0.025);}
+  .cmp-table td.gc{background:rgba(212,169,66,0.028);}
+  .cmp-table tr:last-child td{border-bottom:none;}
+  .cmp-table tbody tr:hover td{background:rgba(255,255,255,0.02);}
+  .cmp-table tbody tr:hover td.fc{background:rgba(232,122,0,0.05);}
+  .cmp-table tbody tr:hover td.gc{background:rgba(212,169,66,0.055);}
+  /* Values */
+  .ck{color:var(--orange);font-size:18px;line-height:1;}
+  .ckg{color:var(--gold);font-size:18px;line-height:1;}
+  .ds{color:var(--muted2);font-size:20px;}
+  .hv{color:var(--orange);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:15px;}
+  .hvg{color:var(--gold);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:15px;}
+  .cta-cell{padding:20px 20px !important;}
+
+  /* FOOTER */
+  .footer{border-top:1px solid var(--border);padding:56px 24px;text-align:center;position:relative;z-index:1;}
+  .footer-logo img{height:130px;width:auto;margin:0 auto 20px;display:block;}
+  .footer-sub{font-size:11.5px;color:var(--muted);letter-spacing:1px;}
+  .footer-note{font-size:10.5px;color:var(--muted2);max-width:500px;margin:12px auto 0;line-height:1.65;}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:var(--black);}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--orange-dim);}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <ul class="nav-links">
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#addons">Add-Ons</a></li>
+    <li><a href="#mastermind">Mastermind</a></li>
+    <li><a href="#compare">Compare</a></li>
+    <li><a href="#contact" class="nav-cta">Book a Demo</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-logo">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAH0AfQDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAYIBQcBAwQJAv/EAFoQAAEDAgQCBAYJDgkLBQEAAAABAgMEBQYHERIIIRMxQVEVIjJhgZEJFDc4cXWhsbMjJjRCUmJydJKisrTBwxgzNlZ2gpPC0xYXJFNjZ4aUo9LjQ1VXc4Ph/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAIDAQQFBgf/xAA6EQEAAQMCAwUGAwcDBQAAAAAAAQIDEQQhEjFRBTJBYXETIoGRocEzsdEGFEJSYnLwI0PhFVPC0vH/2gAMAwEAAhEDEQA/AKZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG/eEjAuBMX27GlwxzZ3XGns0FPPGraiaNY2qk7pNEje3dqkbevXq5EK64op4pSopmucQ0EC0HhTg9/m3df7Su/xjshbwf3h3tSOK42Z8nitmfJWojV79XOe1PSmhX7f+mfks9j/VCrYN/wCbfDu2zYVkxrl3iBuKMPMYssrUcx8scSdb0ezxZETnroiKncui6aqyhtNvv2aOGrLdqf2xQVtyhgqIt7mb2OeiKmrVRU5dqKik6blNVPFCFVuqmcSioLeY9tHCrgnFVXhq/YXr47hSIxZWxVFa9qb2Ne3RUl58nIYNLhweyrsWxXSDX7dX1y6f9RfmIRfzGYplObONuKFXwWjrsiMr8wbbU3DJvG7H10UayeDaqTenmRUcjZY0VeW5yOTUrTfLVcbHeKq0Xajlo6+klWKeCRNHMcnWn/8AU5KnNCdFymvkhXbmnm8QLfXjBvDrgjAmELpjbDFV7ZvdujmSSCqrH75EijdIqo2VEbzkTqTQ8GZOAMmaSwZd4ow3hl8dnv2IKanqllrarWSlkR6ORUdIqtXki6povLrK41ET4SnNiY8YVQBcXMjDXC7l9iFthxLhSvhrHQNqGpFU1sjVY5VRFRUl72qnoNT8XOX2GsC4psUmEKD2jaLnbelazp5JUdK167nI6Rzl5tdHy1+clRfiuYjE7ldmaYmc8mkgb44T8A4MxXR4wvmO7Y6ttVjpI5U+ryxbNUke931NzVXRsfV5za2WeDuGPMOqr6fDeFax60EKT1Dp6qtja1qronNZfMvqMV34omYxOxRZmqInMbqYgtRlvgzJGPIqPMXHGGZnwyXCeJXxVdVuaxZ3NibtZInUmia9fLnqefwpwe/zbuv9pXf4w9vGZiKZPY7bzCr4LQeFOD3+bd1/tK7/ABjozxwRlE3ICkzBy6sMtGlXcGQxTy1NQ5ysR8jHorJJHInjM7hF+MxE0zGT2O0zEwrMATPI/D1NivNvDVhrYOnpKmuatREqqiSRM1e9q6c9Fa1U5F1U4jKqIzOEMB9G/wDMFlB/Mii/t5v+8qtxj4BsWBcc2luGbZHbrZXW7d0LHOcnTMkcjl1cqr5KsKLeppuVcMLrmnqojMtGgFsuDjLPAmM8sbjdMT4cprnWRXmWnZLI96K2NIYHI3xXInW5y+ksuXIt08Uq7dE1ziFTQWL41sB4RwRUYUbhWyQWtKxtWtQkTnL0mxYduu5V6tzvWV0M264rp4oK6Joq4ZAATQADsikYzyoI5Pwld+xUMSQ6wZi1yS1MvR0OG6askTrayOaRfUj1JJSWzEj1RzcropE+/oKtqL6ekQ1L2sptd6PnMR+ctq1pZud2fpM/ZBGbVcm9VRvaqJqp+tI9+m523v28/VqbHbZLg/nUZPy69qwSVcfyK9yHmltVpZJtuGW+KqBO10NS9fSiPi/aa8dqUVTtTM+k0T/5Lp7PrjnP0q/9UKp47Y5f9IrKyNPvKVr/AJ5EJBZcJ0t62pa626yqva6zyOanpjc8kD8UYLwvTxtw3g6aa56ePUXxqOWNfMxF0186bTL4cteZ2YbG1ldfam1WiTyXprE17e5kbNNyedeXnU09T2hepom7V/p0dapjM+lMRMz84lt6fRWqq4tx/qVdKYn6zMxj5Sjt0yovVDAkz7zYmoqaoyepdTyelsjW6ekiNwsdbQ69LNbpNF00guMEyr6GPVTb15t2VmXyLDcYJMRXnrdFK/eqL98nkNT4dXfCR1mZNwuVZ7RsWGMPW5mx7oo0o0kcu1qu268kVVRFRNG9ehRo+0dddp46KeKj+aqIoj4bzOPPC3VaHSW6uCqrhq6RPF89oj6tYAllZjZ1wVfCeGMOVSO8pzaNYZF/rxuaupi6tthq4ukoFqrdUdsFQ5JYnfgyIiK34HNVO9x3aL9z/cox6bx+v0ceu1R/t15+k/p9WHBy9qtcrXJoqHBtNcAAAAAAAAAAAAAAAAAAAAAAAAAAAstwZfyEza+KYfoqsrSWW4Mv5CZtfFMP0VWU6j8Ofh+a2x34/wA8ET4RsAYXzCxpd7biqhkq6amt3TxNZO+JUf0jG66tVFXkqk7osrciM0aSroMsMQ1tqxFBEskVLVukVr9O9siaub3qxy7ddVRepcb7H97o+IPij99Ga84XaiSl4g8LSRuVquq5I107UdE9qp6lKq+KaqpieSyjhimmJjmmXCRjC74Jzdly+vLpG0FzqJKGppJF3Ngq2aojkTq1VWqxdOvVNepDGQ4XhwdxkW/D9LH0dLBiOnkpm6cmxSObIxqeZGvRPQfrMOJtv40k6BNmmKKGbl3vfC9fWrlJrm9G1nHJhlydclVbnL8OqJ+wTPvZ6wRHu46ShHE9Sw13FZX0VS1XQVFTb4pGoumrXQQoqap1clNo5gZe8M+FMVU+Er+262e41UTJY5mVE72I17la1Vcu5qc2r1ponaa14j/fdz/j1s+igPTx4e7TS/EsH0sxiImrgpzjZmZiOKcZ3R7NPCV8yAzbt9TYrrNKxqNrbdVObtV7Nyo6KRE5L1aOTqVHJyTXRJdxp22gui4OzMtUPRwYktrem5fbIxj41d98rJNv/wCaHr4zH9PgLKipqfs2S1Sul15qusVMq6r8Kr8pxnnz4QssVm/jkmjRqfedDL+zaZpqmeCqefIqiI4qY5czi/8Acryh+Kn/AEFKfvOiR8XB9ljLG5WPZVxOa5F5oqRTaKfji/8Acryh+Kn/AEFKc52+86y0/GYvoZiNHdo9Z+7NXeq9I+z88bUbL1bsv8dwMRWXa1Kx707E0ZKxP+q/1KdnEX9cnDJlfi7+MlpWNoZX9u50O16r/Wp/WpxjT66eBvDd0XxqjD9e2GVU57WI+SFE9T4lGFfrn4Fb9b2+NPh+4ufGi/atSWOZy/kyyfKKdqafKcE7zPnGXOUn1u8GGP76/wASS51L6Ri/dMckUCfLJIccMP1vcP2amME8WR9M6jhevY9kLlb+dOz5DnMb62+CHBloTlLeK5s8ifdMc6afX0fU0OKv62uAynjX6lLiO6JqnUq/V1cnrZTp6BO8T51EbTHlDif3glP8ar+tOPHw+YBywumSV+x3mDbauoba7o+F8sFRK1WxJHAqIjWOTXxpF8/M9k/vBKf41X9accZTe8hzD+NX/oUhnM8M4n+I24oz0PbXCJ/7bf8A8qq/7zz505j5VVuRdLl7l6twjjpK9s8MNRC/RrVdI9/jvVVXxnqVxBdFiMxMzM4U+1nExEQG9eBy1JcM8GVqs1S2W2oqUXTqV22L5pV+U0UWx9j2tSrUYuvb28mspqWN3fqr3vT5GDUTi3JYjNyFtysHsgtpSbCWGL6jedLXS0ir5pY0d+5N24oxKlszTwbh3pNPDMFw1br19FHG9P2+pSI8Ytp8K5B3qRrN0lBJBVsTu2yNa5fyHuObZ925TP8AnRv3feoqh89y8PAJ7jt2/pBN+r05R4vDwCe47dv6QTfq9Ob+r/Daem/EQ72Q77KwT+BXfPAVPLYeyHfZWCfwK754Cp5LS/hQjqPxJAd0MDJE51UMa9iPR3P1Jod8VsqZXaRyUa92tZE3X1uQsm5TTznCuKKp5Q89M6Bkm6eJ8rfuWv2/LovIy9JiWpoWtS2261Ub0/8AUSkbM/8AKl3qno0PZZMPVkcqSVuFLtd2a8m0c2jVT4WsevqJxbJbBbUYtXkteI/unTdLN8j2onzHK1uttRtwcfpNOPlNUfk6Wl0lyd+Pg+FWfnFP3a8nxhiqZNr8RXRrPuI6lzGfktVEMhhuhx3iuo2W2putSxnlzyVL0ij+F7l0T4Os2vRZh4YotG0uXVzpkTl9StsbdPUeTHOOMF4nw++11lsxNSuairEkVMjVY7s1aj9rk8y/IvM5P/Ur/FFFvScMT47TjzxGM/N0v3Gziaq9TxY8N4z8Zz+SOU9js9jkR2Ksz5UmTyqa0zyTPRe5XprovwtMrS5oYSsTejtkeK7qreSOrbi9GL8Cb1/RNP1FsuNPSJV1FBVQ06vRiSyQuaxXKiqiaqmmuiKvoJBgjC8Nxo6vEF7kfS4ft3OeRvlzv7IY/vl1RNezVDb1PZumqtzc1Vyao5YjERnpEUxE5n1lq6fX34r4NPbimes5mcdZmdvpCd1udVzuUUjaPB9LLHEm53TPdUIxO9dGpoYqozxxg5dsdJZ4UTkiMgevzvU8Not64yqYZbhVQ4cwy2qZS0dPE3VHSOVERjE+3foqK6R3VrqvLkZvHuWWHLZX0tks1zrmXmpgWWmjrHMWKpVFVOjRyIm169mvJeSctTRjT9jWLsWLlr3t9t6ojrmeW3jjl49W5N7tS9bm7Rc2+EZ6Yjn6Z5ozUZnX6dVWW3WB+q6qjrbGvP0nVFmNd4p454rTh1ksTkdG9triRzVTqVF01RTAUeH7zVRvljt8rIWOVrpptIo2qnWiveqN182p3x2KmZp7fxFaKRe1rXvnd/0mub+cdudH2dT7sUR6RGfpDkxqdbVvNU+s7fWXfLilszdJsNYdfz11bSLGv5jkOia8WmdPqmFrfE7tWnqJ2/I6RyId3tDCMSp02I7lP3pTWtF+V8rfmPU1uXTUTdPiuZe3SGnj/vOJ5sU9ymr4RVH6I4u1d6qn48M/qxkMuG5XIyoo7pToq6LLHVskRid6MWNFXTu3Jqe2ltFyprolvp4bdXwSQ+221D2NWJYE11kV66OY1NFRUVUVFTTTUk2GsN5f4gt15qaNcTw+C6J9VI6eaBGroiqicmKvPRTyVt3ttbgPDuH7U5rbvWuSluD0RdWxsmcsbF7NFdJu5fcpr1Ia1Ws4q+C1TPPE8XhmJnPPwiOvjEeK+nS8NPHcmOWYx47xGOXWfzd1ksdtvNDJWz4MqmWxj0a642yrezt01ZFOrlkTXXknP4F5EJxHbktN8q7e2ZJ44ZFSKVOqSNebHp8LVRfSWFlw1C2mmpm0lTR720SzWyORJZejpXv2ujVq6aP8RNdU0VXKvPU0lmo2VuOq9J6X2nJthV1PuR3Q6wsXo9U5Lt6uXcanY3aP71qaqYnbGcZz06zPWY225dWz2pof3exTVMb56Y69IjpHPfmi4APTvPgAAAAAAAAAAAAAAAAAAAAAWW4Mv5C5tfFMP0VWVpLLcGX8hc2vimH6KrKdR+HPw/NbY78f54Px7H97o+IPij99Ga14avd/wp+Pr+g42V7H97o+IPij99Ga14avd/wp+Pr+g4hPer9P1TjlR6pZmv79L/iK2/uCa5xe/hwr+MW79IhWa/v0v+Irb+4JrnF7+HCv4xbv0iH8v9qXX1QniTkZFxbVUsr2sjZW21znOXRGokMGqqvYhubOrAmVuPce0+MMR5q2eioKejjpn0UFXAjpEY97l0kV69e/TRGqvI0fxVUXhPihutt6XovbU1BB0m3ds308LddNU1016iZYq4T0tFhvNbR5hRXGvtlBJWe0G2tGPkRrXOa1V6dVbuVjkRVTrRe4xPDFNEzVicMxmZqiIzuiHEhjGLNnNW1WPBTHVtuo42W62NZGrEmle5Nzmouio3yW89OTNSS8ZtZR2KyYFyxoZo5FsdubJU7ea67Gxx69yqjXuVPvkU7OBWntctzxZVx2umqcT0NC2W1SzKq7UVHteiJ2au6NFcnPRypqmvOv+ML/AHbFOJ7hiC+TrNca2ZZJ3aaIi9SNROxERERE7ERCyin34pjlT90Kqvc4p51LAcX/ALleUPxU/wCgpTnO33nWWn4zF9DMccX/ALleUPxU/wCgpTnO33nWWn4zF9DMV0d2j1n7p196r0/Rzw5/XNw0Zn4N/jJaVjq6GNe1zotzET+vTp6VHBiqX3COZGBZF3JcbYjoWedzJInL+dH6jG8B90ZBmfdrFUaLBdbS9Ni9TnxvaqJ+S6Q6+E57sI8TtXhmZ6o6Rtdana9ronK/n6YTNyO/HpLFE9yfgy3GsqWbDmXGC412pbbW5ZGfgsiib+g/1jiv+t/JnK3Bacnx0SVFQ3ueyGNuvpdJIeLiu+uziitOGUVXIxtBbVai9Syyb1+SZDy8d11Srzfo7XG5OittqiYrU7Hvc96/mqz1C3Hcj1kuT359IZaf3glP8ar+tOMfw/ZjZZ2TJm+YEzAdXujudzfPJFTwvVHRLHAieM1UVF3RqZCf3glP8ar+tOPHw+YBywumSV+x3mDbauoba7o+F8sFRK1WxJHAqIjWOTXxpF8/Me7w1Z6+BvxRjolOAcO8LmOMUU2G7BaLzJcKlr3RtlmqWN0Y1XLqqv7kUrhmpaaGw5l4lslsiWKioLpUU9OxXK5WxskVGpqvNeSdaljMD404XsF4kp8RYepr5TXGna9scjmVEiIjmq13iucqLyVSuWaN4osQZkYjvluc91HcLnUVMCvbtcrHyK5uqdi6KTs8XHPPHmjdxwxyz5I2Xr4FLV7RyYmr3N8a5XSaZF+9a1kaJ62O9ZRQ+k3Ddaks+ReEaTbtV9vbVKnnmVZf75HWTijDOljNeWps9cTeD+LvLWmR+jKVkTHLr5K1Ur4l/N2+s31mbafD2XWI7Mjdzq22VELPM90bkavoXRSlXFDXXWTiTuN1o6GrmZa5qRsDmROVFWONjl0VE+73F84JWTQMmjXVkjUc1e9FTVDVvRw00T5Nm1PFVVD5NF4eAT3Hbt/SCb9XpyneYVp8A49xBZUZsbQ3Kop2pp9qyRyJ6NEQuJwCe47dv6QTfq9ObeqnNrLW00YuYQ72Q77KwT+BXfPAVRYqNciq1HonYuui+otf7IU1HVmCGq9rEVld4y66Jzg7itdswrdLqqJa5LfVuXqY2vhY9f6j3Nd8hG1et2rMTXOI89vqzctV3LsxRGZeCKqoF5T2tqp3wzvYv525PkPVFLhl/KWhvEP3zayOT5Ojb857q3AGNKTXpsM3J2n+qhWT9HU8MVmrqV6uulgvCsTrRrHQqnpcx3zEYu6e5GaK8+lX/OEvZ37c4rox60/8MzY8P4Uv1dDbrdiOvpK6oXZBHW29ux8i+S3eyRdNV5a6EdiuN4tkrqeG4VtI+JytcyOdzNqouipyUzFprsJ0dxp6qS34gppaeVsjVZWxSKjmqipyWJvcYzFlwpbtia5XOjgfTwVdS+Zkb1RVbuXVddOXWqkLMXJuzRciZpx/Fw7T8Oefsldm3FuKqJiKs+Gd4+PT7vbTY4xjTv3R4nu6r3SVb3p6nKqGSps08fU7NseIpVT/AGkET19bmqQwFtfZ2kr71qmfWmP0V067U0d25VHxlve20OIs0spY211yimr2XdHtlkjaxGxtbtVNGNRF0R7l85G85KmGnqbRlvh9v+i25GJIidctQ/q1718bX4Xr3HhyzzQnwZYKu1eCm1ySTLNA5ZtiMcrURUVNF1Tki9nb3mPyx6a/Zs26sr39JI+rdWTyO6tzUWTVe5NUQ87a0N/SX7t65TEWbfFVREYxmY6R0jaPOdnbuauzqbVu1bmZu18NNUznlE9Z6z+TZmOcI2uoyzoqjDU8dRU4ZVyI6FfLVjk6dF7nbk3+jlyUzGJrA7Eec1qlkZrQWWiZUTuXqWRXvVjPh1RHL5k8530MeDsHW+/XjD9f7dbHAs1XQRVzZmud2KqLqrVVdU17lXVF0Qy98gpcQYegbJeX2KnusLJp2xuYyaVHMTxdzurloi6J2adR5WdZdpmMTPD70RVMbxxxE1bR03mPOcvRxpbdUTmIz7szTE7Tw5iN567RPo0FngyB2O5q6jq1qqKuibPTvR6ubpqrHI1e7ex3VyIKbJz1s1usNTYLZa5Hy0sFA5I3vej1VFme7rTkvNymuIo3yyNjjY573Lo1rU1VV7kQ+i9j3Ka9DbmmdsYjPPEbRnzxG7w3adFVOrrieeczjrO+zspqaoqXK2CF8mnlK1OTU71XsTzqZSmtFujYkl1v1LTp/qaVi1Mvo26R+t6Emw3lPjS8wsfLSttlKvjI6terF/ITVyL8KIZGtwzlphXVt9xHV32uZ10tuRrW69zl1XT8pF8xTe7WsTX7K1XNVXSiOKfnvEfFba7NvRT7S5Rwx1qnEfLaZ+DCUmKLFY8M3mzWGjuNRJd4mxTVVY9jNjW6+SxuvXuXXVxGLA6aC8UdZFTyzJT1EcqoxqqviuRewntXiSnt0DZbLl5ZLTTaaxVF1Ys0rk+6Zv0V3oRxiv8AOljiKRVpr4yFqJtbHFRwpG1PMis/ZqQse2mmubVqPe5zVXvO2P4YqiNvBO97KJpi5cn3eXDTtzz4zTPNtyondRWp1ppLZQdNDSJXOpeTmrSLOjUY6R3NVVm96vVeTufUhoDFldBcsR11XS7/AGq6TZT73KruiaiNZqq81XaidZ7b3jXE15jmZcbmsqTsRkrmwxxukYi6o1XNaiq3Xnt10I8Ox+yq9FNVdyYmqemZ9ef/AN85O0+0adVw024nhjrj7AAO45AAAAAAAAAAAAAAAAAAAAAAFluDL+QubXxTD9FVlaSy3Bn/ACEza+KYfoqsp1H4c/D81tjvx/ng/Hsf3uj4g+KP30ZrfhmY6TiAwq1qaqlc53oSN6r8iGwOA2voaDMO/SV1ZT0rHWna100rWIq9MzkiqpLsE4LysyJucmOMR5hUd/u9LFJ7RoqNGI9HParV2xo9znOVFVNy7WpuXXsVKa6sV1x4zC2inNNM9Gus0XJNxpJ0fPXElub6UWBPnQmmcDkXjiwsiLqrai3Ivm8bX9pAMjYLhmdxP0uIJoFRvhOS9VSIu5sDWO3sbr3I7o2J6DM4gxBBiXjdoq+lkSSmhxBS0cTk6l6FWRuVO9Fc1y6+czMYnHSliJzGesvHxH++7n/HrZ9FAWKmvTKPjAksNQrVgvOEmRpG7qfJHNK9Ph8TpSuvEf77uf8AHrZ9FATziAvv+TfGPgy8K/ZHFTUbJXa9Uck00b1/Je4hVTxU0x5JxVwzVPmgvDpO/L/iofh2ZysifV1dmkVy+Um5ej+HV8cfrIBn5h//ACYzkxRaGs2RMr3zQt05JHLpKxPQ16J6CecVtNPgviVXENE3Y+ZaS706dSb2aNX1vicvpMtx0WyCXF2GsZ0POkvtqTa5E8p0ao5HelksfqLaKvfpq6wrqp92Y6S9fF/7leUPxU/6ClOc7fedZafjMX0Mxxxf+5XlD8VP+gpTnO33nWWn4zF9DMV0d2j1n7p196r0/RqzhsvCWPPPCda5+1klelK5ezSZqxc/N45neJiK44M4j75cbPVT0FTJLHXUtRA5WPassSK9UVOrxlehqa2Vk1vuVLX0zts9NMyaNe5zVRU+VCxPHbRw1WI8I4upU+oXe0bGuTqXY5Hovw6Tp6i6ra7HnCqne3PlKH8NXhPGnEjYbleqyouNU2V9ZU1E71e93RQu2Kqr182sT1GC4lLsl6z1xbWI7c2OvWlRf/pakX9w2TwG0ESY9xDiKo5QWy0K1zl+1WR7V1/Jjf6yv17r5brea66T/wAbWVEk7/wnuVy/OKd7s+UFW1uPOVi5/eCU/wAar+tOOMpveQ5h/Gr/ANCkOZ/eCU/xqv604yvDRbLbifhixbg+qxBQWie5XiRrZKh7dWJ0VMu7arkVU8VUKZnFMz/UtiM1RHkqmCy38Fq3f/Llg/sG/wCMRbOLIJ+X2Am4uixjR3umdVMp2sgpdqO3buaP3uTkrVQvi/bmcRKmbNcRmYaWpYJampipoGq+WV6MY1O1yroiH1ZstDHa7NRW2HTo6SnjgZp3MajU+Y+a2Rdq8NZx4St23cx91gkkTTrYxyPcn5LVPpHii5Ms2GbpeJFRGUNHNUuVepEYxXfsNXWzmYpbGkjETLIg+TD3Oe9XvcrnOXVVVeaqX94Krp4QyFt9Nv3Ot1ZU0q8+rV/SonqlQqvab2VPFnKy1qPaVYwq7xfWnwVn5fla3bFWpDVx+fdE1HL+W15YXgE9x27f0gm/V6c1x7IHaUgxvhu+I3RKy3SUyr3rDJu+aZDY/AJ7jt2/pBN+r05dcnOniVVuMX5hDvZDvsrBP4Fd88BW/DmLb1ZZmrDc7gkLeqOOoRET4NzXJ8hZD2Q77KwT+BXfPAVPJ27Nu9Yim5GY80bl2u1emqicS35hHOiikjbDeW9AqLos1RO57l9EUCIbTsV+tl7gSe2TyTxKmu/oJGt9bmohTA7qSpqKSZs1NM+KRq6o5q6Hm9d+x2kv5qsTNE/OP1+ru6P9qNTaxTejij5T/nwXSuNNSzU8j6miiqtrVVGPjR27ROrmhqSjs1CtvsWKrjS2WupbzURR1FC22QsbCkuqN6N7Wo7Vi6IuqrropAbRm7jS3QMgbVUlRG3qSamb/d0ObFmPDQ3tt0qMMW9ZUkdKiQyzJHG93lPZG56sa5detEQ5ul/Z3X6OmuOeek84xO2+MeE5jfZv6jtzR6qqmeXrHpvtnPjtPVNo8K2Wqgs+Ia7D1nWzXaoihSlp0limpmyu0idva/R66q3cmiaa8iIZ3YCpcI11JWWlJfBtXq3a927opE57devRU5prz5KSTCmM8CPuFN7YlvtPBT1C1FLb55GLSU8vNdzeaLoiqqoiqqJryNlYoobLmBhOa1RXCBOlVr4ZWq2R0T0XVHbUXn2p19SqRntDV9m6y3Ve4vZ7xOc4xPLrvHjMc/PnOf3LTa/S1xa4ePwxjOfHptPhHh5KlG0uHKztueIrtLLqkcdvdDqnW1ZHImvqRxmHZA1eq7cTQKnno1T++bKyxwNR4ItlRBDVPq6mqe1087mbNdqLtaiaroiar2r1qdDtv9pNFc0VdvT3M1Vbcp67846NLsnsLVW9XTXfoxTHnH2li8J1GF7V4Sw5h2jhntdrpXy3Spdo9JZNOTFd1OXRHqvYmiIid3OIrvZrhe7fh3EdDBPZb9Ssltsz26LHLomsevYqorVRyc0V2nby82ZUVrwPllfI7czopLtUSN59bpJlXcnwIzdp+CdFxtFpueXeCLrfa6Gjo7XDTVE75F8tnQp4idqq5yMTROfXpz0POW6LVyY1MzViqZpid+LMU54o8+Ll5bO7XXcoidPHDmmImY/hxnGJ8uH67sRecoqi8X+jooqtaOwWulbTRzO0fLMqvfI7RE5db9FVdOadSnunu2AMtHJbcP23wrfl+p7Ivqk6uXsfJou3X7lqf1Tz1WI8WZl1UttwhHJZ7C12youUuqPkTtRNOr8FOfeqIuhjrvecIZVQSW3DdNHdMSbds1XN43Qr27lTq/Abp517+jTTqtRw6fU1TVV/26Zx8blXhnnMc/Ro1VaezxX7ERTT/PVGfhRHj68vVxidMUXih8JZh4gZheyv5x2ym/j5k+52JzVerylXT7lCA12LLfb1WnwbZYrZG3kldUIk1Y/z7l1SP4GJ6SPX28XO+3KS43aslqql/W969SdyJ1InmTkeA9douyotURF3H9sRimPh/F61Z9Iea1XaM3K5m3n+6d6p+Ph6Rj4u2qqKirqH1FVPLPM9dXySPVznL3qq81OoA68RERiHMmZmcyAAywAAAAAAAAAAAAAAAAAAAAAAAAFnuBuCCusWZFqlrIaRa6jpadskipo1XtqW66aprpqVhBC5Rx08KduvgqytB/BI/wB5lr/5L/ynnqeGDD9pkbNiHOCyUNI3nIr4WRuVPMr5tE+HmVnBX7O5/P8ARPjt/wAv1Wav+ZOXOT+E67C2Tckl1v1e3ZWX6Vd3R8utrtERypr4qNTYirqqquqLpzIiREzrwhLNIiJ4Yp3Oe5f9onNVIQCdNqIiY6ozcmZiei72ZeRUWMM4pMfR44t1HG6ell9qOgR6/UWRt03b069ndy1NO8dE8U2dFJJTzMkRLNAm5jkXRekl7UNBghbszTMTM5wlXdiqJiIxldrMrLiiz4wtgrFkOKqKz1iWlq1PSxJKr1e1jtvlt0VrukTt6zFcS+Dkt/DFY7dNeKS6V2FZYGe2ItGrJCusKIjdVVOTotef2pToEYsTEx720MzeiYnbeV4MwsrYM2Mssu4osV0NndarTHu6SNJVf0kMPLy26adH8pD+KuywYW4c8F4VZdKe4yW24shdNFom/SGbxtuq6dfeVPApsTEx720FV6Jidt5C5VNgujzt4bsA064jpLRW2qPollmYki7YkdCrVbuaqa7GLr5imoLblua8YnEwhRXFOcxnK6VnwFSZIZH5izpieju1bc6BWMlijSNWLsfGxNNztV3SqpS0AW7c05mZzMldcVYiIxhcLKfCEGYXCFQYS8O0tpllr5Zellaj9uyoc7TbuTr+Ejv8Ej/eZa/+S/8AKVfBX7KuJnhqxnyS9pTMRmn6rQfwSP8AeZa/+S/8pms+cMQYF4SbZg5L1TXWWhurVWaJEZv3yzSeTuXTTfp19hUUGfZVzMTVVnHke0piJxTz80+4f8X2LAeaFvxViCmrqmloo5tkdHGx8nSPjcxF0c5qaaOXt7jfuavFDgrE2XF+w9ZrViSGuuVE+ljfU08LY0R6bXblbK5fJVepFKiAlXZprq4pRpu1U08MBYLhdzxw5lfhm7WbEVBeKptVWNqYFoYo3o1VYjXbt8jdPJb1alfQSroiuMSjRXNE5hYHijzmwbmnhy0Ulht17pq631bpFfXQRMYsTmKjkRWSOXXVGdnYvM9nDFnthHLDAVdYL/br5U1VRdJKxj6KCJ7EY6KJiIqvkauusa9ndzK5Ah7Cng4PBP21XFxeLd3FTm5hvNWbDr8PUV2pUtjalJvb0UbN3SLFt27Hu18hdddOw0iAWUURRTwwhXVNc5kABJEAAAIqouqclAAydDiC/UOntK93Km06uiqnt+ZTOUOZuOqPTosRVL0T/XMZL+kikQBrXdFprv4lumfWIlsW9Xft9yuY9Jlsb/PHiyWmdTV9PZ7jE5NHNqaTVF9CKiEqwbhG/wCYctLfMaTOhs0LUSioYmJE17eza1PJZ5+tU6l00UwmRmBLfe6lt8vc9M+lifpT0SyNV0zk+2e3XXai9nb8HXPs7swEwzbvAlolRLtUs5uYv2NGvb5nL2d3X3a+N1923Tqo0PZduIuTzqiO71x085j05vUaO3XVpv3vtCuZojlTnn0z18o+PJg828xqewUq4Qwf0dNJC3op54ERradO2OPT7bvXs+Hq0S5znOVzlVzlXVVVeaqHKrnK5yqqquqqvacHquzOzLPZ9rgt7zPOfGZ6y87r9fd1tzjr2iOUeEQAA6LRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//2Q==" alt="Drive AI Sales" onerror="this.style.display='none'">
+  </div>
+  <div class="hero-badge">Drive AI Sales Inc. — Official Pricing</div>
+  <h1 class="hero-title">Choose Your<br><span>Weapon.</span></h1>
+  <p class="hero-sub">Every plan is engineered to turn follow-up chaos into automated revenue. Pick what you need. Stack what you want. Scale without limits.</p>
+  <div class="hero-divider"></div>
+</section>
+
+<!-- CORE PLANS -->
+<div class="section" id="plans">
+  <div class="plans-hd reveal">
+    <p class="sec-label">Core Plans</p>
+    <h2 class="sec-title">Start With Your Foundation</h2>
+    <p class="sec-sub">All plans include customer success, platform upkeep, and dedicated support. Build up with add-ons at any time.</p>
+  </div>
+
+  <div class="plans-grid reveal">
+
+    <!-- IGNITION -->
+    <div class="plan-card">
+      <p class="plan-num">Tier 01</p>
+      <h3 class="plan-name">IGNITION</h3>
+      <p class="plan-tag">CRM Foundation</p>
+      <div class="price-row"><span class="price-amt">$699</span><span class="price-per">/ mo</span></div>
+      <p class="price-setup"><strong>$2,999</strong> one-time setup</p>
+      <div class="divider"></div>
+      <ul class="feat-list">
+        <li><strong>GoHighLevel CRM</strong> — fully configured sub-account</li>
+        <li><strong>Pipeline setup</strong> — custom stages, fields & lead routing</li>
+        <li><strong>Email automation</strong> — branded follow-up & drip sequences</li>
+        <li><strong>Contact management</strong> — unlimited contacts & deal tracking</li>
+        <li><strong>Monthly reporting</strong> — pipeline & conversion dashboards</li>
+        <li><strong>Dedicated support</strong> — real humans, real responses</li>
+        <li><strong>Platform upkeep</strong> — ongoing optimization included</li>
+        <li><strong>Mastermind</strong> — community + monthly group call</li>
+      </ul>
+      <a href="#contact" class="cta-btn">Get Started →</a>
+    </div>
+
+    <!-- VELOCITY -->
+    <div class="plan-card featured">
+      <div class="plan-badge">★ Most Popular</div>
+      <p class="plan-num">Tier 02</p>
+      <h3 class="plan-name">VELOCITY</h3>
+      <p class="plan-tag">CRM + Voice AI + SMS</p>
+      <div class="price-row"><span class="price-amt">$1,398</span><span class="price-per">/ mo</span></div>
+      <p class="price-setup"><strong>$5,998</strong> one-time setup (CRM + Voice AI)</p>
+      <div class="usage-box">
+        <p class="ub-title">Included Monthly Usage</p>
+        <div class="ub-row"><span>AI Voice Minutes</span><strong>1,000 min</strong></div>
+        <div class="ub-row"><span>Inbound + Outbound SMS</span><strong>2,500 texts</strong></div>
+        <div class="ub-row"><span>Overage — Voice</span><strong>$0.05 / min</strong></div>
+        <div class="ub-row"><span>Overage — SMS</span><strong>$0.03 / text</strong></div>
+        <div class="ub-row"><span>Phone Numbers</span><strong>2 included</strong></div>
+      </div>
+      <ul class="feat-list">
+        <li><strong>Everything in IGNITION</strong></li>
+        <li><strong>ElevenLabs Voice AI</strong> — ultra-realistic AI agents</li>
+        <li><strong>60-second lead response</strong> — AI calls the moment a lead arrives</li>
+        <li><strong>SMS campaigns</strong> — automated texts & appointment links</li>
+        <li><strong>Custom AI scripts</strong> — built to sound like your dealership</li>
+        <li><strong>Full team support</strong> — dedicated success manager</li>
+        <li><strong>Mastermind</strong> — monthly 1:1 + local event invites</li>
+      </ul>
+      <a href="#contact" class="cta-btn primary">Get Started →</a>
+    </div>
+
+    <!-- DOMINATOR -->
+    <div class="plan-card">
+      <p class="plan-num">Tier 03</p>
+      <h3 class="plan-name">DOMINATOR</h3>
+      <p class="plan-tag">CRM + Voice AI + SMS + Automations</p>
+      <div class="price-row"><span class="price-amt">$1,897</span><span class="price-per">/ mo</span></div>
+      <p class="price-setup"><strong>$5,998</strong> one-time setup (integrations included)</p>
+      <div class="usage-box">
+        <p class="ub-title">Included Monthly Usage</p>
+        <div class="ub-row"><span>AI Voice Minutes</span><strong>2,000 min</strong></div>
+        <div class="ub-row"><span>Inbound + Outbound SMS</span><strong>5,000 texts</strong></div>
+        <div class="ub-row"><span>Overage — Voice</span><strong>$0.05 / min</strong></div>
+        <div class="ub-row"><span>Overage — SMS</span><strong>$0.03 / text</strong></div>
+        <div class="ub-row"><span>Phone Numbers</span><strong>5 included</strong></div>
+      </div>
+      <ul class="feat-list">
+        <li><strong>Everything in VELOCITY</strong></li>
+        <li><strong>n8n / Make workflows</strong> — full automation fabric</li>
+        <li><strong>DMS / CRM integrations</strong> — sync with your existing stack</li>
+        <li><strong>API infrastructure</strong> — webhooks, triggers & real-time data</li>
+        <li><strong>Lead source routing</strong> — intelligent distribution logic</li>
+        <li><strong>Mastermind</strong> — bi-weekly 1:1 + priority event access</li>
+      </ul>
+      <a href="#contact" class="cta-btn">Get Started →</a>
+    </div>
+
+  </div><!-- /plans-grid -->
+
+  <!-- ENTERPRISE APEX (full width below) -->
+  <div style="border:1px solid rgba(212,169,66,0.25);border-top:none;position:relative;z-index:1;" class="reveal">
+    <div class="enterprise-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;position:relative;z-index:1;">
+        <div>
+          <div class="ent-badge">★ APEX — Inner Circle Enterprise</div>
+          <p class="plan-num" style="color:rgba(212,169,66,0.5);">Tier 04</p>
+          <h3 class="ent-name">APEX</h3>
+          <p class="ent-tag">Full Stack · Dealer Group · Enterprise</p>
+        </div>
+        <div style="text-align:right;">
+          <div class="price-row" style="justify-content:flex-end;">
+            <span class="price-amt" style="color:var(--gold);font-size:60px;">$2,897</span>
+            <span class="price-per" style="padding-bottom:10px;">/ mo</span>
+          </div>
+          <span class="zero-badge">★ Zero Setup Fee — 1 Year Contract</span>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;">Additional dealerships in same group: <strong style="color:var(--gold);">$1,897/mo</strong> · No extra setup fees</p>
+        </div>
+      </div>
+
+      <div class="ent-grid" style="position:relative;z-index:1;">
+        <div>
+          <div class="ent-usage-box">
+            <p class="ent-ub-title">Per Dealership — Monthly Usage</p>
+            <div class="ent-ub-row"><span>AI Voice Minutes</span><strong>5,000 min</strong></div>
+            <div class="ent-ub-row"><span>Inbound + Outbound SMS</span><strong>10,000 texts</strong></div>
+            <div class="ent-ub-row"><span>Overage — Voice</span><strong>$0.05 / min</strong></div>
+            <div class="ent-ub-row"><span>Overage — SMS</span><strong>$0.03 / text</strong></div>
+            <div class="ent-ub-row"><span>Phone Numbers</span><strong>Unlimited</strong></div>
+          </div>
+          <ul class="ent-feat-list">
+            <li><strong>Full stack platform</strong> — everything in DOMINATOR</li>
+            <li><strong>Custom voice clone</strong> — proprietary branded voice persona</li>
+            <li><strong>Adaptive AI strategies</strong> — continuously refined to your market</li>
+            <li><strong>Dealer group pricing</strong> — add rooftops at $1,897/mo, no setup</li>
+          </ul>
+          <div class="add-rooftop-note">
+            <strong>Dealer Group Expansion:</strong> Bring additional dealerships within the same group at <strong>$1,897/mo each</strong> with zero setup costs. Every location gets the full APEX stack at the group rate.
+          </div>
+        </div>
+
+        <div>
+          <ul class="ent-feat-list">
+            <li><strong>Weekly 1:1 strategy sessions</strong> — dedicated Drive AI executive</li>
+            <li><strong>Revenue forecasting</strong> — pipeline modeling & performance targets</li>
+            <li><strong>Priority refinement</strong> — first access to every new feature</li>
+            <li><strong>Full team support</strong> — engineers, success managers & AI specialists on standby</li>
+            <li><strong>Lifetime Mastermind Inner Circle</strong> — permanent APEX membership, never expires</li>
+            <li><strong>VIP local events</strong> — exclusive invite-only dealer summits</li>
+            <li><strong>Co-marketing opportunities</strong> — featured in Drive AI campaigns</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:28px;position:relative;z-index:1;">
+        <a href="#contact" class="cta-btn gold">Apply for APEX Access — Book a Call →</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /section -->
+
+
+<!-- USAGE BAND -->
+<div class="usage-band reveal">
+  <div class="ub-inner">
+    <div class="usb"><p class="usb-num">$0.05</p><p class="usb-lbl">Per AI Voice Minute</p></div>
+    <div class="usb"><p class="usb-num">$0.03</p><p class="usb-lbl">Per Outbound SMS</p></div>
+    <div class="usb"><p class="usb-num">24hr</p><p class="usb-lbl">Setup & Onboarding</p></div>
+    <div class="usb"><p class="usb-num">$0</p><p class="usb-lbl">APEX Setup Fee</p></div>
+  </div>
+</div>
+
+
+<!-- ADD-ONS -->
+<div class="section" id="addons">
+  <div class="reveal">
+    <p class="sec-label">Add-Ons</p>
+    <h2 class="sec-title">Stack Your Advantage</h2>
+    <p class="sec-sub">Bolt on capabilities to any core plan. No lock-in. Upgrade when ready.</p>
+  </div>
+  <br><br>
+  <div class="addon-grid reveal">
+
+    <div class="addon-card">
+      <div class="addon-icon">🎙️</div>
+      <p class="addon-num">Add-On 01</p>
+      <h3 class="addon-name">VOICE AI & SMS ENGINE</h3>
+      <div class="addon-prices">
+        <div><p class="addon-price-label">Setup</p><p class="addon-price-val">$2,999</p><p class="addon-price-per">one-time</p></div>
+        <div><p class="addon-price-label">Monthly</p><p class="addon-price-val">$699</p><p class="addon-price-per">/ month</p></div>
+      </div>
+      <p class="addon-desc">Full ElevenLabs AI voice agent setup + Twilio SMS. Dedicated phone numbers, custom voice personas, scripts built for your store, and ongoing agent management. Full team support included.</p>
+      <ul class="feat-list" style="margin-bottom:0;flex:1;">
+        <li>ElevenLabs voice personas — sounds like your team</li>
+        <li>Inbound + outbound call handling</li>
+        <li>SMS campaigns, appointment links & follow-ups</li>
+        <li>Script writing, testing & ongoing refinement</li>
+        <li>Overage: $0.05/min voice · $0.03/text</li>
+      </ul>
+    </div>
+
+    <div class="addon-card">
+      <div class="addon-icon">⚙️</div>
+      <p class="addon-num">Add-On 02</p>
+      <h3 class="addon-name">AUTOMATION & INTEGRATION LAYER</h3>
+      <div class="addon-prices">
+        <div><p class="addon-price-label">Setup</p><p class="addon-price-val" style="font-size:16px;padding-top:5px;">Included<br>w/ Voice AI</p></div>
+        <div><p class="addon-price-label">Monthly</p><p class="addon-price-val">$499</p><p class="addon-price-per">/ month</p></div>
+      </div>
+      <p class="addon-desc">Requires Voice AI Add-On. Full n8n/Make workflow architecture — CRM, voice AI, DMS, inventory, and any third-party API. Ongoing maintenance, monitoring, and support included.</p>
+      <ul class="feat-list" style="margin-bottom:0;flex:1;">
+        <li>n8n / Make master workflow build</li>
+        <li>CRM ↔ DMS ↔ Inventory data sync</li>
+        <li>Webhook infrastructure & error handling</li>
+        <li>Ongoing monitoring, fixes & optimization</li>
+        <li>API costs passed through transparently</li>
+      </ul>
+    </div>
+
+    <div class="addon-card">
+      <div class="addon-icon">🚀</div>
+      <p class="addon-num">Add-On 03</p>
+      <h3 class="addon-name">MARKETING & WEB PRESENCE</h3>
+      <div class="addon-prices">
+        <div><p class="addon-price-label">Setup</p><p class="addon-price-val">$2,199</p><p class="addon-price-per">one-time</p></div>
+        <div><p class="addon-price-label">Monthly</p><p class="addon-price-val">$299</p><p class="addon-price-per">/ month</p></div>
+      </div>
+      <p class="addon-desc">Professional website design, build, and hosting with ongoing maintenance. Monthly content, SEO optimization, and digital marketing strategy — all feeding directly into your Drive AI funnel.</p>
+      <ul class="feat-list" style="margin-bottom:0;flex:1;">
+        <li>Custom website design & development</li>
+        <li>Hosting, domain management & upkeep</li>
+        <li>Monthly content & SEO optimization</li>
+        <li>Marketing strategy & campaign support</li>
+        <li>Funnel integration with your CRM</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- MASTERMIND -->
+<section class="mm-section" id="mastermind">
+  <div class="mm-bg"></div>
+  <div class="mm-inner">
+    <div class="reveal">
+      <span class="mm-crown">👑</span>
+      <p class="mm-eyebrow">Exclusive Membership</p>
+      <h2 class="mm-title">THE DRIVE AI<br><em>MASTERMIND</em></h2>
+      <p class="mm-desc">This isn't a software subscription — it's access to a movement. Our Mastermind is an exclusive inner circle for high-performing dealer operators who refuse to compete on yesterday's playbook. You get the tools, the training, the community, and the unfair advantage that comes from being first.</p>
+      <div class="btn-row">
+        <a href="#contact" class="btn-gold">Apply for Access ★</a>
+        <a href="#compare" class="btn-outline">See All Benefits</a>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="tier-list">
+        <div class="tier-row">
+          <span class="tier-icon">🔥</span>
+          <div><p class="tier-name">IGNITION MEMBER</p><p class="tier-desc">Community access · Monthly group training call</p></div>
+          <span class="tier-arrow">→</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-icon">⚡</span>
+          <div><p class="tier-name">VELOCITY MEMBER</p><p class="tier-desc">Monthly 1:1 strategy call · Local event invites</p></div>
+          <span class="tier-arrow">→</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-icon">🏆</span>
+          <div><p class="tier-name">DOMINATOR MEMBER</p><p class="tier-desc">Bi-weekly 1:1 · Priority events · Advanced sales training</p></div>
+          <span class="tier-arrow">→</span>
+        </div>
+        <div class="tier-row gold">
+          <span class="tier-icon">👑</span>
+          <div><p class="tier-name">APEX — INNER CIRCLE</p><p class="tier-desc">Weekly 1:1 · VIP events · Lifetime access · Co-marketing · First access to all new features</p></div>
+          <span class="tier-arrow">→</span>
+        </div>
+      </div>
+
+      <div class="benefit-list">
+        <div class="ben-row">
+          <span class="ben-num">01</span>
+          <div><p class="ben-title">1:1 Strategy Sessions</p><p class="ben-desc">Private calls with Drive AI experts to review KPIs, optimize your AI funnel, and identify deal opportunities specific to your market and region.</p></div>
+        </div>
+        <div class="ben-row">
+          <span class="ben-num">02</span>
+          <div><p class="ben-title">Hands-On Sales Training</p><p class="ben-desc">Live group sessions on objection handling, AI-assisted closing, and modern automotive sales frameworks. Cardone-inspired. Drive AI-powered.</p></div>
+        </div>
+        <div class="ben-row">
+          <span class="ben-num">03</span>
+          <div><p class="ben-title">Local Dealer Events</p><p class="ben-desc">Exclusive in-person meetups, workshops, and networking events connecting you with top-performing dealers in your region. The network is the advantage.</p></div>
+        </div>
+        <div class="ben-row">
+          <span class="ben-num">04</span>
+          <div><p class="ben-title">Inner Circle Community</p><p class="ben-desc">Private members-only group with deal reviews, AI playbooks, script libraries, and real-time benchmarking with dealers who are actually winning.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- COMPARE -->
+<div class="section" id="compare">
+  <div class="reveal">
+    <p class="sec-label">Full Comparison</p>
+    <h2 class="sec-title">Everything Side by Side</h2>
+    <p class="sec-sub">Every feature, every tier — no guesswork. Pick your plan with confidence.</p>
+  </div>
+  <br><br>
+  <div class="cmp-wrap reveal">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th style="width:28%;text-align:left;">
+            <span class="th-tier">Plan</span>
+            <span class="th-name" style="font-size:18px;color:var(--cream-dim);">Feature</span>
+          </th>
+          <th>
+            <span class="th-tier">Tier 01</span>
+            <span class="th-name">IGNITION</span>
+            <span class="th-price">$699 / mo</span>
+          </th>
+          <th class="fc">
+            <span class="th-tier">Tier 02 · Most Popular</span>
+            <span class="th-name">VELOCITY</span>
+            <span class="th-price">$1,398 / mo</span>
+          </th>
+          <th>
+            <span class="th-tier">Tier 03</span>
+            <span class="th-name">DOMINATOR</span>
+            <span class="th-price">$1,897 / mo</span>
+          </th>
+          <th class="gc">
+            <span class="th-tier">Tier 04 · Enterprise</span>
+            <span class="th-name">APEX</span>
+            <span class="th-price">$2,897 / mo</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- CRM & FOUNDATION -->
+        <tr class="cat-row"><td colspan="1">CRM &amp; Foundation</td><td class="fc"></td><td class="fc"></td><td></td><td class="gc"></td></tr>
+        <tr><td>GoHighLevel CRM</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Pipeline &amp; Deal Tracking</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Email Automation &amp; Drip</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Reporting &amp; Dashboards</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Dedicated Support</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="hvg">Full Team</span></td></tr>
+        <tr><td>Setup Cost</td><td>$2,999</td><td class="fc"><span class="hv">$5,998</span></td><td><span class="hv">$5,998</span></td><td class="gc"><span class="hvg">$0 — 1 yr contract</span></td></tr>
+
+        <!-- VOICE AI & COMMUNICATIONS -->
+        <tr class="cat-row"><td colspan="1">Voice AI &amp; Communications</td><td class="fc"></td><td class="fc"></td><td></td><td class="gc"></td></tr>
+        <tr><td>ElevenLabs Voice AI Agents</td><td><span class="ds">—</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Custom Voice Clone</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>60-Second Lead Response</td><td><span class="ds">—</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Included Voice Min / mo</td><td><span class="ds">—</span></td><td class="fc"><span class="hv">1,000 min</span></td><td><span class="hv">2,000 min</span></td><td class="gc"><span class="hvg">5,000 min</span></td></tr>
+        <tr><td>Inbound + Outbound SMS / mo</td><td><span class="ds">—</span></td><td class="fc"><span class="hv">2,500 texts</span></td><td><span class="hv">5,000 texts</span></td><td class="gc"><span class="hvg">10,000 texts</span></td></tr>
+        <tr><td>Overage — Voice</td><td><span class="ds">—</span></td><td class="fc"><span class="hv">$0.05 / min</span></td><td><span class="hv">$0.05 / min</span></td><td class="gc"><span class="hvg">$0.05 / min</span></td></tr>
+        <tr><td>Overage — SMS</td><td><span class="ds">—</span></td><td class="fc"><span class="hv">$0.03 / text</span></td><td><span class="hv">$0.03 / text</span></td><td class="gc"><span class="hvg">$0.03 / text</span></td></tr>
+        <tr><td>Included Phone Numbers</td><td>1</td><td class="fc"><span class="hv">2</span></td><td><span class="hv">5</span></td><td class="gc"><span class="hvg">Unlimited</span></td></tr>
+        <tr><td>SMS Campaigns &amp; Sequences</td><td><span class="ds">—</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+
+        <!-- AUTOMATION & INTEGRATIONS -->
+        <tr class="cat-row"><td colspan="1">Automation &amp; Integrations</td><td class="fc"></td><td class="fc"></td><td></td><td class="gc"></td></tr>
+        <tr><td>n8n / Make Workflow Automation</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>DMS / CRM API Integrations</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Webhook Infrastructure</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Adaptive AI Strategies</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Revenue Forecasting</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+
+        <!-- ENTERPRISE -->
+        <tr class="cat-row"><td colspan="1">Enterprise &amp; Dealer Group</td><td class="fc"></td><td class="fc"></td><td></td><td class="gc"></td></tr>
+        <tr><td>Dealer Group Expansion</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="hvg">$1,897/mo · No setup</span></td></tr>
+        <tr><td>Weekly 1:1 Check-Ins</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+        <tr><td>Priority Feature Refinement</td><td><span class="ds">—</span></td><td class="fc"><span class="ds">—</span></td><td><span class="ds">—</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+
+        <!-- MASTERMIND -->
+        <tr class="cat-row"><td colspan="1">Mastermind &amp; Community</td><td class="fc"></td><td class="fc"></td><td></td><td class="gc"></td></tr>
+        <tr><td>Inner Circle Community</td><td><span class="ck">✔</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="hvg">✔ Lifetime</span></td></tr>
+        <tr><td>Group Training Calls</td><td>Monthly</td><td class="fc"><span class="hv">Monthly</span></td><td><span class="hv">Bi-weekly</span></td><td class="gc"><span class="hvg">Weekly</span></td></tr>
+        <tr><td>1:1 Strategy Sessions</td><td><span class="ds">—</span></td><td class="fc"><span class="hv">Monthly</span></td><td><span class="hv">Bi-weekly</span></td><td class="gc"><span class="hvg">Weekly</span></td></tr>
+        <tr><td>Local Dealer Events</td><td><span class="ds">—</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔ Priority</span></td><td class="gc"><span class="ckg">✔ VIP</span></td></tr>
+        <tr><td>Hands-On Sales Training</td><td><span class="ds">—</span></td><td class="fc"><span class="ck">✔</span></td><td><span class="ck">✔</span></td><td class="gc"><span class="ckg">✔</span></td></tr>
+
+        <!-- CTA ROW -->
+        <tr>
+          <td></td>
+          <td class="cta-cell"><a href="#contact" class="cta-btn" style="display:block;padding:12px 20px;font-size:11px;">Get Started</a></td>
+          <td class="fc cta-cell"><a href="#contact" class="cta-btn primary" style="display:block;padding:12px 20px;font-size:11px;">Get Started</a></td>
+          <td class="cta-cell"><a href="#contact" class="cta-btn" style="display:block;padding:12px 20px;font-size:11px;">Get Started</a></td>
+          <td class="gc cta-cell"><a href="#contact" class="cta-btn gold" style="display:block;padding:12px 20px;font-size:11px;">Apply Now</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="footer-logo">
+    <img src="data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//2Q==" alt="Drive AI Sales" onerror="this.outerHTML='<span style=\'font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:4px;color:#E87A00;\'>DRIVE AI SALES</span>'">
+  </div>
+  <p class="footer-sub">driveaisales.com &nbsp;·&nbsp; 10650 113 Street, Edmonton, AB &nbsp;·&nbsp; © 2026 Drive AI Sales Inc.</p>
+  <p class="footer-note">All prices in CAD where applicable. Overage costs billed monthly based on actual usage. Plans may be adjusted or upgraded at any time. APEX annual contract required for zero setup fee pricing.</p>
+</footer>
+
+<script>
+/* ── SCROLL REVEAL ── */
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 55);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.06 });
+reveals.forEach(el => io.observe(el));
+
+/* ── 3D PARTICLE FIELD ── */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles, mouse = { x: -9999, y: -9999 };
+
+  const ORANGE = [232, 122, 0];
+  const GOLD   = [212, 169, 66];
+  const WHITE  = [255, 255, 255];
+  const COUNT  = 120;
+  const LINES_DIST = 160;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function randBetween(a, b) { return a + Math.random() * (b - a); }
+
+  function makeParticle() {
+    const col = Math.random() < 0.55 ? ORANGE : Math.random() < 0.6 ? GOLD : WHITE;
+    return {
+      x: randBetween(0, W),
+      y: randBetween(0, H),
+      z: randBetween(0.2, 1),        // depth 0=far, 1=close
+      vx: randBetween(-0.18, 0.18),
+      vy: randBetween(-0.12, 0.12),
+      r: randBetween(0.6, 2.2),
+      col,
+      pulse: randBetween(0, Math.PI * 2),
+      pulseSpeed: randBetween(0.008, 0.025),
+    };
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: COUNT }, makeParticle);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Subtle radial vignette — keeps edges very dark
+    const vg = ctx.createRadialGradient(W/2, H/2, H*0.1, W/2, H/2, H*0.9);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+
+    const now = performance.now() * 0.001;
+
+    // Draw connection lines between nearby particles
+    for (let i = 0; i < particles.length; i++) {
+      const a = particles[i];
+      for (let j = i + 1; j < particles.length; j++) {
+        const b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < LINES_DIST) {
+          const depthAvg = (a.z + b.z) * 0.5;
+          const alpha = (1 - dist / LINES_DIST) * depthAvg * 0.18;
+          // Interpolate color from orange to gold
+          const t = (a.col === GOLD || b.col === GOLD) ? 0.6 : 0;
+          const r = Math.round(ORANGE[0] + (GOLD[0]-ORANGE[0]) * t);
+          const g2 = Math.round(ORANGE[1] + (GOLD[1]-ORANGE[1]) * t);
+          const bl = Math.round(ORANGE[2] + (GOLD[2]-ORANGE[2]) * t);
+          ctx.strokeStyle = `rgba(${r},${g2},${bl},${alpha})`;
+          ctx.lineWidth = depthAvg * 0.8;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    for (const p of particles) {
+      p.pulse += p.pulseSpeed;
+      const pulse = 0.7 + 0.3 * Math.sin(p.pulse);
+      const radius = p.r * p.z * pulse;
+      const alpha = 0.25 + p.z * 0.55;
+
+      // Mouse repulsion
+      const mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+      const mDist = Math.sqrt(mdx*mdx + mdy*mdy);
+      if (mDist < 120) {
+        const force = (120 - mDist) / 120 * 0.8;
+        p.x += (mdx / mDist) * force;
+        p.y += (mdy / mDist) * force;
+      }
+
+      // Glow
+      const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 4);
+      glow.addColorStop(0,   `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${alpha})`);
+      glow.addColorStop(0.4, `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${alpha * 0.3})`);
+      glow.addColorStop(1,   `rgba(${p.col[0]},${p.col[1]},${p.col[2]},0)`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core dot
+      ctx.fillStyle = `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${Math.min(1, alpha + 0.3)})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Move
+      p.x += p.vx * p.z;
+      p.y += p.vy * p.z;
+
+      // Wrap
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W+10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H+10) p.y = -10;
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  init();
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,50 +1,87 @@
-# Drive AI Sales — Lead Magnet & Nurture System
+# Drive AI Sales — Complete Marketing & Lead Generation System
 
 **Owner:** Brandon Rose, CEO — Drive AI Sales Inc.
-**Website:** www.driveaisales.com
-**Built:** 2026-04-10
+**Website:** [www.driveaisales.com](https://www.driveaisales.com)
+**Live:** [bprofits.github.io/driveai](https://bprofits.github.io/driveai/)
 
 ---
 
 ## What This Is
 
-A complete lead generation and nurture system for Drive AI Sales, targeting dealership GMs and dealer principals. Built on the StoryBrand framework — the diagnostic creates self-awareness, the nurture sequence builds urgency, and the discovery call is the natural next step.
+A full marketing website and lead generation system for Drive AI Sales, targeting dealership GMs and dealer principals. Built on the StoryBrand framework — the diagnostic creates self-awareness, the nurture sequence builds urgency, and the discovery call is the natural next step.
 
 ---
 
-## Files
+## File Inventory
 
-### Lead Magnet
-| File | Purpose |
-|---|---|
-| `diagnostic.html` | 7-question interactive assessment — "The Dealership Lead Leak Diagnostic" |
-
-### Email Templates (GHL Coded Templates)
-| File | Sequence | Day | Subject Line |
-|---|---|---|---|
-| `email-score-delivery.html` | All Paths | 0 (Immediate) | Your Dealership Lead Leak Score: [X/21] |
-| `nurture-pathA-email2.html` | Path A | Day 2 | The 5-minute rule your CRM can't enforce |
-| `nurture-pathA-email3.html` | Path A | Day 4 | "We picked up 11 extra deals in the first month" |
-| `nurture-pathA-email4.html` | Path A (shared) | Day 6 | "My salespeople won't use it" |
-| `nurture-pathA-email5.html` | Path A (shared) | Day 8 | You don't have a CRM problem. You have a speed problem. |
-| `nurture-pathA-email6.html` | Path A | Day 10 | Let's find out what you're leaving on the table |
-
-### Pages
+### Website
 | File | URL Target | Purpose |
 |---|---|---|
+| `index.html` | driveaisales.com | Main marketing site — hero, problem, how it works, proof, CTA |
+| `pricing.html` | driveaisales.com/pricing | Plans & pricing page (3 tiers + enterprise + add-ons) |
+| `diagnostic.html` | driveaisales.com/diagnostic | 7-question interactive assessment |
 | `discovery.html` | driveaisales.com/discovery | Calendar booking page for discovery calls |
-| `audit-report.html` | Internal / PDF export | Lead Response Audit one-pager sent to prospects |
+| `audit-report.html` | Internal / PDF export | Lead Response Audit one-pager for prospects |
+
+### Email Templates (GHL Coded)
+| File | Path | Day | Subject Line |
+|---|---|---|---|
+| `email-score-delivery.html` | All | 0 (Immediate) | Your Dealership Lead Leak Score: [X/21] |
+| **Path A — Took Assessment** |
+| `nurture-pathA-email2.html` | A | Day 2 | The 5-minute rule your CRM can't enforce |
+| `nurture-pathA-email3.html` | A | Day 4 | "We picked up 11 extra deals in the first month" |
+| `nurture-pathA-email4.html` | A+B+C | Day 6 | "My salespeople won't use it" |
+| `nurture-pathA-email5.html` | A+B+C | Day 8 | You don't have a CRM problem. You have a speed problem. |
+| `nurture-pathA-email6.html` | A+B+C | Day 10 | Let's find out what you're leaving on the table |
+| **Path B — Downloaded Resource** |
+| `nurture-pathB-email1.html` | B | Day 0 | You downloaded our guide — here's what to do next |
+| `nurture-pathB-email2.html` | B | Day 2 | The number that keeps GMs up at night |
+| **Path C — Cold Outreach** |
+| `nurture-pathC-email1.html` | C | Day 0 | Your leads are calling back — but not you |
+| `nurture-pathC-email2.html` | C | Day 2 | I ran a secret audit on 50 dealerships |
+
+### Assets
+| Directory | Contents |
+|---|---|
+| `logo/` | 8 logo variants (wordmark, badge icons, favicons) — small format |
+| `banner/` | 8 banner variants at 2048×1152px (social/YouTube) |
+
+---
+
+## Branding
+
+| Token | Hex | Usage |
+|---|---|---|
+| Black | `#070707` | Page background |
+| Dark | `#0E0E0E` | Callout backgrounds |
+| Card | `#131313` | Card backgrounds |
+| Border | `#242424` | Borders, dividers |
+| Orange | `#E87A00` | Primary accent, buttons, "AI" wordmark |
+| Orange Dim | `#B85E00` | Hover states |
+| Cream | `#F4DEC9` | Body text on dark backgrounds |
+| Cream Dim | `#B8956F` | Secondary text |
+| White | `#FAFAFA` | Headings |
+| Muted | `#5A5550` | Tertiary text, labels |
+
+**Fonts:** Bebas Neue (headlines) + Barlow / Barlow Condensed (body/labels) via Google Fonts. Emails use Arial safe stack.
 
 ---
 
 ## How It Works
 
-### Flow
+### Funnel Flow
 
 ```
-Prospect visits driveaisales.com/diagnostic
+Prospect visits driveaisales.com
         │
         ▼
+┌──────────���──────────────────┐
+│  Marketing Website (index)  │
+│  Problem → Solution → Proof │
+│  CTA → Diagnostic           │
+└─────────────┬───────────────┘
+              │
+              ▼
 ┌─────────────────────────────┐
 │  7-Question Assessment      │
 │  (auto-advance on click,    │
@@ -59,7 +96,7 @@ Prospect visits driveaisales.com/diagnostic
 └─────────────┬───────────────┘
               │
               ▼
-┌─────────────────────────────┐
+┌────────────────────���────────┐
 │  Instant Results Screen     │
 │  - Score circle (X/21)      │
 │  - Tier name + description  │
@@ -71,25 +108,10 @@ Prospect visits driveaisales.com/diagnostic
               ▼ (simultaneously)
 ┌─────────────────────────────┐
 │  POST to GHL Webhook        │
-│  (all scores + contact info │
-│   + tier + revenue estimate │
-│   + weakest areas)          │
-└─────────────┬───────────────┘
-              │
-              ▼
-┌─────────────────────────────┐
-│  GHL Workflow Triggers      │
-│                             │
-│  1. Create/update contact   │
-│  2. Tag with tier           │
-│     (machine/grinder/       │
-│      firefighter/code-red)  │
-│  3. Store scores as custom  │
-│     fields                  │
-│  4. Send score delivery     │
-│     email (immediate)       │
-│  5. Start nurture sequence  │
-│     (6 emails over 10 days) │
+│  → Create/tag contact       │
+│  → Store scores             │
+│  → Send score email         │
+│  → Start nurture sequence   │
 └─────────────────────────────┘
 ```
 
@@ -99,52 +121,24 @@ Each of the 7 questions scores 0-3 points. Total out of 21.
 
 | Score | Tier | Meaning |
 |---|---|---|
-| 18-21 | The Machine | Top 5%. Already ahead. Minor optimization possible. |
-| 12-17 | The Grinder | Good team, cracked process. Biggest ROI segment for Drive AI. |
-| 6-11 | The Firefighter | Working hard, losing ground. Needs a system underneath the team. |
-| 0-5 | Code Red | Leads dying in inbox. Massive gap = massive opportunity. |
+| 18-21 | The Machine | Top 5%. Minor optimization possible. |
+| 12-17 | The Grinder | Good team, cracked process. Biggest ROI segment. |
+| 6-11 | The Firefighter | Working hard, losing ground. Needs a system. |
+| 0-5 | Code Red | Leads dying in inbox. Massive opportunity. |
 
-### Revenue Estimate Formula
+### Nurture Paths
 
-Conservative estimates based on industry benchmarks (avg deal profit $2,500-4,000, close rate 20-25%):
+| Path | Trigger | Unique Emails | Then Merges Into |
+|---|---|---|---|
+| A | Completed diagnostic | Score delivery + emails 2-3 | Emails 4-5-6 (shared) |
+| B | Downloaded PDF resource | Emails B1-B2 (bridge to diagnostic) | Emails 4-5-6 (shared) |
+| C | Cold outreach | Emails C1-C2 (trust from zero) | Emails 4-5-6 (shared) |
 
-| Gap Area | If Score < 3 | Monthly Revenue Leak |
-|---|---|---|
-| Q1: Lead Response Speed | +$8,000-15,000 | Biggest after show rate |
-| Q2: Follow-Up Consistency | +$5,000-10,000 | |
-| Q3: Appointment Show Rate | +$10,000-20,000 | **Biggest lever** |
-| Q4: Staff Efficiency | +$3,000-5,000 | |
-| Q5: CRM Utilization | +$3,000-5,000 | |
-| Q6: Scalability | +$3,000-5,000 | |
-| Q7: Competitive Positioning | +$3,000-5,000 | |
-
----
-
-## Nurture Paths
-
-### Path A: Took the Assessment (has score)
-They've already engaged deeply and know their gaps. Emails build on that self-awareness.
-
-| Day | Email | Parallel Touches |
-|---|---|---|
-| 0 | Score delivery + "here's what's coming" | SMS confirming score |
-| 2 | Problem + Solution (5-minute rule) | |
-| 4 | Social Proof (11 extra deals) | Wanda voicemail drop |
-| 6 | Objection killer (salespeople won't use it) | SMS "did you see my last email?" |
-| 8 | Paradigm shift (CRM ≠ engine) | LinkedIn connection from Bond |
-| 10 | The Ask (20-minute discovery call) | SMS with calendar link |
-
-### Path B: Downloaded Resource (no score yet)
-Email 1 bridges them to the diagnostic. Emails 3-6 shared with Path A.
-
-### Path C: Cold Outreach (no prior engagement)
-Trust from zero. Each email designed to stand alone. Emails 3-6 shared with Path A.
+Multi-channel per path: Email + SMS + Wanda voicemail drops + LinkedIn connection.
 
 ---
 
 ## Webhook Payload
-
-The diagnostic form POSTs the following JSON to the GHL webhook:
 
 ```json
 {
@@ -163,8 +157,8 @@ The diagnostic form POSTs the following JSON to the GHL webhook:
   "q5_crmUtilization": 0-3,
   "q6_scalability": 0-3,
   "q7_competitive": 0-3,
-  "revEstimateLow": number,
-  "revEstimateHigh": number,
+  "revEstimateLow": "number",
+  "revEstimateHigh": "number",
   "weakestAreas": "comma-separated list",
   "source": "diagnostic"
 }
@@ -173,8 +167,6 @@ The diagnostic form POSTs the following JSON to the GHL webhook:
 ---
 
 ## GHL Custom Values Used in Emails
-
-These must exist as custom fields in GHL for the email templates to work:
 
 | GHL Variable | Source | Used In |
 |---|---|---|
@@ -196,31 +188,14 @@ These must exist as custom fields in GHL for the email templates to work:
 - [ ] Create GHL workflow: webhook trigger → create contact → tag tier → store scores → send score email → start drip
 - [ ] Create GHL calendar for discovery calls
 - [ ] Replace calendar embed placeholder in `discovery.html` with actual GHL calendar iframe
-- [ ] Host diagnostic on driveaisales.com/diagnostic (or GitHub Pages)
-- [ ] Host discovery page on driveaisales.com/discovery
-- [ ] Create 7 GHL coded email templates (score delivery + 6 nurture)
+- [ ] Point driveaisales.com domain to GitHub Pages (CNAME)
+- [ ] Create 10 GHL coded email templates (score delivery + 6 Path A + 2 Path B + 2 Path C)
 - [ ] Set up SMS parallel touches (Days 0, 6, 10)
 - [ ] Configure Wanda voicemail drop (Day 4)
 - [ ] Set up LinkedIn connection automation (Day 8)
-- [ ] Build Path B and Path C email variants (Emails 1-2 differ; 3-6 shared)
 - [ ] Build monthly re-engagement sequence (seasonal hooks)
 - [ ] Build referral email (Day 30 post-client-win)
 - [ ] Create Lead Response Audit PDF template from audit-report.html
-
----
-
-## Branding
-
-| Element | Value |
-|---|---|
-| Primary color | `#0066FF` (electric blue) |
-| Background | `#0a0a0a` (near black) |
-| Card background | `#111111` |
-| Input fields | `#1a1a1a` bg, `#333` border |
-| Text | `#e0e0e0` body, `#ffffff` headings, `#888` secondary |
-| Accent (danger/revenue) | `#FF4444` |
-| Accent (success) | `#00CC66` |
-| Font stack | 'Segoe UI', Arial, Helvetica, sans-serif |
 
 ---
 
@@ -229,8 +204,8 @@ These must exist as custom fields in GHL for the email templates to work:
 The diagnostic form includes:
 - **Honeypot field** (hidden "company" input — bots fill it, humans don't)
 - **Time check** (form rejects submissions within 4 seconds of page load)
-- **addEventListener binding** with retry (no inline onclick — safe for embedding)
+- **addEventListener binding** (no inline onclick — safe for embedding)
 
 ---
 
-*Built by Claudette for Bond. All copy from the StoryBrand playbook. Replace [brackets] with real data as it becomes available.*
+*Built by Claudette for Bond. Copy from the StoryBrand playbook. Replace [brackets] with real data as it becomes available.*
