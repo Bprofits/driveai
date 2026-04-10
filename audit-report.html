@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Response Audit — Drive AI Sales</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:#ffffff; font-family:'Barlow',Arial,Helvetica,sans-serif; color:#222222; }
+
+  .page { max-width:700px; margin:0 auto; padding:48px 40px; }
+
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; padding-bottom:20px; border-bottom:3px solid #E87A00; }
+  .header-left img { height:40px; width:auto; }
+  .header-right { text-align:right; font-size:12px; color:#888; }
+
+  .badge { display:inline-block; background:#E87A00; color:#fff; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:4px 12px; border-radius:3px; margin-bottom:16px; }
+
+  h1 { font-family:'Bebas Neue',sans-serif; font-size:28px; color:#111; margin:0 0 4px; letter-spacing:1px; }
+  .dealer-name { font-size:18px; color:#E87A00; margin:0 0 24px; }
+
+  .meta-row { display:flex; gap:24px; margin-bottom:28px; }
+  .meta-item { font-size:13px; color:#666; }
+  .meta-item strong { color:#333; }
+
+  .audit-table { width:100%; border-collapse:collapse; margin-bottom:28px; }
+  .audit-table th {
+    background:#070707; color:#fff; text-align:left; padding:12px 16px;
+    font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2px; font-family:'Barlow Condensed',sans-serif;
+  }
+  .audit-table td {
+    padding:12px 16px; border-bottom:1px solid #eee; font-size:14px; color:#333;
+  }
+  .audit-table tr:nth-child(even) td { background:#f9f9f9; }
+  .audit-table .metric { font-weight:600; color:#111; }
+  .audit-table .yours { color:#FF4444; font-weight:600; }
+  .audit-table .best { color:#00AA44; font-weight:600; }
+
+  .section-title { font-size:16px; font-weight:700; color:#111; margin:28px 0 12px; padding-bottom:6px; border-bottom:2px solid #eee; }
+
+  .impact-box {
+    background:#FFF5F5; border:1px solid #FFdddd; border-radius:8px; padding:20px 24px; margin-bottom:28px;
+  }
+  .impact-box p { margin:0; font-size:15px; color:#333; line-height:1.7; }
+  .impact-box .impact-num { font-family:'Bebas Neue',sans-serif; font-size:32px; color:#E87A00; letter-spacing:1px; }
+
+  .cta-box {
+    background:#070707; border-radius:8px; padding:28px 32px; text-align:center; margin-bottom:28px;
+  }
+  .cta-box h2 { color:#fff; font-family:'Bebas Neue',sans-serif; font-size:22px; margin:0 0 8px; letter-spacing:1px; }
+  .cta-box p { color:#aaa; font-size:14px; margin:0 0 16px; }
+  .cta-box a {
+    display:inline-block; background:#E87A00; color:#fff; padding:14px 36px; border-radius:6px;
+    font-size:15px; font-weight:700; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px;
+  }
+
+  .disclaimer { font-size:12px; color:#999; line-height:1.6; margin-top:28px; padding-top:16px; border-top:1px solid #eee; }
+
+  @media print {
+    .page { padding:24px; }
+    .cta-box a { background:#E87A00 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+  @media (max-width:480px) {
+    .page { padding:24px 16px; }
+    .header { flex-direction:column; align-items:flex-start; gap:8px; }
+    .meta-row { flex-direction:column; gap:8px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <img src="logo/DAI Blue & Orange.png" alt="Drive AI Sales">
+    </div>
+    <div class="header-right">
+      Lead Response Audit Report<br>
+      Confidential
+    </div>
+  </div>
+
+  <div class="badge">Lead Response Audit</div>
+  <h1>Lead Response Audit</h1>
+  <p class="dealer-name">[Dealership Name]</p>
+
+  <div class="meta-row">
+    <div class="meta-item"><strong>Date:</strong> [Month Day, Year]</div>
+    <div class="meta-item"><strong>Lead Submitted:</strong> [Time] on a [Day of Week]</div>
+    <div class="meta-item"><strong>Conducted by:</strong> Drive AI Sales</div>
+  </div>
+
+  <p style="font-size:15px; color:#333; line-height:1.7; margin-bottom:28px;">
+    We submitted a realistic lead to your store's website and measured how your team responded. Here's what we found:
+  </p>
+
+  <table class="audit-table">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Your Store</th>
+        <th>Industry Best Practice</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="metric">Time to first response</td>
+        <td class="yours">[X hours/minutes]</td>
+        <td class="best">Under 5 minutes</td>
+      </tr>
+      <tr>
+        <td class="metric">Response channel</td>
+        <td class="yours">[email only / text / call]</td>
+        <td class="best">Multi-channel (text + email + call)</td>
+      </tr>
+      <tr>
+        <td class="metric">Personalization</td>
+        <td class="yours">[generic auto-reply / personalized]</td>
+        <td class="best">Personalized with vehicle mention</td>
+      </tr>
+      <tr>
+        <td class="metric">Appointment ask</td>
+        <td class="yours">[yes / no]</td>
+        <td class="best">Always within first 2 touches</td>
+      </tr>
+      <tr>
+        <td class="metric">Follow-up within 24h</td>
+        <td class="yours">[X touches]</td>
+        <td class="best">3+ touches across channels</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">What This Means</div>
+
+  <div class="impact-box">
+    <p>
+      At your current response time, industry data suggests you're losing approximately <strong>[X]%</strong> of internet leads to faster-responding competitors.
+    </p>
+    <p style="margin-top:12px;">
+      On an estimated <strong>[X] leads per month</strong>, that's roughly <strong>[X] missed opportunities</strong>, or:
+    </p>
+    <p style="margin-top:12px; text-align:center;">
+      <span class="impact-num">$[XX,000]/month</span><br>
+      <span style="font-size:13px; color:#888;">in potential gross profit left on the table</span>
+    </p>
+  </div>
+
+  <div class="cta-box">
+    <h2>Want to see how Drive AI closes this gap?</h2>
+    <p>20 minutes. Your numbers. A real plan.</p>
+    <a href="https://driveaisales.com/discovery">Book a Discovery Call</a>
+  </div>
+
+  <p class="disclaimer">
+    This audit was conducted as a complimentary service by Drive AI Sales Inc. No purchase necessary. The lead submission was clearly marked as a test ("Test Lead from Drive AI Audit") and will not affect your CRM reporting. Revenue estimates are based on industry averages (avg deal profit $2,500-4,000, close rate 20-25%) and should be treated as directional, not precise.
+  </p>
+
+  <p style="font-size:12px; color:#aaa; text-align:center; margin-top:20px;">
+    &copy; 2026 Drive AI Sales Inc. &nbsp;|&nbsp; www.driveaisales.com
+  </p>
+
+</div>
+</body>
+</html>

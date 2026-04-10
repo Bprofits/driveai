@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Your Dealership Lead Leak Score</title>
+<style>
+body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; display:block; }
+@media only screen and (max-width:620px) {
+  .email-container { width:100% !important; }
+  .body-padding { padding:24px 18px !important; }
+}
+</style>
+</head>
+<body style="margin:0; padding:0; background-color:#070707; font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#070707">
+<tr>
+<td align="center" style="padding:24px 12px;">
+<table class="email-container" role="presentation" width="600" cellspacing="0" cellpadding="0" border="0"
+  style="max-width:600px; width:100%; background-color:#131313; border-radius:8px; overflow:hidden; border-top:4px solid #E87A00;">
+
+  <!-- HEADER -->
+  <tr>
+  <td align="center" style="padding:32px 40px 20px;">
+    <p style="margin:0; font-size:24px; font-weight:800; color:#ffffff; letter-spacing:-0.5px;">DRIVE <span style="color:#E87A00;">AI</span></p>
+    <p style="margin:4px 0 0; font-size:11px; color:#666666; text-transform:uppercase; letter-spacing:2px;">Sales Intelligence for Dealerships</p>
+  </td>
+  </tr>
+
+  <!-- SCORE SECTION -->
+  <tr>
+  <td align="center" style="padding:0 40px 20px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
+    <tr>
+    <td align="center" style="width:100px; height:100px; border-radius:50%; border:4px solid #E87A00;">
+      <p style="margin:0; font-size:36px; font-weight:800; color:#ffffff; line-height:1;">{{custom.totalScore}}</p>
+      <p style="margin:2px 0 0; font-size:12px; color:#666666;">out of 21</p>
+    </td>
+    </tr>
+    </table>
+  </td>
+  </tr>
+
+  <!-- BODY -->
+  <tr>
+  <td class="body-padding" style="padding:0 40px 32px; color:#cccccc;">
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 18px; color:#cccccc;">
+      {{contact.first_name}},
+    </p>
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 18px; color:#cccccc;">
+      You scored <strong style="color:#ffffff;">{{custom.totalScore}} out of 21</strong> on the Dealership Lead Leak Diagnostic.
+    </p>
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 24px; color:#cccccc;">
+      That puts you in the <strong style="color:#ffffff;">{{custom.tier}}</strong> category.
+    </p>
+
+    <!-- REVENUE ESTIMATE -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:24px;">
+    <tr>
+    <td style="background-color:#0E0E0E; border:1px solid #242424; border-radius:8px; padding:20px 24px; text-align:center;">
+      <p style="margin:0 0 4px; font-size:13px; color:#888888;">Estimated Monthly Revenue Left on the Table</p>
+      <p style="margin:0; font-size:28px; font-weight:800; color:#FF4444;">${{custom.revEstimateLow}} - ${{custom.revEstimateHigh}}/mo</p>
+    </td>
+    </tr>
+    </table>
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 18px; color:#cccccc;">
+      That's not a pitch. It's math. Here's where the biggest leaks are:
+    </p>
+
+    <!-- LEAK AREAS -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:24px;">
+    <tr>
+    <td style="background-color:#0E0E0E; border-left:3px solid #FF4444; border-radius:0 6px 6px 0; padding:16px 20px;">
+      <p style="margin:0; font-size:15px; color:#cccccc; line-height:1.8;">
+        {{custom.weakestAreas}}
+      </p>
+    </td>
+    </tr>
+    </table>
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 24px; color:#cccccc;">
+      The stores that close these gaps don't do it by hiring more people. They do it by putting a system underneath their team that never misses a lead, never forgets a follow-up, and never calls in sick.
+    </p>
+
+    <p style="font-size:16px; line-height:1.7; margin:0 0 28px; color:#cccccc;">
+      That's what we build at Drive AI.
+    </p>
+
+    <!-- CTA -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:28px;">
+    <tr>
+    <td align="center">
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+        href="https://driveaisales.com/discovery"
+        style="height:52px; v-text-anchor:middle; width:320px;" arcsize="8%" stroke="f" fillcolor="#E87A00">
+        <w:anchorlock/>
+        <center style="color:#ffffff; font-family:Arial,sans-serif; font-size:15px; font-weight:bold; letter-spacing:1px;">BOOK YOUR DISCOVERY CALL</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-->
+      <a href="https://driveaisales.com/discovery" target="_blank"
+        style="background-color:#E87A00; color:#ffffff; padding:16px 40px; text-decoration:none;
+          font-weight:bold; font-size:15px; border-radius:6px; display:inline-block;
+          text-transform:uppercase; letter-spacing:1px; font-family:Arial,Helvetica,sans-serif;">
+        Book Your Discovery Call
+      </a>
+      <!--<![endif]-->
+    </td>
+    </tr>
+    </table>
+
+    <p style="font-size:14px; line-height:1.6; margin:0 0 24px; color:#888888;">
+      We're not for every store. We work best with GMs who already know their process needs to evolve. If you want to see exactly how we'd plug these leaks for YOUR store specifically &mdash; not a generic demo, but a plan built around your numbers &mdash; that call is the next step.
+    </p>
+
+    <p style="font-size:14px; line-height:1.6; margin:0 0 8px; color:#888888;">
+      Over the next few days, I'll send you 5 short emails tackling the biggest revenue killers I've seen in 10 years on the floor. No fluff. Just the playbook.
+    </p>
+
+    <!-- SIGNATURE -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:28px;">
+    <tr>
+    <td style="padding-top:20px; border-top:1px solid #242424;">
+      <p style="font-size:15px; line-height:1.5; margin:0 0 4px; color:#888888;">Talk soon,</p>
+      <p style="font-size:17px; line-height:1.5; margin:0 0 2px; font-weight:bold; color:#ffffff;">Brandon Rose</p>
+      <p style="font-size:14px; line-height:1.5; margin:0 0 4px; color:#888888;">CEO, Drive AI Sales Inc.</p>
+      <p style="font-size:13px; line-height:1.5; margin:0; color:#555555;">10 years in the business. Every role. Every desk.</p>
+      <p style="font-size:13px; line-height:1.5; margin:6px 0 0;">
+        <a href="https://www.driveaisales.com" style="color:#E87A00; text-decoration:none;">www.driveaisales.com</a>
+      </p>
+    </td>
+    </tr>
+    </table>
+
+  </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+  <td align="center" style="background-color:#070707; padding:20px 24px; border-top:1px solid #181818;">
+    <p style="color:#444444; font-size:12px; margin:0 0 6px;">&copy; 2026 Drive AI Sales Inc. All rights reserved.</p>
+    <p style="color:#444444; font-size:11px; margin:0;">
+      <a href="{{contact.unsubscribe_link}}" style="color:#555555; text-decoration:underline;">Unsubscribe</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <a href="https://www.driveaisales.com" target="_blank" style="color:#555555; text-decoration:underline;">Visit Our Website</a>
+    </p>
+  </td>
+  </tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

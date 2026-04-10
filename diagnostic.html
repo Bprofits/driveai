@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dealership Lead Leak Diagnostic — Drive AI Sales</title>
+<link rel="icon" type="image/png" href="logo/Drive AI - Favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:#070707; font-family:'Barlow',Arial,Helvetica,sans-serif; min-height:100vh; color:#F4DEC9; }
+
+  .page-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+
+  .card {
+    background:#131313; border-radius:12px; padding:44px 40px; max-width:640px; width:100%;
+    box-shadow:0 8px 32px rgba(0,0,0,0.6); border-top:4px solid #E87A00;
+  }
+
+  .logo { text-align:center; margin-bottom:32px; }
+  .logo img { height:60px; width:auto; margin:0 auto; }
+  .logo .tagline { font-size:10px; color:#5A5550; text-transform:uppercase; letter-spacing:3px; margin-top:8px; font-family:'Barlow Condensed',sans-serif; font-weight:600; }
+
+  .badge { display:inline-block; background:rgba(232,122,0,0.15); color:#E87A00; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:5px 14px; border:1px solid rgba(232,122,0,0.3); margin-bottom:16px; font-family:'Barlow Condensed',sans-serif; }
+
+  h1 { color:#FAFAFA; font-family:'Bebas Neue',sans-serif; font-size:32px; margin:0 0 8px; line-height:1.1; letter-spacing:1px; }
+  .subtitle { color:#B8956F; font-size:15px; font-weight:300; margin:0 0 28px; line-height:1.7; }
+
+  .progress-wrap { margin-bottom:32px; }
+  .progress-label { color:#5A5550; font-size:10px; font-weight:600; letter-spacing:2px; margin-bottom:6px; display:flex; justify-content:space-between; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; }
+  .progress-bar { width:100%; background:#181818; border-radius:2px; height:3px; overflow:hidden; }
+  .progress-fill { background:#E87A00; height:3px; border-radius:2px; width:0%; transition:width 0.4s ease; }
+
+  .question { display:none; }
+  .question.active { display:block; }
+  .q-number { color:#E87A00; font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; font-family:'Barlow Condensed',sans-serif; }
+  .q-text { color:#FAFAFA; font-size:18px; font-weight:500; margin:0 0 20px; line-height:1.4; }
+
+  .option {
+    display:block; background:#131313; border:1px solid #242424; border-radius:4px; padding:16px 18px;
+    margin-bottom:8px; cursor:pointer; transition:all 0.2s; font-size:14px; color:#B8956F; line-height:1.5;
+  }
+  .option:hover { border-color:#E87A00; color:#F4DEC9; background:#181818; }
+  .option.selected { border-color:#E87A00; background:rgba(232,122,0,0.08); color:#F4DEC9; }
+  .option input { display:none; }
+  .option .letter { color:#E87A00; font-weight:700; margin-right:8px; }
+
+  .q-insight { background:#0E0E0E; border-left:2px solid #242424; border-radius:0 4px 4px 0; padding:14px 16px; margin-top:16px; font-size:12px; color:#5A5550; line-height:1.6; }
+  .q-insight strong { color:#B8956F; }
+
+  .nav-row { display:flex; gap:12px; margin-top:24px; }
+  .btn { flex:1; padding:12px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; font-family:'Barlow Condensed',sans-serif; border:none; letter-spacing:3px; text-transform:uppercase; }
+  .btn-next { background:#E87A00; color:#070707; }
+  .btn-next:hover { background:#FF8C00; }
+  .btn-next:disabled { background:#242424; color:#5A5550; cursor:not-allowed; }
+  .btn-back { background:transparent; color:#5A5550; border:1px solid #242424; }
+  .btn-back:hover { color:#E87A00; border-color:#E87A00; }
+
+  .contact-form { display:none; }
+  .contact-form.active { display:block; }
+  .contact-form label { display:block; color:#F4DEC9; font-size:11px; font-weight:700; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
+  .contact-form input, .contact-form select {
+    width:100%; background:#0E0E0E; border:1px solid #242424; border-radius:4px; color:#FAFAFA;
+    font-size:14px; padding:12px 14px; font-family:inherit; margin-bottom:16px; outline:none;
+  }
+  .contact-form input:focus, .contact-form select:focus { border-color:#E87A00; }
+  .form-row { display:flex; gap:12px; }
+  .form-row > div { flex:1; }
+
+  .results { display:none; text-align:center; }
+  .results.active { display:block; }
+  .score-circle {
+    width:120px; height:120px; border-radius:50%; border:3px solid #E87A00; margin:0 auto 20px;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    box-shadow:0 0 40px rgba(232,122,0,0.15);
+  }
+  .score-circle .score-num { font-family:'Bebas Neue',sans-serif; font-size:42px; color:#E87A00; line-height:1; }
+  .score-circle .score-of { font-size:11px; color:#5A5550; letter-spacing:1px; }
+  .tier-name { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:1px; margin:0 0 8px; }
+  .tier-desc { color:#B8956F; font-size:14px; font-weight:300; line-height:1.7; margin:0 0 24px; max-width:500px; margin-left:auto; margin-right:auto; }
+  .revenue-box {
+    background:rgba(232,122,0,0.06); border:1px solid rgba(232,122,0,0.15); border-radius:4px; padding:20px 24px; margin-bottom:28px;
+  }
+  .revenue-box .rev-label { color:#5A5550; font-size:11px; margin-bottom:4px; text-transform:uppercase; letter-spacing:2px; font-family:'Barlow Condensed',sans-serif; font-weight:600; }
+  .revenue-box .rev-amount { color:#E87A00; font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:1px; }
+  .leak-list { text-align:left; margin:0 auto 28px; max-width:440px; }
+  .leak-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; font-size:13px; color:#B8956F; line-height:1.5; }
+  .leak-dot { width:6px; height:6px; background:#E87A00; border-radius:50%; margin-top:7px; flex-shrink:0; }
+  .btn-cta {
+    display:inline-block; background:#E87A00; color:#070707; padding:14px 36px; border-radius:4px;
+    font-size:11px; font-weight:700; text-decoration:none; letter-spacing:3px; text-transform:uppercase;
+    font-family:'Barlow Condensed',sans-serif; border:none; cursor:pointer;
+  }
+  .btn-cta:hover { background:#FF8C00; }
+
+  .footer { color:#3D3A38; font-size:11px; text-align:center; margin-top:24px; letter-spacing:0.5px; }
+  .hp-field { position:absolute; left:-9999px; }
+
+  @media (max-width:480px) {
+    .card { padding:28px 20px; }
+    .form-row { flex-direction:column; gap:0; }
+    h1 { font-size:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<div class="card">
+  <div class="logo">
+    <img src="logo/DAI - Beige, Orange - BLUE BKG.png" alt="Drive AI Sales">
+    <div class="tagline">Sales Intelligence for Dealerships</div>
+  </div>
+
+  <div id="intro" class="question active">
+    <div class="badge">Free Diagnostic</div>
+    <h1>How Much Revenue Is Your Store Leaving on the Table?</h1>
+    <p class="subtitle">Answer 7 quick questions and get a personalized estimate of your dealership's revenue leaks &mdash; plus a plan to plug them. Takes under 2 minutes.</p>
+    <div class="nav-row">
+      <button class="btn btn-next" id="btnStart">Start the Diagnostic &rarr;</button>
+    </div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-label">
+      <span id="progressText">Question 1 of 7</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="question" id="q1" data-q="1">
+    <div class="q-number">Question 1 of 7 &mdash; Lead Response Speed</div>
+    <p class="q-text">When a lead submits a form on your website at 8:47 PM on a Tuesday, what happens?</p>
+    <label class="option"><input type="radio" name="q1" value="3"><span class="letter">A.</span> Someone responds within 5 minutes, every time</label>
+    <label class="option"><input type="radio" name="q1" value="2"><span class="letter">B.</span> They get an auto-reply, then a human follows up next morning</label>
+    <label class="option"><input type="radio" name="q1" value="1"><span class="letter">C.</span> It depends on who's working. Could be hours, could be next day</label>
+    <label class="option"><input type="radio" name="q1" value="0"><span class="letter">D.</span> Honestly? Some of those leads probably never get touched</label>
+    <div class="q-insight"><strong>Why this matters:</strong> 78% of buyers purchase from the first dealership to respond. Every hour of delay cuts close probability in half.</div>
+  </div>
+
+  <div class="question" id="q2" data-q="2">
+    <div class="q-number">Question 2 of 7 &mdash; Follow-Up Consistency</div>
+    <p class="q-text">After initial contact, how many times does your team follow up with a lead who doesn't respond?</p>
+    <label class="option"><input type="radio" name="q2" value="3"><span class="letter">A.</span> Structured cadence: 7+ touches across calls, texts, and email over 30 days</label>
+    <label class="option"><input type="radio" name="q2" value="2"><span class="letter">B.</span> 2-3 attempts, then we move on</label>
+    <label class="option"><input type="radio" name="q2" value="1"><span class="letter">C.</span> Depends on the salesperson. Some are persistent, some aren't</label>
+    <label class="option"><input type="radio" name="q2" value="0"><span class="letter">D.</span> If they don't call back, we assume they bought somewhere else</label>
+    <div class="q-insight"><strong>Why this matters:</strong> 80% of sales require 5+ follow-ups. Most salespeople give up after 2.</div>
+  </div>
+
+  <div class="question" id="q3" data-q="3">
+    <div class="q-number">Question 3 of 7 &mdash; Appointment Show Rate</div>
+    <p class="q-text">What percentage of booked appointments actually show up?</p>
+    <label class="option"><input type="radio" name="q3" value="3"><span class="letter">A.</span> 70%+ and we confirm, remind, and re-engage no-shows systematically</label>
+    <label class="option"><input type="radio" name="q3" value="2"><span class="letter">B.</span> 50-70%. We send reminders but no-shows fall through the cracks</label>
+    <label class="option"><input type="radio" name="q3" value="1"><span class="letter">C.</span> 30-50%. It's a constant frustration</label>
+    <label class="option"><input type="radio" name="q3" value="0"><span class="letter">D.</span> We don't track it closely, but it's not great</label>
+    <div class="q-insight"><strong>Why this matters:</strong> A 20% improvement in show rate on 100 monthly appointments = 20 more ups on the floor. At a 25% close rate, that's 5 extra deals per month.</div>
+  </div>
+
+  <div class="question" id="q4" data-q="4">
+    <div class="q-number">Question 4 of 7 &mdash; Staff Efficiency</div>
+    <p class="q-text">How much of your sales team's day is spent on actual selling vs. admin and follow-up?</p>
+    <label class="option"><input type="radio" name="q4" value="3"><span class="letter">A.</span> 70%+ selling. Our systems handle the rest</label>
+    <label class="option"><input type="radio" name="q4" value="2"><span class="letter">B.</span> About 50/50. They juggle tasks and selling</label>
+    <label class="option"><input type="radio" name="q4" value="1"><span class="letter">C.</span> Mostly chasing leads, logging notes, and doing CRM tasks</label>
+    <label class="option"><input type="radio" name="q4" value="0"><span class="letter">D.</span> Half my team is basically a BDC that also tries to sell</label>
+    <div class="q-insight"><strong>Why this matters:</strong> The average salesperson spends 65% of their time on non-selling activities. That's 65% of their paycheck going to work a computer could do better.</div>
+  </div>
+
+  <div class="question" id="q5" data-q="5">
+    <div class="q-number">Question 5 of 7 &mdash; CRM Utilization</div>
+    <p class="q-text">How would you honestly rate your team's CRM usage?</p>
+    <label class="option"><input type="radio" name="q5" value="3"><span class="letter">A.</span> Fully adopted. Every lead, every note, every task logged</label>
+    <label class="option"><input type="radio" name="q5" value="2"><span class="letter">B.</span> Most people use it, but data quality varies</label>
+    <label class="option"><input type="radio" name="q5" value="1"><span class="letter">C.</span> A few power users carry the team. Most avoid it</label>
+    <label class="option"><input type="radio" name="q5" value="0"><span class="letter">D.</span> We're paying for a CRM that half the team doesn't touch</label>
+    <div class="q-insight"><strong>Why this matters:</strong> A CRM your team won't use isn't a tool. It's an expense. The problem usually isn't the people. It's that the system creates work instead of eliminating it.</div>
+  </div>
+
+  <div class="question" id="q6" data-q="6">
+    <div class="q-number">Question 6 of 7 &mdash; Scalability</div>
+    <p class="q-text">If you wanted to handle 50% more leads next month, what would you need to do?</p>
+    <label class="option"><input type="radio" name="q6" value="3"><span class="letter">A.</span> Nothing. Our systems scale automatically</label>
+    <label class="option"><input type="radio" name="q6" value="2"><span class="letter">B.</span> Extend hours or add overtime</label>
+    <label class="option"><input type="radio" name="q6" value="1"><span class="letter">C.</span> Hire 1-2 more BDC or sales reps</label>
+    <label class="option"><input type="radio" name="q6" value="0"><span class="letter">D.</span> We're already overwhelmed with current volume</label>
+    <div class="q-insight"><strong>Why this matters:</strong> If growth requires headcount, you don't have a system. You have a headcount problem. And headcount doesn't scale. It breaks.</div>
+  </div>
+
+  <div class="question" id="q7" data-q="7">
+    <div class="q-number">Question 7 of 7 &mdash; Competitive Positioning</div>
+    <p class="q-text">How confident are you that your store responds to leads faster than the dealer across town?</p>
+    <label class="option"><input type="radio" name="q7" value="3"><span class="letter">A.</span> Very confident. We've tested it and we win</label>
+    <label class="option"><input type="radio" name="q7" value="2"><span class="letter">B.</span> Probably, but I haven't checked</label>
+    <label class="option"><input type="radio" name="q7" value="1"><span class="letter">C.</span> It's a coin flip on any given day</label>
+    <label class="option"><input type="radio" name="q7" value="0"><span class="letter">D.</span> They're probably faster, honestly</label>
+    <div class="q-insight"><strong>Why this matters:</strong> Your competition isn't standing still. The stores investing in automation and AI right now are building advantages that compound every single month.</div>
+  </div>
+
+  <div class="contact-form" id="contactForm">
+    <div class="q-number">Almost Done &mdash; Where Should We Send Your Results?</div>
+    <p class="q-text" style="font-size:16px;">We'll email your personalized score, revenue estimate, and leak breakdown instantly.</p>
+    <div class="form-row">
+      <div>
+        <label for="firstName">First Name *</label>
+        <input type="text" id="firstName" placeholder="Brandon" required>
+      </div>
+      <div>
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" placeholder="Rose">
+      </div>
+    </div>
+    <label for="email">Email Address *</label>
+    <input type="email" id="email" placeholder="you@dealership.com" required>
+    <label for="phone">Phone (optional)</label>
+    <input type="tel" id="phone" placeholder="(780) 555-1234">
+    <div class="form-row">
+      <div>
+        <label for="dealership">Dealership Name</label>
+        <input type="text" id="dealership" placeholder="Your Dealership">
+      </div>
+      <div>
+        <label for="role">Your Role</label>
+        <select id="role">
+          <option value="">Select...</option>
+          <option value="GM">General Manager</option>
+          <option value="DP">Dealer Principal / Owner</option>
+          <option value="SM">Sales Manager</option>
+          <option value="BDC">BDC Director</option>
+          <option value="Marketing">Marketing Director</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="hp-field" aria-hidden="true">
+      <label for="company">Company</label>
+      <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-back" id="btnContactBack">&larr; Back</button>
+      <button class="btn btn-next" id="btnSubmit">Get My Results &rarr;</button>
+    </div>
+  </div>
+
+  <div class="results" id="resultsSection">
+    <div class="score-circle">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-of">out of 21</div>
+    </div>
+    <h1 class="tier-name" id="tierName"></h1>
+    <p class="tier-desc" id="tierDesc"></p>
+    <div class="revenue-box">
+      <div class="rev-label">Estimated Monthly Revenue Left on the Table</div>
+      <div class="rev-amount" id="revAmount">$0</div>
+    </div>
+    <div class="leak-list" id="leakList"></div>
+    <p style="color:#5A5550; font-size:13px; margin-bottom:24px;">We've emailed your full breakdown. In the meantime, if you want to see exactly how we'd plug these leaks for your store:</p>
+    <a href="https://driveaisales.com/discovery" class="btn-cta">Book Your Discovery Call</a>
+    <p style="color:#5A5550; font-size:12px; margin-top:16px; letter-spacing:0.5px;">20 minutes. Not a demo. A real conversation about your store.</p>
+  </div>
+
+  <p class="footer">&copy; 2026 Drive AI Sales Inc. &nbsp;|&nbsp; <a href="https://www.driveaisales.com" style="color:#5A5550; text-decoration:none;">www.driveaisales.com</a></p>
+</div>
+</div>
+
+<script>
+(function() {
+  var loadTime = Date.now();
+  var currentQ = 0;
+  var scores = {};
+  var totalQuestions = 7;
+
+  var qLabels = {
+    q1: 'Lead Response Speed',
+    q2: 'Follow-Up Consistency',
+    q3: 'Appointment Show Rate',
+    q4: 'Staff Efficiency',
+    q5: 'CRM Utilization',
+    q6: 'Scalability',
+    q7: 'Competitive Positioning'
+  };
+
+  var tiers = [
+    { min:18, name:'The Machine', color:'#00CC66', desc:'Your store is running tight. You\'re already ahead of most dealers. Drive AI probably isn\'t for you, unless you want to squeeze out that last 10-15% and free your team up even more.' },
+    { min:12, name:'The Grinder', color:'#FFaa00', desc:'You\'ve got a good team and decent process, but there are cracks. Leads are slipping, follow-up isn\'t consistent, and you know you\'re leaving money on the table. This is exactly where Drive AI makes the biggest impact.' },
+    { min:6, name:'The Firefighter', color:'#FF6600', desc:'You\'re working harder than anyone in the building and it still feels like you\'re losing ground. The problem isn\'t effort. It\'s that your tools weren\'t built for this volume. You need a system that works while your team sleeps.' },
+    { min:0, name:'Code Red', color:'#FF4444', desc:'Leads are dying in the inbox. Follow-up is inconsistent or nonexistent. The good news: the gap is so wide that even basic automation will move your numbers meaningfully. The bad news: every month you wait, the competition pulls further ahead.' }
+  ];
+
+  function show(id) {
+    document.querySelectorAll('.question, .contact-form, .results').forEach(function(el) { el.classList.remove('active'); });
+    var el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+
+  function updateProgress() {
+    var pct = Math.round((currentQ / totalQuestions) * 100);
+    var wrap = document.getElementById('progressWrap');
+    var fill = document.getElementById('progressFill');
+    var text = document.getElementById('progressText');
+    var pctEl = document.getElementById('progressPct');
+    if (currentQ >= 1 && currentQ <= 7) {
+      wrap.style.display = 'block';
+      fill.style.width = pct + '%';
+      text.textContent = 'Question ' + currentQ + ' of 7';
+      pctEl.textContent = pct + '%';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+
+  function goTo(q) {
+    currentQ = q;
+    if (q === 0) show('intro');
+    else if (q >= 1 && q <= 7) show('q' + q);
+    else if (q === 8) show('contactForm');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderLeaks(leaks) {
+    var container = document.getElementById('leakList');
+    while (container.firstChild) container.removeChild(container.firstChild);
+    leaks.slice(0, 4).forEach(function(l) {
+      var item = document.createElement('div');
+      item.className = 'leak-item';
+      var dot = document.createElement('div');
+      dot.className = 'leak-dot';
+      var text = document.createElement('div');
+      text.textContent = l;
+      item.appendChild(dot);
+      item.appendChild(text);
+      container.appendChild(item);
+    });
+  }
+
+  document.querySelectorAll('.option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var radio = this.querySelector('input[type="radio"]');
+      radio.checked = true;
+      scores[radio.name] = parseInt(radio.value);
+      this.parentElement.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+      this.classList.add('selected');
+      setTimeout(function() {
+        if (currentQ < 7) goTo(currentQ + 1);
+        else goTo(8);
+      }, 400);
+    });
+  });
+
+  document.getElementById('btnStart').addEventListener('click', function() { goTo(1); });
+  document.getElementById('btnContactBack').addEventListener('click', function() { goTo(7); });
+
+  document.getElementById('btnSubmit').addEventListener('click', function() {
+    if (document.getElementById('company').value) return;
+    if (Date.now() - loadTime < 4000) return;
+
+    var firstName = document.getElementById('firstName').value.trim();
+    var email = document.getElementById('email').value.trim();
+    if (!firstName || !email) {
+      alert('Please enter your name and email to get your results.');
+      return;
+    }
+
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Calculating...';
+
+    var totalScore = 0;
+    for (var k in scores) totalScore += scores[k];
+
+    var revLow = 0, revHigh = 0;
+    if (scores.q1 < 3) { revLow += 8000; revHigh += 15000; }
+    if (scores.q2 < 3) { revLow += 5000; revHigh += 10000; }
+    if (scores.q3 < 3) { revLow += 10000; revHigh += 20000; }
+    if (scores.q4 < 3) { revLow += 3000; revHigh += 5000; }
+    if (scores.q5 < 3) { revLow += 3000; revHigh += 5000; }
+    if (scores.q6 < 3) { revLow += 3000; revHigh += 5000; }
+    if (scores.q7 < 3) { revLow += 3000; revHigh += 5000; }
+
+    var tier = tiers[tiers.length - 1];
+    for (var i = 0; i < tiers.length; i++) {
+      if (totalScore >= tiers[i].min) { tier = tiers[i]; break; }
+    }
+
+    var leaks = [];
+    for (var q = 1; q <= 7; q++) {
+      if ((scores['q' + q] || 0) < 2) leaks.push(qLabels['q' + q]);
+    }
+    if (leaks.length === 0) {
+      for (var q2 = 1; q2 <= 7; q2++) {
+        if ((scores['q' + q2] || 0) < 3) leaks.push(qLabels['q' + q2]);
+      }
+    }
+
+    var payload = {
+      firstName: firstName,
+      lastName: document.getElementById('lastName').value.trim(),
+      email: email,
+      phone: document.getElementById('phone').value.trim(),
+      dealership: document.getElementById('dealership').value.trim(),
+      role: document.getElementById('role').value,
+      totalScore: totalScore,
+      tier: tier.name,
+      q1_leadResponse: scores.q1 || 0,
+      q2_followUp: scores.q2 || 0,
+      q3_showRate: scores.q3 || 0,
+      q4_staffEfficiency: scores.q4 || 0,
+      q5_crmUtilization: scores.q5 || 0,
+      q6_scalability: scores.q6 || 0,
+      q7_competitive: scores.q7 || 0,
+      revEstimateLow: revLow,
+      revEstimateHigh: revHigh,
+      weakestAreas: leaks.join(', '),
+      source: 'diagnostic'
+    };
+
+    fetch('WEBHOOK_URL_HERE', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(function() {});
+
+    document.getElementById('scoreNum').textContent = totalScore;
+    document.getElementById('tierName').textContent = tier.name;
+    document.getElementById('tierName').style.color = tier.color;
+    document.getElementById('tierDesc').textContent = tier.desc;
+    document.getElementById('revAmount').textContent = '$' + revLow.toLocaleString() + ' - $' + revHigh.toLocaleString() + '/mo';
+    renderLeaks(leaks);
+
+    currentQ = 9;
+    show('resultsSection');
+    document.getElementById('progressWrap').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
