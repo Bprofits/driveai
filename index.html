@@ -7,9 +7,10 @@
 <meta name="description" content="Drive AI responds to every dealership lead in under 60 seconds. Text, email, voice. 24/7. No new software for your team to learn.">
 <meta property="og:title" content="Drive AI Sales — AI-Powered Lead Response for Dealerships">
 <meta property="og:description" content="78% of buyers purchase from the first dealership to respond. Drive AI makes sure that's you.">
-<meta property="og:image" content="banner/DAI - Beige, Orange - BLUE BKG.png">
-<link rel="icon" type="image/png" href="logo/Drive AI - Favicon.png">
+<meta property="og:image" content="banner/dai-beige-orange-blue-bkg.png">
+<link rel="icon" type="image/png" href="logo/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 :root {
   --black: #070707;
@@ -242,8 +243,8 @@ body::before {
   html { font-size:23px; }
 }
 
-/* ─── PREMIUM: PARTICLE CANVAS ─── */
-#particleCanvas { position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+/* ─── THREE.JS CANVAS ─── */
+#bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
 
 /* ─── PREMIUM: GRADIENT SHIMMER TEXT ─── */
 .shimmer-text {
@@ -324,7 +325,7 @@ body::before {
 <!-- ─── NAV ─── -->
 <nav class="navbar" id="navbar">
   <div class="navbar__inner">
-    <a href="/" class="navbar__logo"><img src="logo/DAI - Beige, Orange - BLUE BKG.png" alt="Drive AI Sales"></a>
+    <a href="/" class="navbar__logo"><img src="logo/dai-beige-orange-blue-bkg.png" alt="Drive AI Sales"></a>
     <ul class="navbar__menu">
       <li><a href="#problem" class="hide-m">The Problem</a></li>
       <li><a href="#solution" class="hide-m">Solution</a></li>
@@ -339,12 +340,14 @@ body::before {
 </nav>
 
 <!-- ─── HERO ─── -->
+<canvas id="bg"></canvas>
+
 <section class="hero">
-  <div class="hero__bg"><canvas id="particleCanvas"></canvas></div>
+  <div class="hero__bg"></div>
   <div class="hero__gradient"></div>
   <div class="hero__content">
     <div class="hero__logo">
-      <img src="logo/DAI - Beige, Orange - BLUE BKG.png" alt="Drive AI Sales">
+      <img src="logo/dai-beige-orange-blue-bkg.png" alt="Drive AI Sales">
     </div>
     <div class="hero__badge">AI-Powered Sales Intelligence</div>
     <h1 class="hero__title">
@@ -554,7 +557,7 @@ body::before {
 <footer class="footer">
   <div class="footer__top">
     <div class="footer__brand">
-      <img src="logo/DAI - Beige, Orange - BLUE BKG.png" alt="Drive AI Sales">
+      <img src="logo/dai-beige-orange-blue-bkg.png" alt="Drive AI Sales">
       <p>AI-powered sales intelligence for car dealerships. Built by a dealer, for dealers.</p>
     </div>
     <div>
@@ -624,111 +627,113 @@ body::before {
   if (ticker) ticker.innerHTML += ticker.innerHTML;
 })();
 
-// ─── PREMIUM: PARTICLE FIELD ───
+// ─── THREE.JS SCROLL ANIMATION ───
 (function() {
-  var canvas = document.getElementById('particleCanvas');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var w, h, particles = [], mouse = { x: null, y: null, radius: 150 };
-  var PARTICLE_COUNT = 120;
-  var CONNECTION_DIST = 100;
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  var renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), alpha: true, antialias: true });
 
-  function resize() {
-    var rect = canvas.parentElement.getBoundingClientRect();
-    var dpr = window.devicePixelRatio || 1;
-    w = canvas.width = rect.width * dpr;
-    h = canvas.height = rect.height * dpr;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.setZ(30);
+  camera.position.setX(-3);
+
+  // Torus — Drive AI orange accent geometry
+  var torusGeo = new THREE.TorusGeometry(10, 2, 16, 100);
+  var torusMat = new THREE.MeshStandardMaterial({ color: 0xE87A00, wireframe: false, roughness: 0.4, metalness: 0.6 });
+  var torus = new THREE.Mesh(torusGeo, torusMat);
+  scene.add(torus);
+
+  // Icosahedron — secondary geometry
+  var icoGeo = new THREE.IcosahedronGeometry(4, 1);
+  var icoMat = new THREE.MeshStandardMaterial({ color: 0xB85E00, wireframe: true });
+  var ico = new THREE.Mesh(icoGeo, icoMat);
+  ico.position.set(15, -8, -20);
+  scene.add(ico);
+
+  // Octahedron — tertiary
+  var octGeo = new THREE.OctahedronGeometry(3, 0);
+  var octMat = new THREE.MeshStandardMaterial({ color: 0xF4DEC9, wireframe: true, transparent: true, opacity: 0.3 });
+  var oct = new THREE.Mesh(octGeo, octMat);
+  oct.position.set(-12, 5, -15);
+  scene.add(oct);
+
+  // Lights
+  var pointLight = new THREE.PointLight(0xE87A00, 1.5);
+  pointLight.position.set(20, 10, 10);
+  var pointLight2 = new THREE.PointLight(0xFF8C00, 0.8);
+  pointLight2.position.set(-15, -10, -10);
+  var ambientLight = new THREE.AmbientLight(0x111111);
+  scene.add(pointLight, pointLight2, ambientLight);
+
+  // Stars
+  function addStar() {
+    var geo = new THREE.SphereGeometry(0.15, 12, 12);
+    var mat = new THREE.MeshStandardMaterial({ color: 0xF4DEC9 });
+    var star = new THREE.Mesh(geo, mat);
+    var spread = 140;
+    star.position.set(
+      THREE.MathUtils.randFloatSpread(spread),
+      THREE.MathUtils.randFloatSpread(spread),
+      THREE.MathUtils.randFloatSpread(spread)
+    );
+    scene.add(star);
+  }
+  for (var i = 0; i < 300; i++) addStar();
+
+  // Orange dust particles (larger, closer)
+  function addDust() {
+    var geo = new THREE.SphereGeometry(0.08, 8, 8);
+    var mat = new THREE.MeshBasicMaterial({ color: 0xE87A00, transparent: true, opacity: Math.random() * 0.4 + 0.1 });
+    var dust = new THREE.Mesh(geo, mat);
+    dust.position.set(
+      THREE.MathUtils.randFloatSpread(80),
+      THREE.MathUtils.randFloatSpread(80),
+      THREE.MathUtils.randFloatSpread(80)
+    );
+    scene.add(dust);
+  }
+  for (var d = 0; d < 100; d++) addDust();
+
+  // Scroll animation — camera moves through the scene
+  function moveCamera() {
+    var t = document.body.getBoundingClientRect().top;
+
+    torus.rotation.x += 0.02;
+    torus.rotation.y += 0.03;
+    torus.rotation.z += 0.01;
+
+    ico.rotation.y += 0.01;
+    ico.rotation.z += 0.015;
+
+    oct.rotation.x += 0.005;
+    oct.rotation.y += 0.01;
+
+    camera.position.z = 30 + t * -0.01;
+    camera.position.x = -3 + t * -0.0002;
+    camera.rotation.y = t * -0.0002;
   }
 
-  function Particle() {
-    this.x = Math.random() * (w / (window.devicePixelRatio||1));
-    this.y = Math.random() * (h / (window.devicePixelRatio||1));
-    this.vx = (Math.random() - 0.5) * 0.4;
-    this.vy = (Math.random() - 0.5) * 0.4;
-    this.size = Math.random() * 1.5 + 0.5;
-    this.opacity = Math.random() * 0.4 + 0.1;
-  }
-  Particle.prototype.update = function() {
-    if (mouse.x !== null) {
-      var dx = this.x - mouse.x, dy = this.y - mouse.y;
-      var dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist < mouse.radius) {
-        var force = (mouse.radius - dist) / mouse.radius;
-        this.vx += (dx/dist) * force * 0.3;
-        this.vy += (dy/dist) * force * 0.3;
-      }
-    }
-    this.vx *= 0.99; this.vy *= 0.99;
-    this.x += this.vx; this.y += this.vy;
-    var bw = w/(window.devicePixelRatio||1), bh = h/(window.devicePixelRatio||1);
-    if (this.x < 0) this.x = bw; if (this.x > bw) this.x = 0;
-    if (this.y < 0) this.y = bh; if (this.y > bh) this.y = 0;
-  };
-  Particle.prototype.draw = function() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(232, 160, 80, ' + this.opacity + ')';
-    ctx.fill();
-  };
+  document.body.onscroll = moveCamera;
+  moveCamera();
 
-  function init() {
-    resize();
-    particles = [];
-    for (var i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-  }
-
-  function drawConnections() {
-    for (var i = 0; i < particles.length; i++) {
-      for (var j = i+1; j < particles.length; j++) {
-        var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-        var dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < CONNECTION_DIST) {
-          var opacity = (1 - dist/CONNECTION_DIST) * 0.1;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = 'rgba(232, 122, 0, ' + opacity + ')';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-    if (mouse.x !== null) {
-      for (var k = 0; k < particles.length; k++) {
-        var dx2 = particles[k].x - mouse.x, dy2 = particles[k].y - mouse.y;
-        var dist2 = Math.sqrt(dx2*dx2 + dy2*dy2);
-        if (dist2 < mouse.radius) {
-          var op = (1 - dist2/mouse.radius) * 0.25;
-          ctx.beginPath();
-          ctx.moveTo(particles[k].x, particles[k].y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = 'rgba(232, 122, 0, ' + op + ')';
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
-        }
-      }
-    }
-  }
-
-  function animate() {
-    var bw = w/(window.devicePixelRatio||1), bh = h/(window.devicePixelRatio||1);
-    ctx.clearRect(0, 0, bw, bh);
-    for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
-    drawConnections();
-    requestAnimationFrame(animate);
-  }
-
-  canvas.addEventListener('mousemove', function(e) {
-    var rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
+  // Resize handler
+  window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
   });
-  canvas.addEventListener('mouseleave', function() { mouse.x = null; mouse.y = null; });
-  window.addEventListener('resize', resize);
-  init();
+
+  // Animate
+  function animate() {
+    requestAnimationFrame(animate);
+    torus.rotation.x += 0.003;
+    torus.rotation.y += 0.002;
+    torus.rotation.z += 0.003;
+    ico.rotation.y += 0.004;
+    oct.rotation.x += 0.002;
+    renderer.render(scene, camera);
+  }
   animate();
 })();
 
