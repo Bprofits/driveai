@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-y:scroll}
@@ -283,7 +284,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><img src="logo/dai-beige-orange-blue-bkg.png" alt="Drive AI Sales"><p>AI-powered sales intelligence for car dealerships. Built by a dealer, for dealers.</p></div>
+    <div class="footer-brand"><div class="nav-mark" style="font-size:1.8rem;margin-bottom:1rem">DRIVE <span>AI</span> SALES</div><p>AI-powered sales intelligence for car dealerships. Built by a dealer, for dealers.</p></div>
     <div><div class="footer-col-title">Product</div><ul class="footer-links"><li><a href="diagnostic.html">Free Diagnostic</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="discovery.html">Book a Call</a></li></ul></div>
     <div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a href="#">About</a></li><li><a href="#">Case Studies</a></li><li><a href="#">Contact</a></li></ul></div>
     <div><div class="footer-col-title">Connect</div><ul class="footer-links"><li><a href="#">LinkedIn</a></li><li><a href="mailto:brandon@driveaisales.com">Email</a></li><li><a href="#">Edmonton, AB</a></li></ul></div>
@@ -301,144 +302,134 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
   els.forEach(function(el){obs.observe(el)});
 })();
 
-// ─── THREE.JS — REAL CAR MODEL + HOLOGRAPHIC MATERIAL ───
+// ─── THREE.JS — HOLOGRAPHIC CAR SHOWCASE ───
 (function(){
   var scene=new THREE.Scene();
-  scene.fog=new THREE.FogExp2(0x000000,.015);
-  var camera=new THREE.PerspectiveCamera(40,window.innerWidth/window.innerHeight,.1,1000);
-  var renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#bg'),alpha:true,antialias:true});
+  var camera=new THREE.PerspectiveCamera(35,window.innerWidth/window.innerHeight,.1,500);
+  var renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#bg'),antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.5;
+  renderer.toneMappingExposure=1.8;
   renderer.outputEncoding=THREE.sRGBEncoding;
-  camera.position.set(5,2,8);
-  camera.lookAt(0,.5,0);
+  renderer.setClearColor(0x000000,1);
 
-  // Holographic materials
-  var holoWire=new THREE.MeshBasicMaterial({color:0xE87A00,wireframe:true,transparent:true,opacity:.25});
-  var holoSolid=new THREE.MeshStandardMaterial({color:0x0a0a0a,roughness:.2,metalness:1,transparent:true,opacity:.15,envMapIntensity:2});
-  var holoGlow=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:.06,side:THREE.BackSide});
-  var glassMat=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:.12});
+  // Materials
+  var holoBody=new THREE.MeshPhysicalMaterial({color:0x111111,roughness:.15,metalness:1,transparent:true,opacity:.6,clearcoat:1,clearcoatRoughness:.1});
+  var holoWire=new THREE.MeshBasicMaterial({color:0xE87A00,wireframe:true,transparent:true,opacity:.18});
+  var holoGlow=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:.04,side:THREE.BackSide});
 
-  // ── LOAD FERRARI GLB ──
+  // DRACO + GLTF Loader
+  var dracoLoader=new THREE.DRACOLoader();
+  dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+  var gltfLoader=new THREE.GLTFLoader();
+  gltfLoader.setDRACOLoader(dracoLoader);
+
   var carGroup=new THREE.Group();
-  var carModel=null;
-  var loader=new THREE.GLTFLoader();
-  loader.load('ferrari.glb',function(gltf){
-    carModel=gltf.scene;
-    carModel.scale.set(1,1,1);
+  var carLoaded=false;
 
-    // Replace all materials with holographic versions
-    carModel.traverse(function(child){
+  gltfLoader.load('ferrari.glb',function(gltf){
+    var model=gltf.scene;
+    model.traverse(function(child){
       if(child.isMesh){
-        var geo=child.geometry;
-        // Clone mesh with wireframe overlay
-        var wire=new THREE.Mesh(geo,holoWire);
-        wire.position.copy(child.position);
-        wire.rotation.copy(child.rotation);
-        wire.scale.copy(child.scale);
+        // Dark reflective body
+        child.material=holoBody.clone();
+        // Wireframe overlay
+        var wire=new THREE.Mesh(child.geometry.clone(),holoWire);
+        wire.position.copy(child.position);wire.rotation.copy(child.rotation);wire.scale.copy(child.scale);
         carGroup.add(wire);
-
-        // Solid dark underlayer
-        child.material=holoSolid;
-
-        // Outer glow shell
-        var glowMesh=new THREE.Mesh(geo,holoGlow);
-        glowMesh.position.copy(child.position);
-        glowMesh.rotation.copy(child.rotation);
-        glowMesh.scale.copy(child.scale);
-        glowMesh.scale.multiplyScalar(1.02);
-        carGroup.add(glowMesh);
+        // Outer glow
+        var gl=new THREE.Mesh(child.geometry.clone(),holoGlow);
+        gl.position.copy(child.position);gl.rotation.copy(child.rotation);
+        gl.scale.copy(child.scale).multiplyScalar(1.015);
+        carGroup.add(gl);
       }
     });
-    carGroup.add(carModel);
-    carGroup.position.set(3,0,-2);
-    carGroup.rotation.y=-Math.PI/4;
+    carGroup.add(model);
     scene.add(carGroup);
+    carLoaded=true;
   });
 
-  // ── GRID FLOOR ──
-  var gridHelper=new THREE.GridHelper(60,60,0x1a1a1a,0x0a0a0a);
-  gridHelper.position.y=-.01;
-  scene.add(gridHelper);
+  // ── LIGHTING — dramatic, clean ──
+  var key=new THREE.SpotLight(0xE87A00,4,40,Math.PI/5,.5,1);
+  key.position.set(8,10,5);scene.add(key);
+  var fill=new THREE.SpotLight(0xFF8C00,1.5,30,Math.PI/4,.6,1);
+  fill.position.set(-6,5,3);scene.add(fill);
+  var rim=new THREE.PointLight(0xE87A00,2,25);
+  rim.position.set(-4,3,-8);scene.add(rim);
+  var bottom=new THREE.PointLight(0xE87A00,.3,15);
+  bottom.position.set(0,-2,0);scene.add(bottom);
+  scene.add(new THREE.AmbientLight(0x060606));
 
-  // Reflective floor
-  var floorGeo=new THREE.PlaneGeometry(100,100);
-  var floorMat=new THREE.MeshStandardMaterial({color:0x000000,roughness:.85,metalness:.5,transparent:true,opacity:.6});
-  var floor=new THREE.Mesh(floorGeo,floorMat);
-  floor.rotation.x=-Math.PI/2;floor.position.y=-.02;
-  scene.add(floor);
-
-  // ── LIGHTING ──
-  // Key light — dramatic orange spot
-  var keyLight=new THREE.SpotLight(0xE87A00,3,30,Math.PI/6,.4,1);
-  keyLight.position.set(6,8,4);
-  scene.add(keyLight);
-
-  // Fill — cooler, subtle
-  var fillLight=new THREE.PointLight(0xFF8C00,.5,20);
-  fillLight.position.set(-5,3,2);
-  scene.add(fillLight);
-
-  // Rim — from behind
-  var rimLight=new THREE.PointLight(0xE87A00,1,25);
-  rimLight.position.set(-3,2,-6);
-  scene.add(rimLight);
-
-  // Top down wash
-  var topLight=new THREE.DirectionalLight(0xffffff,.05);
-  topLight.position.set(0,10,0);
-  scene.add(topLight);
-
-  // Ambient — very dark
-  scene.add(new THREE.AmbientLight(0x050505));
-
-  // ── STARS ──
-  var stGeo=new THREE.BufferGeometry();
-  var stCount=1200;
-  var stPos=new Float32Array(stCount*3);
-  for(var i=0;i<stCount*3;i++)stPos[i]=THREE.MathUtils.randFloatSpread(300);
-  stGeo.setAttribute('position',new THREE.BufferAttribute(stPos,3));
-  scene.add(new THREE.Points(stGeo,new THREE.PointsMaterial({color:0xffffff,size:.06,sizeAttenuation:true,transparent:true,opacity:.3})));
-
-  // ── ORANGE DUST ──
-  var dGeo=new THREE.BufferGeometry();
-  var dCount=200;
-  var dPos=new Float32Array(dCount*3);
-  var dVel=[];
-  for(var j=0;j<dCount;j++){
-    dPos[j*3]=THREE.MathUtils.randFloatSpread(50);
-    dPos[j*3+1]=Math.random()*15;
-    dPos[j*3+2]=THREE.MathUtils.randFloatSpread(50);
-    dVel.push({x:(Math.random()-.5)*.01,y:Math.random()*.005+.002,z:(Math.random()-.5)*.01});
+  // ── PARTICLES — orbit the car ──
+  var pCount=400;
+  var pGeo=new THREE.BufferGeometry();
+  var pPos=new Float32Array(pCount*3);
+  var pAngles=[];
+  for(var i=0;i<pCount;i++){
+    var radius=3+Math.random()*5;
+    var angle=Math.random()*Math.PI*2;
+    var height=(Math.random()-.5)*4;
+    pPos[i*3]=Math.cos(angle)*radius;
+    pPos[i*3+1]=height;
+    pPos[i*3+2]=Math.sin(angle)*radius;
+    pAngles.push({r:radius,a:angle,h:height,speed:.001+Math.random()*.003});
   }
-  dGeo.setAttribute('position',new THREE.BufferAttribute(dPos,3));
-  var dust=new THREE.Points(dGeo,new THREE.PointsMaterial({color:0xE87A00,size:.04,sizeAttenuation:true,transparent:true,opacity:.4}));
-  scene.add(dust);
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  var pMat=new THREE.PointsMaterial({color:0xE87A00,size:.03,sizeAttenuation:true,transparent:true,opacity:.6});
+  var particles=new THREE.Points(pGeo,pMat);
+  scene.add(particles);
 
-  // ── SCAN BEAM (horizontal light sweep over car) ──
-  var scanGeo=new THREE.PlaneGeometry(12,.02);
-  var scanMat=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:.6,side:THREE.DoubleSide});
-  var scanBeam=new THREE.Mesh(scanGeo,scanMat);
-  scanBeam.position.set(0,0,0);
-  scanBeam.rotation.x=-Math.PI/2;
-  scene.add(scanBeam);
+  // ── SCAN BEAM ──
+  var scanGeo=new THREE.PlaneGeometry(10,.015);
+  var scanMat=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:0,side:THREE.DoubleSide});
+  var scan=new THREE.Mesh(scanGeo,scanMat);
+  scene.add(scan);
+
+  // ── CAMERA KEYFRAMES (scroll-driven) ──
+  // Each keyframe: [camX, camY, camZ, lookX, lookY, lookZ]
+  var keyframes=[
+    [6, 2.5, 8,   0, .5, 0],    // 0% — 3/4 view
+    [8, 1.5, 3,   0, .5, 0],    // 15% — side view
+    [5, 3.5, -2,  0, .8, 0],    // 30% — rear 3/4
+    [-3, 2, -6,   0, .5, 0],    // 45% — rear
+    [-7, 1.5, -1, 0, .5, 0],    // 60% — driver side
+    [-4, 4, 4,    0, 1, 0],     // 70% — top down angle
+    [2, 1, 2.5,   0, .3, 0],    // 80% — low front
+    [0, 1.5, 5,   0, .5, 0],    // 90% — front center
+    [6, 2.5, 8,   0, .5, 0],    // 100% — back to start
+  ];
+
+  function lerpVal(a,b,t){return a+(b-a)*t}
+
+  function getCameraForScroll(scrollPct){
+    var totalFrames=keyframes.length-1;
+    var rawIdx=scrollPct*totalFrames;
+    var idx=Math.floor(rawIdx);
+    var frac=rawIdx-idx;
+    if(idx>=totalFrames){idx=totalFrames-1;frac=1}
+    var a=keyframes[idx],b=keyframes[idx+1]||keyframes[idx];
+    return{
+      cx:lerpVal(a[0],b[0],frac),cy:lerpVal(a[1],b[1],frac),cz:lerpVal(a[2],b[2],frac),
+      lx:lerpVal(a[3],b[3],frac),ly:lerpVal(a[4],b[4],frac),lz:lerpVal(a[5],b[5],frac)
+    };
+  }
 
   // ── SCROLL ──
+  var scrollPct=0;
   function onScroll(){
-    var t=document.documentElement.scrollTop||document.body.scrollTop;
-    if(carGroup.children.length>0){
-      carGroup.rotation.y=-Math.PI/4+t*.0003;
-      carGroup.position.x=3-t*.002;
-      carGroup.position.z=-2-t*.003;
-    }
-    camera.position.z=8-t*.005;
-    camera.position.y=2+t*.0008;
-    camera.position.x=5-t*.002;
-    camera.rotation.y=t*-.0001;
+    var scrollTop=document.documentElement.scrollTop||document.body.scrollTop;
+    var scrollHeight=document.documentElement.scrollHeight-window.innerHeight;
+    scrollPct=scrollHeight>0?scrollTop/scrollHeight:0;
+    var cam=getCameraForScroll(scrollPct);
+    camera.position.set(cam.cx,cam.cy,cam.cz);
+    camera.lookAt(cam.lx,cam.ly,cam.lz);
   }
-  window.addEventListener('scroll',onScroll);onScroll();
+  window.addEventListener('scroll',onScroll);
+
+  // Initial position
+  camera.position.set(6,2.5,8);
+  camera.lookAt(0,.5,0);
 
   // ── RESIZE ──
   window.addEventListener('resize',function(){
@@ -453,32 +444,31 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     requestAnimationFrame(animate);
     var t=clock.getElapsedTime();
 
-    // Car hover
-    if(carGroup.children.length>0){
-      carGroup.position.y=Math.sin(t*.5)*.05;
+    if(carLoaded){
+      // Subtle car hover
+      carGroup.position.y=Math.sin(t*.4)*.03;
+      // Wireframe pulse
+      holoWire.opacity=.15+Math.sin(t*1.5)*.06;
     }
 
-    // Wireframe pulse
-    holoWire.opacity=.2+Math.sin(t*2)*.08;
-
-    // Scan beam sweeps
-    scanBeam.position.z=-6+((t*1.5)%12);
-    scanBeam.position.y=.5+Math.sin(t*.8)*.3;
-    scanMat.opacity=.4+Math.sin(t*3)*.2;
-
-    // Dust drift
-    var pp=dust.geometry.attributes.position.array;
-    for(var i=0;i<dCount;i++){
-      pp[i*3]+=dVel[i].x;
-      pp[i*3+1]+=dVel[i].y;
-      pp[i*3+2]+=dVel[i].z;
-      if(pp[i*3+1]>15){pp[i*3+1]=0;pp[i*3]=THREE.MathUtils.randFloatSpread(50);pp[i*3+2]=THREE.MathUtils.randFloatSpread(50)}
+    // Particles orbit
+    var pp=particles.geometry.attributes.position.array;
+    for(var i=0;i<pCount;i++){
+      pAngles[i].a+=pAngles[i].speed;
+      pp[i*3]=Math.cos(pAngles[i].a)*pAngles[i].r;
+      pp[i*3+1]=pAngles[i].h+Math.sin(t*.5+i)*.1;
+      pp[i*3+2]=Math.sin(pAngles[i].a)*pAngles[i].r;
     }
-    dust.geometry.attributes.position.needsUpdate=true;
+    particles.geometry.attributes.position.needsUpdate=true;
 
-    // Light pulse
-    keyLight.intensity=3+Math.sin(t*1.2)*.5;
-    rimLight.intensity=1+Math.sin(t*1.8)*.3;
+    // Scan beam sweep (every 4 seconds)
+    var scanCycle=(t%4)/4;
+    scan.position.set(0,-1+scanCycle*4,0);
+    scan.rotation.x=-Math.PI/2;
+    scanMat.opacity=scanCycle<.1||scanCycle>.9?0:.35;
+
+    // Light breathing
+    key.intensity=4+Math.sin(t)*.5;
 
     renderer.render(scene,camera);
   }
