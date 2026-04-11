@@ -3,279 +3,263 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drive AI Sales — AI-Powered Lead Response for Dealerships</title>
+<title>Drive AI Sales Inc. — AI-Powered Lead Response for Dealerships</title>
 <meta name="description" content="Drive AI responds to every dealership lead in under 60 seconds. Text, email, voice. 24/7. No new software for your team to learn.">
-<meta property="og:title" content="Drive AI Sales — AI-Powered Lead Response for Dealerships">
-<meta property="og:description" content="78% of buyers purchase from the first dealership to respond. Drive AI makes sure that's you.">
 <link rel="icon" type="image/png" href="logo/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-y:scroll}
+html{scroll-snap-type:y mandatory}
 body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* THREE.JS */
-#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
 /* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:difference}
-.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:#fff;text-decoration:none;display:flex;align-items:center;gap:.5rem}
-.nav-mark span{color:#E87A00;font-weight:400}
-.nav-links{display:flex;gap:2.5rem;list-style:none}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;transition:color .3s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);pointer-events:none}
+.nav>*{pointer-events:auto}
+.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:#fff;text-decoration:none}
+.nav-mark span{color:#E87A00}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);text-decoration:none;transition:color .3s}
 .nav-links a:hover{color:#E87A00}
-.nav-cta{background:#E87A00!important;color:#000!important;padding:.5rem 1.2rem}
+.nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem}
 
-/* SECTIONS */
-.s{min-height:100vh;scroll-snap-align:start;position:relative;z-index:1;display:flex;align-items:flex-end;overflow:hidden}
-.s--center{align-items:center}
-.s-inner{width:100%;max-width:1400px;margin:0 auto;padding:4rem}
+/* SCENE SECTIONS */
+.scene{min-height:100vh;scroll-snap-align:start;position:relative;display:flex;align-items:center;overflow:hidden}
+.scene-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.215,.61,.355,1),opacity .8s;will-change:transform}
+.scene-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.6) 100%)}
+.scene-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:6rem 4rem;width:100%}
+
+/* Parallax on scroll */
+.scene.in-view .scene-bg{transform:scale(1.05)}
 
 /* TYPOGRAPHY */
-.overline{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:1rem}
-.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,7rem);line-height:.95;letter-spacing:2px;color:#fff}
+.overline{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6.5rem);line-height:.95;letter-spacing:2px}
 .h1 em{font-style:normal;color:#E87A00}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4.5rem);line-height:1;letter-spacing:1px;color:#fff}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.8rem);line-height:1;letter-spacing:1px}
 .h2 em{font-style:normal;color:#E87A00}
-.body-text{font-size:.95rem;font-weight:300;line-height:1.75;color:rgba(255,255,255,.45);max-width:32rem}
-.body-text strong{color:rgba(255,255,255,.7);font-weight:500}
-
-/* HERO */
-.hero-content{padding-bottom:6rem}
-.hero-sub{margin-top:1.5rem}
-.hero-bar{margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
-.hero-cta{display:flex;gap:1rem}
-.scroll-hint{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:1rem}
-.scroll-line{width:40px;height:1px;background:rgba(255,255,255,.15);position:relative;overflow:hidden}
-.scroll-line::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:#E87A00;animation:scrollPulse 2.5s ease infinite}
-@keyframes scrollPulse{0%{left:-100%}50%{left:0}100%{left:100%}}
+.h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px;margin-bottom:.5rem}
+.body{font-size:.9rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.5);max-width:28rem}
+.body strong{color:rgba(255,255,255,.75);font-weight:500}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;transition:all .3s cubic-bezier(.215,.61,.355,1)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.6rem;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;transition:all .3s}
 .btn-fill{background:#E87A00;color:#000}
-.btn-fill:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.3)}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+.btn-fill:hover{background:#FF8C00;box-shadow:0 0 40px rgba(232,122,0,.3)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1)}
 .btn-ghost:hover{border-color:#E87A00;color:#E87A00}
 
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
-.stat{background:#000;padding:3rem 2rem;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#E87A00;line-height:1}
-.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:.3rem}
+/* SCENE CONTENT LAYOUTS */
+.scene-left{max-width:50%}
+.scene-center{text-align:center;max-width:700px;margin:0 auto}
+.scene-right{margin-left:auto;max-width:50%;text-align:right}
 
-/* SPLIT */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:0;width:100%;max-width:none;padding:0}
-.split-col{padding:6rem 4rem;display:flex;flex-direction:column;justify-content:center}
-.split-col--border{border-left:1px solid rgba(255,255,255,.06)}
+/* STATS ROW */
+.stats-row{display:flex;gap:3rem;margin-top:2rem}
+.stat-item .stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#E87A00;line-height:1}
+.stat-item .stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25)}
 
-/* CARDS */
-.card-stack{display:flex;flex-direction:column}
-.card{padding:1.8rem 2rem;border-bottom:1px solid rgba(255,255,255,.04);cursor:default;transition:all .3s;position:relative}
-.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .3s}
-.card:hover{background:rgba(232,122,0,.02)}
-.card:hover::before{background:#E87A00}
-.card-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;color:rgba(255,255,255,.8);margin-bottom:.3rem}
-.card-desc{font-size:.78rem;color:rgba(255,255,255,.3);line-height:1.6;font-weight:300}
+/* FEATURE PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+.pill{background:rgba(232,122,0,.1);border:1px solid rgba(232,122,0,.2);color:#E87A00;padding:.4rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
 
-/* STEPS */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.04)}
-.step{background:#000;padding:2.5rem 2rem;position:relative}
-.step::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.04);transition:background .4s}
-.step:hover::before{background:#E87A00}
-.step-num{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:1rem}
-.step-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;letter-spacing:1px;margin-bottom:.4rem}
-.step-desc{font-size:.78rem;color:rgba(255,255,255,.3);line-height:1.6;font-weight:300}
+/* RESULT ROWS */
+.result-rows{margin-top:1.5rem}
+.rr{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.rr:last-child{border-bottom:none}
+.rr-lbl{font-size:.8rem;color:rgba(255,255,255,.35)}
+.rr-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#E87A00}
 
-/* FEATURES */
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.04)}
-.feat{background:#000;padding:2rem;transition:background .3s}
-.feat:hover{background:rgba(255,255,255,.02)}
-.feat-icon{font-size:1.2rem;margin-bottom:.8rem;opacity:.6}
-.feat-name{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem}
-.feat-desc{font-size:.75rem;color:rgba(255,255,255,.25);line-height:1.55;font-weight:300}
+/* PARTICLE CANVAS OVERLAY */
+#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 
-/* PROOF */
-.proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
-.quote{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);padding:2.5rem;position:relative}
-.quote::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:#E87A00}
-.quote-text{font-size:1rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:1rem}
-.quote-attr{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:rgba(255,255,255,.2);font-weight:600;letter-spacing:2px;text-transform:uppercase}
-.results{background:rgba(232,122,0,.03);border:1px solid rgba(232,122,0,.1);padding:2.5rem}
-.results-title{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:3px;color:#E87A00;text-transform:uppercase;margin-bottom:1.2rem}
-.result-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.result-row:last-child{border-bottom:none}
-.result-lbl{font-size:.8rem;color:rgba(255,255,255,.35)}
-.result-val{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#E87A00}
+/* SCROLL PROGRESS */
+.progress{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:.6rem}
+.progress-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s;cursor:pointer}
+.progress-dot.active{background:#E87A00;box-shadow:0 0 8px rgba(232,122,0,.5)}
 
-/* CTA */
-.cta-panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-top:2px solid #E87A00;padding:4rem;text-align:center;max-width:700px;margin:0 auto;position:relative;overflow:hidden}
-.cta-panel::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(232,122,0,.05),transparent 70%);pointer-events:none}
-.cta-score{font-family:'Bebas Neue',sans-serif;font-size:4rem;color:#E87A00;line-height:1}
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(2rem);transition:opacity .8s cubic-bezier(.215,.61,.355,1),transform .8s cubic-bezier(.215,.61,.355,1)}
+.reveal.show{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.15s}
+.reveal-d2{transition-delay:.3s}
+.reveal-d3{transition-delay:.45s}
+.reveal-d4{transition-delay:.6s}
 
 /* FOOTER */
-.footer{border-top:1px solid rgba(255,255,255,.06);position:relative;z-index:1}
-.footer-inner{max-width:1400px;margin:0 auto;padding:4rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
-.footer-brand img{height:48px;width:auto;margin-bottom:1rem}
-.footer-brand p{font-size:.75rem;color:rgba(255,255,255,.2);line-height:1.6}
-.footer-col-title{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:3px;color:#E87A00;text-transform:uppercase;margin-bottom:1rem}
-.footer-links{list-style:none}
-.footer-links a{font-size:.78rem;color:rgba(255,255,255,.2);text-decoration:none;display:block;padding:.3rem 0;transition:color .2s}
-.footer-links a:hover{color:rgba(255,255,255,.6)}
-.footer-bottom{max-width:1400px;margin:0 auto;padding:1.5rem 4rem;border-top:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between}
+.footer{border-top:1px solid rgba(255,255,255,.06);position:relative;z-index:2;background:#000}
+.footer-inner{max-width:1200px;margin:0 auto;padding:3rem 4rem;display:flex;justify-content:space-between;align-items:center}
 .footer-copy{font-size:.6rem;color:rgba(255,255,255,.15)}
-
-/* WAYPOINTS */
-.wp{opacity:0;transform:translateY(1.5rem);transition:opacity .8s cubic-bezier(.215,.61,.355,1),transform .8s cubic-bezier(.215,.61,.355,1)}
-.wp.v{opacity:1;transform:translateY(0)}
-.wp-d1{transition-delay:.1s}.wp-d2{transition-delay:.2s}.wp-d3{transition-delay:.3s}.wp-d4{transition-delay:.4s}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:.6rem;color:rgba(255,255,255,.15);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#E87A00}
 
 /* RESPONSIVE */
-@media(max-width:960px){
-  .split{grid-template-columns:1fr}.split-col--border{border-left:none;border-top:1px solid rgba(255,255,255,.06)}
-  .steps,.feat-grid{grid-template-columns:1fr}
-  .proof-grid{grid-template-columns:1fr}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .footer-inner{grid-template-columns:1fr 1fr}
-}
-@media(max-width:600px){
-  .nav{padding:1.5rem 2rem}.nav-links .hide-m{display:none}
-  .s-inner,.split-col{padding:3rem 2rem}
-  .hero-bar{flex-direction:column;align-items:flex-start;gap:1.5rem}
-  .scroll-hint{display:none}
-  .footer-inner{grid-template-columns:1fr}
+@media(max-width:768px){
+  .nav{padding:1rem 1.5rem}
+  .nav-links .hide-m{display:none}
+  .scene-content{padding:4rem 2rem}
+  .scene-left,.scene-right{max-width:100%;text-align:left;margin:0}
+  .stats-row{flex-wrap:wrap;gap:1.5rem}
+  .progress{display:none}
+  .footer-inner{flex-direction:column;gap:1rem;text-align:center}
 }
 </style>
 </head>
 <body>
 
-<canvas id="bg"></canvas>
+<!-- PARTICLE OVERLAY -->
+<canvas id="particles"></canvas>
+
+<!-- SCROLL PROGRESS -->
+<div class="progress" id="progressDots"></div>
 
 <!-- NAV -->
 <nav class="nav">
   <a href="/" class="nav-mark">DRIVE <span>AI</span> SALES</a>
   <ul class="nav-links">
-    <li><a href="#problem" class="hide-m">Problem</a></li>
-    <li><a href="#solution" class="hide-m">Solution</a></li>
-    <li><a href="#results" class="hide-m">Results</a></li>
+    <li><a href="#scene-3" class="hide-m">How It Works</a></li>
+    <li><a href="#scene-6" class="hide-m">Results</a></li>
     <li><a href="pricing.html" class="hide-m">Pricing</a></li>
     <li><a href="diagnostic.html" class="nav-cta">Free Diagnostic</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section class="s">
-  <div class="s-inner hero-content">
-    <div class="overline wp">AI-Powered Sales Intelligence</div>
-    <h1 class="h1 wp wp-d1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
-    <p class="body-text hero-sub wp wp-d2">78% of buyers purchase from the first dealership to respond. The average dealer takes 47 minutes. Drive AI responds in under 60 seconds &mdash; text, email, voice &mdash; 24 hours a day.</p>
-    <div class="hero-bar wp wp-d3">
-      <div class="hero-cta">
+<!-- SCENE 1: HERO — Car materializing -->
+<section class="scene" id="scene-0">
+  <div class="scene-bg" style="background-image:url(scenes/01-hero.jpg)"></div>
+  <div class="scene-overlay"></div>
+  <div class="scene-content">
+    <div class="scene-left">
+      <div class="overline reveal">Drive AI Sales Inc.</div>
+      <h1 class="h1 reveal reveal-d1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
+      <p class="body reveal reveal-d2">78% of buyers purchase from the first dealership to respond. The average dealer takes 47 minutes. We respond in under 60 seconds.</p>
+      <div style="display:flex;gap:1rem;margin-top:2rem" class="reveal reveal-d3">
         <a href="diagnostic.html" class="btn btn-fill">Take the Free Diagnostic &rarr;</a>
-        <a href="#solution" class="btn btn-ghost">How It Works</a>
-      </div>
-      <div class="scroll-hint"><div class="scroll-line"></div>Scroll to explore</div>
-    </div>
-  </div>
-</section>
-
-<!-- STATS -->
-<section class="s s--center" style="min-height:auto">
-  <div style="width:100%">
-    <div class="stats">
-      <div class="stat wp"><div class="stat-val">&lt;60s</div><div class="stat-lbl">Lead Response</div></div>
-      <div class="stat wp wp-d1"><div class="stat-val">24/7</div><div class="stat-lbl">No Off Hours</div></div>
-      <div class="stat wp wp-d2"><div class="stat-val">68%</div><div class="stat-lbl">Show Rate</div></div>
-      <div class="stat wp wp-d3"><div class="stat-val">0</div><div class="stat-lbl">New Tools to Learn</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- PROBLEM -->
-<section class="s s--center" id="problem">
-  <div class="split">
-    <div class="split-col">
-      <div class="overline wp">The Problem</div>
-      <h2 class="h2 wp wp-d1">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</h2>
-      <p class="body-text wp wp-d2" style="margin-top:1.5rem">The average dealership loses <strong>$15,000&ndash;$45,000 per month</strong> to slow response, inconsistent follow-up, and missed appointments.</p>
-    </div>
-    <div class="split-col split-col--border">
-      <div class="card-stack wp wp-d2">
-        <div class="card"><div class="card-title">Leads Die After Hours</div><div class="card-desc">62% of leads come in after your team goes home. They sit in the CRM until morning. By morning, they're someone else's customer.</div></div>
-        <div class="card"><div class="card-title">Follow-Up Falls Apart</div><div class="card-desc">80% of sales require 5+ follow-ups. Most salespeople give up after 2. Not because they're lazy &mdash; because they're juggling 40 other things.</div></div>
-        <div class="card"><div class="card-title">Appointments Don't Show</div><div class="card-desc">Industry average show rate: 40-50%. Every no-show is a booked deal that was prepped for and lost.</div></div>
-        <div class="card"><div class="card-title">Scaling Means Hiring</div><div class="card-desc">If growth requires more headcount, you don't have a system. You have a headcount problem. Headcount doesn't scale.</div></div>
+        <a href="#scene-2" class="btn btn-ghost">How It Works</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SOLUTION -->
-<section class="s s--center" id="solution">
-  <div class="s-inner">
-    <div style="text-align:center;margin-bottom:3rem">
-      <div class="overline wp">The Solution</div>
-      <h2 class="h2 wp wp-d1">An Engine That Works<br>While Your Team <em>Sleeps</em></h2>
-      <p class="body-text wp wp-d2" style="margin:1rem auto 0;text-align:center">Drive AI plugs into your existing CRM and handles everything between the lead and the handshake.</p>
-    </div>
-    <div class="steps wp wp-d3">
-      <div class="step"><div class="step-num">Step 01</div><div class="step-title">We Plug In</div><div class="step-desc">Connect to CDK, DealerTrack, VinSolutions &mdash; whatever you run. Takes less than a day. No migration, no disruption.</div></div>
-      <div class="step"><div class="step-num">Step 02</div><div class="step-title">AI Takes Point</div><div class="step-desc">Every lead gets a response in under 60 seconds. Text, email, voice. The AI qualifies, follows up, books appointments, re-engages no-shows.</div></div>
-      <div class="step"><div class="step-num">Step 03</div><div class="step-title">Your Team Closes</div><div class="step-desc">Salespeople get warm, qualified appointments on their calendar with full context. They sell cars. The AI handles everything else.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="s s--center" id="features">
-  <div class="s-inner">
-    <div class="overline wp">Capabilities</div>
-    <h2 class="h2 wp wp-d1">Built for the Floor,<br>Not the Boardroom</h2>
-    <div class="feat-grid wp wp-d2" style="margin-top:3rem">
-      <div class="feat"><div class="feat-icon">&#9889;</div><div class="feat-name">Instant Lead Response</div><div class="feat-desc">Every lead gets a personalized response in under 60 seconds, 24/7. Text, email, and voice.</div></div>
-      <div class="feat"><div class="feat-icon">&#128197;</div><div class="feat-name">Appointment Booking</div><div class="feat-desc">AI books directly into your calendar, sends confirmations, handles rescheduling.</div></div>
-      <div class="feat"><div class="feat-icon">&#128257;</div><div class="feat-name">7-Touch Follow-Up</div><div class="feat-desc">Structured cadence across text, email, and voice over 30 days. AI adjusts timing based on engagement.</div></div>
-      <div class="feat"><div class="feat-icon">&#128276;</div><div class="feat-name">Show Rate Engine</div><div class="feat-desc">Automated confirmations, day-of reminders, no-show re-engagement. 65%+ show rates.</div></div>
-      <div class="feat"><div class="feat-icon">&#128260;</div><div class="feat-name">CRM Integration</div><div class="feat-desc">CDK, DealerTrack, VinSolutions and more. All activity logged. No duplicate entry.</div></div>
-      <div class="feat"><div class="feat-icon">&#128274;</div><div class="feat-name">Zero Adoption</div><div class="feat-desc">Your team doesn't log in, learn software, or change anything. Invisible until the results show up.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- PROOF -->
-<section class="s s--center" id="results">
-  <div class="s-inner">
-    <div class="overline wp">Results</div>
-    <h2 class="h2 wp wp-d1">The Numbers Speak <em>Dealer.</em></h2>
-    <div class="proof-grid">
-      <div class="wp wp-d1">
-        <div class="quote"><p class="quote-text">"I stopped checking the CRM every hour because I finally trusted something was handling it. We picked up 11 extra deals in the first month without adding a single person."</p><p class="quote-attr">General Manager &mdash; Mid-Size Franchise Dealer</p></div>
-        <div class="quote" style="margin-top:1px"><p class="quote-text">"My salespeople didn't even know we installed it for the first two weeks. They just noticed their calendars were fuller."</p><p class="quote-attr">Dealer Principal &mdash; Multi-Rooftop Group</p></div>
-      </div>
-      <div class="wp wp-d2">
-        <div class="results">
-          <div class="results-title">30-Day Pilot Results</div>
-          <div class="result-row"><span class="result-lbl">Lead Response Time</span><span class="result-val">4hrs &rarr; 47s</span></div>
-          <div class="result-row"><span class="result-lbl">Appointment Show Rate</span><span class="result-val">41% &rarr; 68%</span></div>
-          <div class="result-row"><span class="result-lbl">Additional Deals / Month</span><span class="result-val">+11</span></div>
-          <div class="result-row"><span class="result-lbl">Incremental Gross Profit</span><span class="result-val">+$33K</span></div>
-          <div class="result-row"><span class="result-lbl">Staff Added</span><span class="result-val">0</span></div>
-        </div>
+<!-- SCENE 2: EXTERIOR — Full car, neural network -->
+<section class="scene" id="scene-1">
+  <div class="scene-bg" style="background-image:url(scenes/02-exterior.jpg)"></div>
+  <div class="scene-overlay"></div>
+  <div class="scene-content">
+    <div class="scene-right">
+      <div class="overline reveal">The Problem</div>
+      <h2 class="h2 reveal reveal-d1">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</h2>
+      <p class="body reveal reveal-d2" style="margin-left:auto">The average dealership loses <strong>$15,000&ndash;$45,000/month</strong> to slow response, inconsistent follow-up, and missed appointments.</p>
+      <div class="stats-row reveal reveal-d3">
+        <div class="stat-item"><div class="stat-val">47min</div><div class="stat-lbl">Avg Response</div></div>
+        <div class="stat-item"><div class="stat-val">40%</div><div class="stat-lbl">Show Rate</div></div>
+        <div class="stat-item"><div class="stat-val">2</div><div class="stat-lbl">Follow-ups</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="s s--center">
-  <div class="s-inner">
-    <div class="cta-panel wp">
-      <div class="overline">Free Assessment</div>
-      <h2 class="h2">How Much Are You<br>Leaving on the Table?</h2>
-      <p class="body-text" style="margin:1rem auto;text-align:center;max-width:28rem">7 questions. 2 minutes. A personalized score and dollar estimate of your store's revenue leaks.</p>
-      <div style="margin-top:2rem"><a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a></div>
-      <p style="font-size:.7rem;color:rgba(255,255,255,.2);margin-top:1rem">Or skip ahead: <a href="discovery.html" style="color:#E87A00;text-decoration:none">Book a discovery call &rarr;</a></p>
+<!-- SCENE 3: EXPLOSION — Car shatters, transition -->
+<section class="scene" id="scene-2">
+  <div class="scene-bg" style="background-image:url(scenes/03-explosion.jpg)"></div>
+  <div class="scene-overlay" style="background:linear-gradient(to right,rgba(0,0,0,.75),rgba(0,0,0,.3))"></div>
+  <div class="scene-content">
+    <div class="scene-left">
+      <div class="overline reveal">The Solution</div>
+      <h2 class="h2 reveal reveal-d1">We Tear the Old<br>System <em>Apart.</em></h2>
+      <p class="body reveal reveal-d2">Drive AI doesn't patch your process. It replaces the broken parts with an engine that never sleeps, never forgets, and never calls in sick.</p>
+      <div class="pills reveal reveal-d3">
+        <div class="pill">Instant Response</div>
+        <div class="pill">24/7 Coverage</div>
+        <div class="pill">Zero Adoption</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE 4: ENGINE — Under the hood -->
+<section class="scene" id="scene-3">
+  <div class="scene-bg" style="background-image:url(scenes/04-engine.jpg)"></div>
+  <div class="scene-overlay" style="background:linear-gradient(to left,rgba(0,0,0,.8),rgba(0,0,0,.2))"></div>
+  <div class="scene-content">
+    <div class="scene-right">
+      <div class="overline reveal">Under the Hood</div>
+      <h2 class="h2 reveal reveal-d1">We <em>Plug In</em> to<br>Your CRM</h2>
+      <p class="body reveal reveal-d2" style="margin-left:auto">CDK, DealerTrack, VinSolutions &mdash; whatever you run. Drive AI connects in under a day. No migration. No disruption. No downtime.</p>
+      <p class="body reveal reveal-d3" style="margin-left:auto;margin-top:1rem;color:rgba(255,255,255,.3)">Your team doesn't learn new software. They don't even know it's there.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE 5: DRIVETRAIN — AI takes point -->
+<section class="scene" id="scene-4">
+  <div class="scene-bg" style="background-image:url(scenes/05-drivetrain.jpg)"></div>
+  <div class="scene-overlay"></div>
+  <div class="scene-content">
+    <div class="scene-left">
+      <div class="overline reveal">The Drivetrain</div>
+      <h2 class="h2 reveal reveal-d1"><em>AI Takes Point.</em><br>Every Lead. Every Time.</h2>
+      <p class="body reveal reveal-d2">Every inbound lead gets a response in under 60 seconds. Text, email, voice. The AI qualifies, follows up, books appointments, and re-engages no-shows &mdash; all with natural, human conversation.</p>
+      <div class="stats-row reveal reveal-d3">
+        <div class="stat-item"><div class="stat-val">&lt;60s</div><div class="stat-lbl">Response Time</div></div>
+        <div class="stat-item"><div class="stat-val">7+</div><div class="stat-lbl">Touch Points</div></div>
+        <div class="stat-item"><div class="stat-val">30</div><div class="stat-lbl">Day Cadence</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE 6: CPU — The AI brain -->
+<section class="scene" id="scene-5">
+  <div class="scene-bg" style="background-image:url(scenes/06-cpu.jpg)"></div>
+  <div class="scene-overlay" style="background:linear-gradient(to left,rgba(0,0,0,.75),rgba(0,0,0,.25))"></div>
+  <div class="scene-content">
+    <div class="scene-right">
+      <div class="overline reveal">The Intelligence</div>
+      <h2 class="h2 reveal reveal-d1">The <em>Brain</em> Behind<br>Every Decision</h2>
+      <p class="body reveal reveal-d2" style="margin-left:auto">Real-time lead scoring. Appointment optimization. No-show prediction. The AI learns your store's patterns and gets smarter every week.</p>
+      <div class="result-rows reveal reveal-d3">
+        <div class="rr"><span class="rr-lbl">Lead Response</span><span class="rr-val">4hrs &rarr; 47s</span></div>
+        <div class="rr"><span class="rr-lbl">Show Rate</span><span class="rr-val">41% &rarr; 68%</span></div>
+        <div class="rr"><span class="rr-lbl">Deals / Month</span><span class="rr-val">+11</span></div>
+        <div class="rr"><span class="rr-lbl">Gross Profit</span><span class="rr-val">+$33K</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE 7: COCKPIT — Your team closes -->
+<section class="scene" id="scene-6">
+  <div class="scene-bg" style="background-image:url(scenes/07-cockpit.jpg)"></div>
+  <div class="scene-overlay" style="background:linear-gradient(135deg,rgba(0,0,0,.6),rgba(0,0,0,.3))"></div>
+  <div class="scene-content">
+    <div class="scene-left">
+      <div class="overline reveal">The Cockpit</div>
+      <h2 class="h2 reveal reveal-d1">Your Team <em>Closes.</em><br>The AI Handles<br>Everything Else.</h2>
+      <p class="body reveal reveal-d2">Salespeople get warm, qualified appointments on their calendar with full context loaded. They focus on what they're best at: selling cars.</p>
+      <div class="pills reveal reveal-d3">
+        <div class="pill">Appointment Booking</div>
+        <div class="pill">Show Rate Engine</div>
+        <div class="pill">CRM Sync</div>
+        <div class="pill">No-Show Recovery</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE 8: FINAL — Reformed, CTA -->
+<section class="scene" id="scene-7">
+  <div class="scene-bg" style="background-image:url(scenes/08-final.jpg)"></div>
+  <div class="scene-overlay" style="background:radial-gradient(ellipse at center,rgba(0,0,0,.3),rgba(0,0,0,.7))"></div>
+  <div class="scene-content">
+    <div class="scene-center">
+      <div class="overline reveal">Free Assessment</div>
+      <h2 class="h2 reveal reveal-d1">How Much Revenue Is<br>Your Store <em>Leaving<br>on the Table?</em></h2>
+      <p class="body reveal reveal-d2" style="margin:1rem auto;text-align:center;max-width:24rem">7 questions. 2 minutes. A personalized score and dollar estimate of your dealership's revenue leaks.</p>
+      <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap" class="reveal reveal-d3">
+        <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a>
+        <a href="discovery.html" class="btn btn-ghost">Book a Discovery Call</a>
+      </div>
     </div>
   </div>
 </section>
@@ -283,191 +267,90 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand"><div class="nav-mark" style="font-size:1.8rem;margin-bottom:1rem">DRIVE <span>AI</span> SALES</div><p>AI-powered sales intelligence for car dealerships. Built by a dealer, for dealers.</p></div>
-    <div><div class="footer-col-title">Product</div><ul class="footer-links"><li><a href="diagnostic.html">Free Diagnostic</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="discovery.html">Book a Call</a></li></ul></div>
-    <div><div class="footer-col-title">Company</div><ul class="footer-links"><li><a href="#">About</a></li><li><a href="#">Case Studies</a></li><li><a href="#">Contact</a></li></ul></div>
-    <div><div class="footer-col-title">Connect</div><ul class="footer-links"><li><a href="#">LinkedIn</a></li><li><a href="mailto:brandon@driveaisales.com">Email</a></li><li><a href="#">Edmonton, AB</a></li></ul></div>
+    <div class="footer-copy">&copy; 2026 Drive AI Sales Inc. &nbsp;&middot;&nbsp; Edmonton, AB</div>
+    <div class="footer-links">
+      <a href="diagnostic.html">Diagnostic</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="discovery.html">Book a Call</a>
+    </div>
   </div>
-  <div class="footer-bottom"><div class="footer-copy">&copy; 2026 Drive AI Sales Inc.</div><div class="footer-copy"><a href="#" style="color:inherit;text-decoration:none">Privacy</a> &nbsp;&middot;&nbsp; <a href="#" style="color:inherit;text-decoration:none">Terms</a></div></div>
 </footer>
 
 <script>
-// ─── WAYPOINT REVEAL ───
+// ─── SCROLL PROGRESS DOTS ───
 (function(){
-  var els=document.querySelectorAll('.wp');
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}});
-  },{threshold:.1,rootMargin:'0px 0px -30px 0px'});
-  els.forEach(function(el){obs.observe(el)});
+  var scenes=document.querySelectorAll('.scene');
+  var container=document.getElementById('progressDots');
+  scenes.forEach(function(_,i){
+    var dot=document.createElement('div');
+    dot.className='progress-dot';
+    dot.addEventListener('click',function(){scenes[i].scrollIntoView({behavior:'smooth'})});
+    container.appendChild(dot);
+  });
 })();
 
-// ─── THREE.JS — HOLOGRAPHIC CAR SHOWCASE ───
+// ─── INTERSECTION OBSERVER — reveals + parallax + progress ───
 (function(){
-  var scene=new THREE.Scene();
-  var camera=new THREE.PerspectiveCamera(35,window.innerWidth/window.innerHeight,.1,500);
-  var renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#bg'),antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.8;
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  renderer.setClearColor(0x000000,1);
+  var scenes=document.querySelectorAll('.scene');
+  var dots=document.querySelectorAll('.progress-dot');
 
-  // Materials
-  var holoBody=new THREE.MeshPhysicalMaterial({color:0x111111,roughness:.15,metalness:1,transparent:true,opacity:.6,clearcoat:1,clearcoatRoughness:.1});
-  var holoWire=new THREE.MeshBasicMaterial({color:0xE87A00,wireframe:true,transparent:true,opacity:.18});
-  var holoGlow=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:.04,side:THREE.BackSide});
-
-  // GLTF Loader (no DRACO needed)
-  var gltfLoader=new THREE.GLTFLoader();
-  var carGroup=new THREE.Group();
-  var carLoaded=false;
-
-  gltfLoader.load('car.glb',function(gltf){
-    var model=gltf.scene;
-    model.traverse(function(child){
-      if(child.isMesh){
-        // Dark reflective body
-        child.material=holoBody.clone();
-        // Wireframe overlay
-        var wire=new THREE.Mesh(child.geometry.clone(),holoWire);
-        wire.position.copy(child.position);wire.rotation.copy(child.rotation);wire.scale.copy(child.scale);
-        carGroup.add(wire);
-        // Outer glow
-        var gl=new THREE.Mesh(child.geometry.clone(),holoGlow);
-        gl.position.copy(child.position);gl.rotation.copy(child.rotation);
-        gl.scale.copy(child.scale).multiplyScalar(1.015);
-        carGroup.add(gl);
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in-view');
+        // Reveal children
+        e.target.querySelectorAll('.reveal').forEach(function(r){r.classList.add('show')});
+        // Update progress dots
+        var idx=Array.from(scenes).indexOf(e.target);
+        dots.forEach(function(d,i){d.classList.toggle('active',i===idx)});
       }
     });
-    carGroup.add(model);
-    scene.add(carGroup);
-    carLoaded=true;
-  });
+  },{threshold:.3});
 
-  // ── LIGHTING — dramatic, clean ──
-  var key=new THREE.SpotLight(0xE87A00,4,40,Math.PI/5,.5,1);
-  key.position.set(8,10,5);scene.add(key);
-  var fill=new THREE.SpotLight(0xFF8C00,1.5,30,Math.PI/4,.6,1);
-  fill.position.set(-6,5,3);scene.add(fill);
-  var rim=new THREE.PointLight(0xE87A00,2,25);
-  rim.position.set(-4,3,-8);scene.add(rim);
-  var bottom=new THREE.PointLight(0xE87A00,.3,15);
-  bottom.position.set(0,-2,0);scene.add(bottom);
-  scene.add(new THREE.AmbientLight(0x060606));
+  scenes.forEach(function(s){obs.observe(s)});
+})();
 
-  // ── PARTICLES — orbit the car ──
-  var pCount=400;
-  var pGeo=new THREE.BufferGeometry();
-  var pPos=new Float32Array(pCount*3);
-  var pAngles=[];
-  for(var i=0;i<pCount;i++){
-    var radius=3+Math.random()*5;
-    var angle=Math.random()*Math.PI*2;
-    var height=(Math.random()-.5)*4;
-    pPos[i*3]=Math.cos(angle)*radius;
-    pPos[i*3+1]=height;
-    pPos[i*3+2]=Math.sin(angle)*radius;
-    pAngles.push({r:radius,a:angle,h:height,speed:.001+Math.random()*.003});
+// ─── PARTICLE OVERLAY ───
+(function(){
+  var c=document.getElementById('particles');
+  var ctx=c.getContext('2d');
+  var w,h;
+  var particles=[];
+  var COUNT=80;
+
+  function resize(){
+    w=c.width=window.innerWidth;
+    h=c.height=window.innerHeight;
   }
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-  var pMat=new THREE.PointsMaterial({color:0xE87A00,size:.03,sizeAttenuation:true,transparent:true,opacity:.6});
-  var particles=new THREE.Points(pGeo,pMat);
-  scene.add(particles);
+  resize();
+  window.addEventListener('resize',resize);
 
-  // ── SCAN BEAM ──
-  var scanGeo=new THREE.PlaneGeometry(10,.015);
-  var scanMat=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:0,side:THREE.DoubleSide});
-  var scan=new THREE.Mesh(scanGeo,scanMat);
-  scene.add(scan);
-
-  // ── CAMERA KEYFRAMES (scroll-driven) ──
-  // Each keyframe: [camX, camY, camZ, lookX, lookY, lookZ]
-  var keyframes=[
-    [6, 2.5, 8,   0, .5, 0],    // 0% — 3/4 view
-    [8, 1.5, 3,   0, .5, 0],    // 15% — side view
-    [5, 3.5, -2,  0, .8, 0],    // 30% — rear 3/4
-    [-3, 2, -6,   0, .5, 0],    // 45% — rear
-    [-7, 1.5, -1, 0, .5, 0],    // 60% — driver side
-    [-4, 4, 4,    0, 1, 0],     // 70% — top down angle
-    [2, 1, 2.5,   0, .3, 0],    // 80% — low front
-    [0, 1.5, 5,   0, .5, 0],    // 90% — front center
-    [6, 2.5, 8,   0, .5, 0],    // 100% — back to start
-  ];
-
-  function lerpVal(a,b,t){return a+(b-a)*t}
-
-  function getCameraForScroll(scrollPct){
-    var totalFrames=keyframes.length-1;
-    var rawIdx=scrollPct*totalFrames;
-    var idx=Math.floor(rawIdx);
-    var frac=rawIdx-idx;
-    if(idx>=totalFrames){idx=totalFrames-1;frac=1}
-    var a=keyframes[idx],b=keyframes[idx+1]||keyframes[idx];
-    return{
-      cx:lerpVal(a[0],b[0],frac),cy:lerpVal(a[1],b[1],frac),cz:lerpVal(a[2],b[2],frac),
-      lx:lerpVal(a[3],b[3],frac),ly:lerpVal(a[4],b[4],frac),lz:lerpVal(a[5],b[5],frac)
-    };
+  for(var i=0;i<COUNT;i++){
+    particles.push({
+      x:Math.random()*w,
+      y:Math.random()*h,
+      r:Math.random()*1.5+.5,
+      dx:(Math.random()-.5)*.3,
+      dy:(Math.random()-.5)*.3-.1,
+      o:Math.random()*.3+.1
+    });
   }
 
-  // ── SCROLL ──
-  var scrollPct=0;
-  function onScroll(){
-    var scrollTop=document.documentElement.scrollTop||document.body.scrollTop;
-    var scrollHeight=document.documentElement.scrollHeight-window.innerHeight;
-    scrollPct=scrollHeight>0?scrollTop/scrollHeight:0;
-    var cam=getCameraForScroll(scrollPct);
-    camera.position.set(cam.cx,cam.cy,cam.cz);
-    camera.lookAt(cam.lx,cam.ly,cam.lz);
-  }
-  window.addEventListener('scroll',onScroll);
-
-  // Initial position
-  camera.position.set(6,2.5,8);
-  camera.lookAt(0,.5,0);
-
-  // ── RESIZE ──
-  window.addEventListener('resize',function(){
-    camera.aspect=window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
-  });
-
-  // ── ANIMATE ──
-  var clock=new THREE.Clock();
-  function animate(){
-    requestAnimationFrame(animate);
-    var t=clock.getElapsedTime();
-
-    if(carLoaded){
-      // Subtle car hover
-      carGroup.position.y=Math.sin(t*.4)*.03;
-      // Wireframe pulse
-      holoWire.opacity=.15+Math.sin(t*1.5)*.06;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<COUNT;i++){
+      var p=particles[i];
+      p.x+=p.dx;p.y+=p.dy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;
+      if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(232,122,0,'+p.o+')';
+      ctx.fill();
     }
-
-    // Particles orbit
-    var pp=particles.geometry.attributes.position.array;
-    for(var i=0;i<pCount;i++){
-      pAngles[i].a+=pAngles[i].speed;
-      pp[i*3]=Math.cos(pAngles[i].a)*pAngles[i].r;
-      pp[i*3+1]=pAngles[i].h+Math.sin(t*.5+i)*.1;
-      pp[i*3+2]=Math.sin(pAngles[i].a)*pAngles[i].r;
-    }
-    particles.geometry.attributes.position.needsUpdate=true;
-
-    // Scan beam sweep (every 4 seconds)
-    var scanCycle=(t%4)/4;
-    scan.position.set(0,-1+scanCycle*4,0);
-    scan.rotation.x=-Math.PI/2;
-    scanMat.opacity=scanCycle<.1||scanCycle>.9?0:.35;
-
-    // Light breathing
-    key.intensity=4+Math.sin(t)*.5;
-
-    renderer.render(scene,camera);
+    requestAnimationFrame(draw);
   }
-  animate();
+  draw();
 })();
 </script>
 </body>
