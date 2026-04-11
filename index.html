@@ -10,13 +10,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* THREE.JS PARTICLE CANVAS — fixed fullscreen on top of backgrounds */
-#stage{position:fixed;inset:0;z-index:2;pointer-events:none}
+/* ─── VIDEO LAYER (bottom) ─── */
+#vid{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
 
-/* NAV */
+/* ─── PARTICLE LAYER (middle) ─── */
+#stage{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* ─── CONTENT LAYER (top) ─── */
+.scroll-spacer{height:800vh;position:relative;z-index:2;pointer-events:none}
+
+/* ─── NAV ─── */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
 .nav>*{pointer-events:auto}
 .nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:#fff;text-decoration:none}
@@ -26,58 +31,85 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .nav-links a:hover{color:#E87A00}
 .nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem}
 
-/* SCENES */
-.scene{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden}
-.scene-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s cubic-bezier(.215,.61,.355,1)}
-.scene.active .scene-bg{opacity:1}
-.scene-grad{position:absolute;inset:0}
-.scene-content{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:6rem 4rem;width:100%}
+/* ─── CONTENT PANELS (fixed, fade in/out) ─── */
+.panel{position:fixed;inset:0;z-index:10;display:flex;align-items:center;opacity:0;pointer-events:none;transition:opacity .6s cubic-bezier(.215,.61,.355,1)}
+.panel.active{opacity:1;pointer-events:auto}
+.panel-inner{max-width:1200px;margin:0 auto;padding:0 4rem;width:100%}
+.panel-left .panel-inner{max-width:600px;margin:0;margin-left:4rem}
+.panel-right .panel-inner{max-width:600px;margin:0;margin-left:auto;margin-right:4rem;text-align:right}
+.panel-center .panel-inner{max-width:650px;margin:0 auto;text-align:center}
 
-/* TEXT */
-.overline{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem}
-.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6.5rem);line-height:.95;letter-spacing:2px}
-.h1 em{font-style:normal;color:#E87A00}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1;letter-spacing:1px}
-.h2 em{font-style:normal;color:#E87A00}
-.body{font-size:.88rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.45);max-width:26rem}
-.body strong{color:rgba(255,255,255,.7);font-weight:500}
+/* ─── TEXT ─── */
+.ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;transform:translateY(1rem);transition:all .5s .1s}
+.tt{font-family:'Bebas Neue',sans-serif;line-height:.95;letter-spacing:2px;opacity:0;transform:translateY(1.5rem);transition:all .6s .2s}
+.tt-hero{font-size:clamp(3rem,8vw,6rem)}
+.tt-section{font-size:clamp(2rem,5vw,3.5rem)}
+.tt em{font-style:normal;color:#E87A00}
+.bd{font-size:.88rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.45);max-width:26rem;margin-top:1rem;opacity:0;transform:translateY(1rem);transition:all .5s .35s}
+.bd strong{color:rgba(255,255,255,.7);font-weight:500}
+.panel-right .bd{margin-left:auto}
+.panel-center .bd{margin:1rem auto 0;text-align:center}
+.cta-row{display:flex;gap:.8rem;margin-top:1.8rem;opacity:0;transform:translateY(1rem);transition:all .5s .5s;flex-wrap:wrap}
+.panel-right .cta-row{justify-content:flex-end}
+.panel-center .cta-row{justify-content:center}
 
-.scene-left .body,.scene-left .h2{max-width:50%}
-.scene-right{text-align:right}
-.scene-right .body,.scene-right .h2{margin-left:auto;max-width:50%}
-.scene-center{text-align:center}
-.scene-center .body{margin:1rem auto;max-width:24rem;text-align:center}
+/* Animate in when panel is active */
+.panel.active .ol,.panel.active .tt,.panel.active .bd,.panel.active .cta-row{opacity:1;transform:translateY(0)}
 
-/* BUTTONS */
+/* ─── BUTTONS ─── */
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s}
 .btn-fill{background:#E87A00;color:#000}
 .btn-fill:hover{background:#FF8C00;box-shadow:0 0 40px rgba(232,122,0,.4)}
 .btn-ghost{background:transparent;color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.1)}
 .btn-ghost:hover{border-color:#E87A00;color:#E87A00}
 
-/* STATS / RESULTS */
-.stats-row{display:flex;gap:2.5rem;margin-top:1.5rem}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#E87A00;line-height:1}
-.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2)}
-.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.2rem}
-.pill{background:rgba(232,122,0,.08);border:1px solid rgba(232,122,0,.15);color:#E87A00;padding:.35rem .8rem;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+/* ─── STATS ─── */
+.stats{display:flex;gap:2.5rem;margin-top:1.5rem;opacity:0;transform:translateY(1rem);transition:all .5s .45s}
+.panel-right .stats{justify-content:flex-end}
+.panel.active .stats{opacity:1;transform:translateY(0)}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#E87A00;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2)}
+
+/* ─── PILLS ─── */
+.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.2rem;opacity:0;transform:translateY(1rem);transition:all .5s .5s}
+.panel.active .pills{opacity:1;transform:translateY(0)}
+.pill{background:rgba(232,122,0,.08);border:1px solid rgba(232,122,0,.15);color:#E87A00;padding:.3rem .7rem;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+
+/* ─── RESULTS ─── */
 .rr{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
 .rr:last-child{border-bottom:none}
-.rr-lbl{font-size:.75rem;color:rgba(255,255,255,.3)}
-.rr-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#E87A00}
+.rr-l{font-size:.75rem;color:rgba(255,255,255,.3)}
+.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#E87A00}
+.results{margin-top:1.2rem;max-width:20rem;opacity:0;transform:translateY(1rem);transition:all .5s .4s}
+.panel-right .results{margin-left:auto}
+.panel.active .results{opacity:1;transform:translateY(0)}
 
-/* PROGRESS DOTS */
+/* ─── PROGRESS ─── */
 .dots{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:.5rem}
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.1);cursor:pointer;transition:all .3s}
 .dot.on{background:#E87A00;box-shadow:0 0 6px rgba(232,122,0,.5)}
 
-/* REVEAL */
-.rv{opacity:0;transform:translateY(1.5rem);transition:opacity .7s cubic-bezier(.215,.61,.355,1),transform .7s cubic-bezier(.215,.61,.355,1)}
-.active .rv{opacity:1;transform:translateY(0)}
-.rv-1{transition-delay:.1s}.rv-2{transition-delay:.25s}.rv-3{transition-delay:.4s}.rv-4{transition-delay:.55s}
+/* ─── SCENE LABEL ─── */
+.scene-label{position:fixed;bottom:2rem;left:4rem;z-index:90;font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.15);transition:opacity .3s}
 
-/* FOOTER */
-.footer{border-top:1px solid rgba(255,255,255,.05);position:relative;z-index:3;background:#000}
+/* ─── SCROLL CUE ─── */
+.scroll-cue{position:fixed;bottom:2rem;right:4rem;z-index:90;display:flex;align-items:center;gap:.8rem;font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.15);transition:opacity .5s}
+.scroll-cue.hide{opacity:0}
+.scroll-line{width:30px;height:1px;background:rgba(255,255,255,.1);position:relative;overflow:hidden}
+.scroll-line::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:#E87A00;animation:sweep 2.5s ease infinite}
+@keyframes sweep{0%{left:-100%}50%{left:0}100%{left:100%}}
+
+/* ─── PRELOADER ─── */
+.preloader{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;transition:opacity .8s}
+.preloader.done{opacity:0;pointer-events:none}
+.preloader-mark{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:4px;color:#fff}
+.preloader-mark span{color:#E87A00}
+.preloader-bar{width:200px;height:2px;background:rgba(255,255,255,.06);border-radius:1px;overflow:hidden}
+.preloader-fill{height:100%;background:#E87A00;width:0%;transition:width .3s}
+.preloader-pct{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;color:rgba(255,255,255,.3)}
+
+/* ─── FOOTER ─── */
+.footer{position:relative;z-index:10;border-top:1px solid rgba(255,255,255,.05);background:#000}
 .footer-inner{max-width:1200px;margin:0 auto;padding:2.5rem 4rem;display:flex;justify-content:space-between;align-items:center}
 .footer-c{font-size:.55rem;color:rgba(255,255,255,.12)}
 .footer-l{display:flex;gap:1.2rem}
@@ -86,146 +118,159 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 @media(max-width:768px){
   .nav{padding:1rem 1.5rem}.nav-links .hm{display:none}
-  .scene-content{padding:4rem 2rem}
-  .scene-left .body,.scene-left .h2,.scene-right .body,.scene-right .h2{max-width:100%}
-  .scene-right{text-align:left}.scene-right .body,.scene-right .h2{margin-left:0}
-  .stats-row{flex-wrap:wrap;gap:1.2rem}.dots{display:none}
+  .panel-inner,.panel-left .panel-inner,.panel-right .panel-inner{max-width:100%;margin:0;padding:0 2rem;text-align:left}
+  .panel-right .bd,.panel-right .stats,.panel-right .results{margin-left:0}
+  .panel-right .stats,.panel-right .cta-row{justify-content:flex-start}
+  .stats{flex-wrap:wrap;gap:1.2rem}
+  .dots,.scene-label,.scroll-cue{display:none}
+  .footer-inner{flex-direction:column;gap:1rem;text-align:center;padding:2rem}
 }
 </style>
 </head>
 <body>
 
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <div class="preloader-mark">DRIVE <span>AI</span> SALES</div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloaderFill"></div></div>
+  <div class="preloader-pct" id="preloaderPct">Loading experience...</div>
+</div>
+
+<!-- VIDEO BACKGROUND -->
+<video id="vid" muted playsinline preload="auto">
+  <source src="hero-desktop.mp4" type="video/mp4">
+</video>
+
+<!-- THREE.JS PARTICLE OVERLAY -->
 <canvas id="stage"></canvas>
 
-<div class="dots" id="dots"></div>
+<!-- SCROLL SPACER (8 sections × 100vh) -->
+<div class="scroll-spacer"></div>
 
+<!-- NAV -->
 <nav class="nav">
   <a href="/" class="nav-mark">DRIVE <span>AI</span> SALES</a>
   <ul class="nav-links">
-    <li><a href="#s2" class="hm">How It Works</a></li>
-    <li><a href="#s5" class="hm">Results</a></li>
+    <li><a href="#" onclick="scrollToScene(2);return false" class="hm">How It Works</a></li>
+    <li><a href="#" onclick="scrollToScene(5);return false" class="hm">Results</a></li>
     <li><a href="pricing.html" class="hm">Pricing</a></li>
     <li><a href="diagnostic.html" class="nav-cta">Free Diagnostic</a></li>
   </ul>
 </nav>
 
-<!-- S0: HERO — particles assemble into car -->
-<section class="scene" id="s0">
-  <div class="scene-bg" style="background-image:url(scenes/01-hero.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(100deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-left">
-    <div class="overline rv">Drive AI Sales Inc.</div>
-    <h1 class="h1 rv rv-1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
-    <p class="body rv rv-2">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds &mdash; text, email, voice &mdash; 24/7.</p>
-    <div style="display:flex;gap:.8rem;margin-top:1.8rem" class="rv rv-3">
+<!-- PROGRESS DOTS -->
+<div class="dots" id="dots"></div>
+
+<!-- SCENE LABEL -->
+<div class="scene-label" id="sceneLabel"></div>
+
+<!-- SCROLL CUE -->
+<div class="scroll-cue" id="scrollCue"><div class="scroll-line"></div>Scroll to explore</div>
+
+<!-- ─── CONTENT PANELS ─── -->
+
+<!-- P0: HERO -->
+<div class="panel panel-left" id="p0">
+  <div class="panel-inner">
+    <div class="ol">Drive AI Sales Inc.</div>
+    <div class="tt tt-hero">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></div>
+    <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds &mdash; text, email, voice &mdash; 24/7.</div>
+    <div class="cta-row">
       <a href="diagnostic.html" class="btn btn-fill">Free Diagnostic &rarr;</a>
-      <a href="#s2" class="btn btn-ghost">How It Works</a>
+      <a href="#" onclick="scrollToScene(2);return false" class="btn btn-ghost">How It Works</a>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S1: EXTERIOR — particles orbit car -->
-<section class="scene" id="s1">
-  <div class="scene-bg" style="background-image:url(scenes/02-exterior.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(260deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.2) 60%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-right">
-    <div class="overline rv">The Problem</div>
-    <h2 class="h2 rv rv-1">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</h2>
-    <p class="body rv rv-2" style="margin-left:auto">The average dealership loses <strong>$15K&ndash;$45K/month</strong> to slow response, broken follow-up, and missed appointments.</p>
-    <div class="stats-row rv rv-3" style="justify-content:flex-end">
-      <div><div class="stat-val">47min</div><div class="stat-lbl">Avg Response</div></div>
-      <div><div class="stat-val">40%</div><div class="stat-lbl">Show Rate</div></div>
-      <div><div class="stat-val">2</div><div class="stat-lbl">Follow-ups</div></div>
+<!-- P1: PROBLEM -->
+<div class="panel panel-right" id="p1">
+  <div class="panel-inner">
+    <div class="ol">The Problem</div>
+    <div class="tt tt-section">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
+    <div class="bd">The average dealership loses <strong>$15K&ndash;$45K/month</strong> to slow response, broken follow-up, and no-shows.</div>
+    <div class="stats">
+      <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
+      <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
+      <div><div class="sv">2</div><div class="sl">Follow-ups</div></div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S2: EXPLOSION — particles burst outward -->
-<section class="scene" id="s2">
-  <div class="scene-bg" style="background-image:url(scenes/03-explosion.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(90deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.6) 100%)"></div>
-  <div class="scene-content scene-left">
-    <div class="overline rv">The Solution</div>
-    <h2 class="h2 rv rv-1">We Tear the Old<br>System <em>Apart.</em></h2>
-    <p class="body rv rv-2">Drive AI replaces the broken parts with an engine that never sleeps, never forgets, and never calls in sick.</p>
-    <div class="pills rv rv-3">
+<!-- P2: EXPLOSION / SOLUTION -->
+<div class="panel panel-left" id="p2">
+  <div class="panel-inner">
+    <div class="ol">The Solution</div>
+    <div class="tt tt-section">We Tear the Old<br>System <em>Apart.</em></div>
+    <div class="bd">Drive AI replaces the broken parts with an engine that never sleeps, never forgets, and never calls in sick.</div>
+    <div class="pills">
       <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S3: ENGINE — particles stream inward, reassemble -->
-<section class="scene" id="s3">
-  <div class="scene-bg" style="background-image:url(scenes/04-engine.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(270deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-right">
-    <div class="overline rv">Under the Hood</div>
-    <h2 class="h2 rv rv-1">We <em>Plug In</em><br>to Your CRM</h2>
-    <p class="body rv rv-2" style="margin-left:auto">CDK, DealerTrack, VinSolutions. Under a day. No migration. No disruption. Your team doesn't even know it's there.</p>
+<!-- P3: ENGINE -->
+<div class="panel panel-right" id="p3">
+  <div class="panel-inner">
+    <div class="ol">Under the Hood</div>
+    <div class="tt tt-section">We <em>Plug In</em><br>to Your CRM</div>
+    <div class="bd">CDK, DealerTrack, VinSolutions. Under a day. No migration. No disruption. Your team doesn't even know it's there.</div>
   </div>
-</section>
+</div>
 
-<!-- S4: DRIVETRAIN — particles flow through -->
-<section class="scene" id="s4">
-  <div class="scene-bg" style="background-image:url(scenes/05-drivetrain.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(90deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.2) 60%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-left">
-    <div class="overline rv">The Drivetrain</div>
-    <h2 class="h2 rv rv-1"><em>AI Takes Point.</em><br>Every Lead. Every Time.</h2>
-    <p class="body rv rv-2">Under 60 seconds. Text, email, voice. Qualifies, follows up, books appointments, re-engages no-shows.</p>
-    <div class="stats-row rv rv-3">
-      <div><div class="stat-val">&lt;60s</div><div class="stat-lbl">Response</div></div>
-      <div><div class="stat-val">7+</div><div class="stat-lbl">Touches</div></div>
-      <div><div class="stat-val">30d</div><div class="stat-lbl">Cadence</div></div>
+<!-- P4: DRIVETRAIN -->
+<div class="panel panel-left" id="p4">
+  <div class="panel-inner">
+    <div class="ol">The Drivetrain</div>
+    <div class="tt tt-section"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
+    <div class="bd">Under 60 seconds. Text, email, voice. Qualifies, follows up, books appointments, re-engages no-shows.</div>
+    <div class="stats">
+      <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
+      <div><div class="sv">7+</div><div class="sl">Touches</div></div>
+      <div><div class="sv">30d</div><div class="sl">Cadence</div></div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S5: CPU — particles converge -->
-<section class="scene" id="s5">
-  <div class="scene-bg" style="background-image:url(scenes/06-cpu.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(250deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.2) 50%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-right">
-    <div class="overline rv">The Intelligence</div>
-    <h2 class="h2 rv rv-1">The <em>Brain</em> Behind<br>Every Decision</h2>
-    <div class="rv rv-2" style="margin-left:auto;max-width:50%">
-      <div class="rr"><span class="rr-lbl">Lead Response</span><span class="rr-val">4hrs &rarr; 47s</span></div>
-      <div class="rr"><span class="rr-lbl">Show Rate</span><span class="rr-val">41% &rarr; 68%</span></div>
-      <div class="rr"><span class="rr-lbl">Deals / Month</span><span class="rr-val">+11</span></div>
-      <div class="rr"><span class="rr-lbl">Gross Profit</span><span class="rr-val">+$33K</span></div>
+<!-- P5: CPU -->
+<div class="panel panel-right" id="p5">
+  <div class="panel-inner">
+    <div class="ol">The Intelligence</div>
+    <div class="tt tt-section">The <em>Brain</em> Behind<br>Every Decision</div>
+    <div class="results">
+      <div class="rr"><span class="rr-l">Lead Response</span><span class="rr-v">4hrs &rarr; 47s</span></div>
+      <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% &rarr; 68%</span></div>
+      <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
+      <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S6: COCKPIT — particles flow across -->
-<section class="scene" id="s6">
-  <div class="scene-bg" style="background-image:url(scenes/07-cockpit.jpg)"></div>
-  <div class="scene-grad" style="background:linear-gradient(135deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.2) 50%,rgba(0,0,0,.5) 100%)"></div>
-  <div class="scene-content scene-left">
-    <div class="overline rv">The Cockpit</div>
-    <h2 class="h2 rv rv-1">Your Team <em>Closes.</em><br>AI Handles the Rest.</h2>
-    <p class="body rv rv-2">Warm, qualified appointments on their calendar with full context. They sell cars. The AI handles everything else.</p>
-    <div class="pills rv rv-3">
-      <div class="pill">Booking</div><div class="pill">Show Rate</div><div class="pill">CRM Sync</div><div class="pill">No-Show Recovery</div>
+<!-- P6: COCKPIT -->
+<div class="panel panel-left" id="p6">
+  <div class="panel-inner">
+    <div class="ol">The Cockpit</div>
+    <div class="tt tt-section">Your Team <em>Closes.</em><br>AI Handles the Rest.</div>
+    <div class="bd">Warm, qualified appointments with full context. They sell cars. The AI handles everything else.</div>
+    <div class="pills">
+      <div class="pill">Booking</div><div class="pill">Show Rate</div><div class="pill">CRM Sync</div><div class="pill">Recovery</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- S7: FINAL — particles settle, CTA -->
-<section class="scene" id="s7">
-  <div class="scene-bg" style="background-image:url(scenes/08-final.jpg)"></div>
-  <div class="scene-grad" style="background:radial-gradient(ellipse at center,rgba(0,0,0,.25),rgba(0,0,0,.7))"></div>
-  <div class="scene-content scene-center">
-    <div class="overline rv">Free Assessment</div>
-    <h2 class="h2 rv rv-1">How Much Are You<br><em>Leaving on the Table?</em></h2>
-    <p class="body rv rv-2">7 questions. 2 minutes. Your score. Your revenue leak estimate. No pitch.</p>
-    <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1.8rem;flex-wrap:wrap" class="rv rv-3">
+<!-- P7: FINAL CTA -->
+<div class="panel panel-center" id="p7">
+  <div class="panel-inner">
+    <div class="ol">Free Assessment</div>
+    <div class="tt tt-section">How Much Are You<br><em>Leaving on the Table?</em></div>
+    <div class="bd">7 questions. 2 minutes. Your score. Your revenue leak estimate. No pitch.</div>
+    <div class="cta-row">
       <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a>
       <a href="discovery.html" class="btn btn-ghost">Book a Discovery Call</a>
     </div>
   </div>
-</section>
+</div>
 
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-c">&copy; 2026 Drive AI Sales Inc. &middot; Edmonton, AB</div>
@@ -234,94 +279,128 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 </footer>
 
 <script>
+// ─── GLOBALS ───
+var vid=document.getElementById('vid');
+var totalScenes=8;
+var sceneLabels=['Materializing','The Problem','The Solution','Under the Hood','The Drivetrain','The Intelligence','The Cockpit','The Assessment'];
+var currentScene=-1;
+
+// ─── PRELOADER ───
+(function(){
+  var fill=document.getElementById('preloaderFill');
+  var pct=document.getElementById('preloaderPct');
+  var pre=document.getElementById('preloader');
+
+  vid.addEventListener('canplaythrough',function(){
+    fill.style.width='100%';
+    pct.textContent='Ready';
+    setTimeout(function(){pre.classList.add('done')},600);
+  });
+
+  // Progress simulation while loading
+  var prog=0;
+  var iv=setInterval(function(){
+    prog=Math.min(prog+Math.random()*15,90);
+    fill.style.width=prog+'%';
+    pct.textContent=Math.round(prog)+'%';
+    if(prog>=90)clearInterval(iv);
+  },200);
+
+  // Fallback: if video takes too long, proceed anyway
+  setTimeout(function(){
+    fill.style.width='100%';
+    pct.textContent='Ready';
+    setTimeout(function(){pre.classList.add('done')},400);
+  },5000);
+})();
+
 // ─── PROGRESS DOTS ───
 (function(){
-  var n=document.querySelectorAll('.scene').length;
   var c=document.getElementById('dots');
-  for(var i=0;i<n;i++){var d=document.createElement('div');d.className='dot';d.dataset.i=i;
-    d.addEventListener('click',function(){document.getElementById('s'+this.dataset.i).scrollIntoView({behavior:'smooth'})});
+  for(var i=0;i<totalScenes;i++){
+    var d=document.createElement('div');
+    d.className='dot';
+    d.dataset.i=i;
+    d.addEventListener('click',function(){scrollToScene(parseInt(this.dataset.i))});
     c.appendChild(d);
   }
 })();
 
-// ─── SCENE OBSERVER ───
-(function(){
-  var scenes=document.querySelectorAll('.scene');
-  var dots=document.querySelectorAll('.dot');
-  var currentScene=0;
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){
-        e.target.classList.add('active');
-        var idx=parseInt(e.target.id.replace('s',''));
-        currentScene=idx;
-        dots.forEach(function(d,i){d.classList.toggle('on',i===idx)});
-        // Expose to particle system
-        window.__currentScene=idx;
-      } else {
-        e.target.classList.remove('active');
-      }
-    });
-  },{threshold:.4});
-  scenes.forEach(function(s){obs.observe(s)});
-  window.__currentScene=0;
-})();
+function scrollToScene(i){
+  var scrollH=document.documentElement.scrollHeight-window.innerHeight;
+  var target=(i/totalScenes)*scrollH;
+  window.scrollTo({top:target,behavior:'smooth'});
+}
 
-// ─── THREE.JS PARTICLE SYSTEM — scroll-driven behaviors ───
+// ─── SCROLL ENGINE ───
+function onScroll(){
+  var scrollTop=window.pageYOffset||document.documentElement.scrollTop;
+  var scrollH=document.documentElement.scrollHeight-window.innerHeight;
+  var pct=scrollH>0?scrollTop/scrollH:0;
+
+  // ── VIDEO SCRUB ──
+  if(vid.duration&&vid.duration>0){
+    vid.currentTime=pct*vid.duration;
+  }
+
+  // ── ACTIVE SCENE ──
+  var scene=Math.min(Math.floor(pct*totalScenes),totalScenes-1);
+  if(scene!==currentScene){
+    currentScene=scene;
+    // Update panels
+    for(var i=0;i<totalScenes;i++){
+      var p=document.getElementById('p'+i);
+      if(p)p.classList.toggle('active',i===scene);
+    }
+    // Update dots
+    document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('on',i===scene)});
+    // Scene label
+    document.getElementById('sceneLabel').textContent=sceneLabels[scene]||'';
+    // Expose to particle system
+    window.__scene=scene;
+  }
+
+  // ── SCROLL CUE ──
+  document.getElementById('scrollCue').classList.toggle('hide',pct>.05);
+
+  // Expose scroll pct globally
+  window.__scrollPct=pct;
+}
+
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+// ─── THREE.JS PARTICLE SYSTEM ───
 (function(){
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,500);
-  camera.position.set(0,0,25);
+  camera.position.set(0,0,20);
   var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('stage'),alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  // PARTICLE SYSTEM — 2000 particles
-  var COUNT=2000;
+  var COUNT=1500;
   var geo=new THREE.BufferGeometry();
   var pos=new Float32Array(COUNT*3);
   var col=new Float32Array(COUNT*3);
-  var sizes=new Float32Array(COUNT);
-  var basePos=[]; // store home positions for each behavior
-  var vel=[];
+  var meta=[];
 
-  // Initialize particles in a car-shaped distribution (ellipsoid)
   for(var i=0;i<COUNT;i++){
-    var theta=Math.random()*Math.PI*2;
-    var phi=Math.acos(2*Math.random()-1);
-    var r=2+Math.random()*6;
-    pos[i*3]=Math.cos(theta)*Math.sin(phi)*r*1.8;  // wider X
-    pos[i*3+1]=Math.sin(theta)*Math.sin(phi)*r*.6;  // flat Y
-    pos[i*3+2]=Math.cos(phi)*r;
-    col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0; // orange
-    sizes[i]=Math.random()*2+.5;
-    basePos.push({x:pos[i*3],y:pos[i*3+1],z:pos[i*3+2]});
-    vel.push({x:0,y:0,z:0,angle:Math.random()*Math.PI*2,speed:.005+Math.random()*.01,radius:r});
+    var a=Math.random()*Math.PI*2;
+    var r=2+Math.random()*8;
+    var h=(Math.random()-.5)*6;
+    pos[i*3]=Math.cos(a)*r;
+    pos[i*3+1]=h;
+    pos[i*3+2]=Math.sin(a)*r;
+    col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0;
+    meta.push({a:a,r:r,h:h,sp:.003+Math.random()*.008,ox:pos[i*3],oy:pos[i*3+1],oz:pos[i*3+2]});
   }
 
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  geo.setAttribute('size',new THREE.BufferAttribute(sizes,1));
 
-  // Custom shader material for varying size particles
-  var mat=new THREE.PointsMaterial({
-    size:.08,
-    vertexColors:true,
-    transparent:true,
-    opacity:.7,
-    sizeAttenuation:true,
-    blending:THREE.AdditiveBlending,
-    depthWrite:false
-  });
-
-  var particles=new THREE.Points(geo,mat);
-  scene.add(particles);
-
-  // Scan beam
-  var scanGeo=new THREE.PlaneGeometry(30,.03);
-  var scanMat=new THREE.MeshBasicMaterial({color:0xE87A00,transparent:true,opacity:0,side:THREE.DoubleSide});
-  var scanBeam=new THREE.Mesh(scanGeo,scanMat);
-  scene.add(scanBeam);
+  var mat=new THREE.PointsMaterial({size:.06,vertexColors:true,transparent:true,opacity:.65,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  scene.add(new THREE.Points(geo,mat));
 
   window.addEventListener('resize',function(){
     camera.aspect=window.innerWidth/window.innerHeight;
@@ -329,96 +408,87 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     renderer.setSize(window.innerWidth,window.innerHeight);
   });
 
-  // SCROLL POSITION
-  var scrollPct=0;
-  window.addEventListener('scroll',function(){
-    var t=document.documentElement.scrollTop||document.body.scrollTop;
-    var h=document.documentElement.scrollHeight-window.innerHeight;
-    scrollPct=h>0?t/h:0;
-  });
-
   var clock=new THREE.Clock();
 
   function animate(){
     requestAnimationFrame(animate);
     var t=clock.getElapsedTime();
-    var sc=window.__currentScene||0;
+    var sc=window.__scene||0;
     var p=geo.attributes.position.array;
     var c=geo.attributes.color.array;
 
     for(var i=0;i<COUNT;i++){
       var idx=i*3;
-      var b=basePos[i];
-      var v=vel[i];
+      var m=meta[i];
 
       switch(sc){
-        case 0: // VORTEX ASSEMBLING — spiral inward
-          v.angle+=v.speed;
-          var decay=.97;
-          var targetR=v.radius*(1-Math.min(t*.05,1)*.7);
-          p[idx]=Math.cos(v.angle)*targetR*1.5+Math.sin(t*.3+i)*.1;
-          p[idx+1]=Math.sin(v.angle)*targetR*.5+Math.cos(t*.4+i)*.1;
-          p[idx+2]=b.z*.8+Math.sin(t*.2+i*.1)*.3;
-          break;
-
-        case 1: // ORBIT — elliptical paths around center
-          v.angle+=v.speed*.6;
-          p[idx]=Math.cos(v.angle)*v.radius*1.3;
-          p[idx+1]=b.y+Math.sin(t*.3+i*.1)*.15;
-          p[idx+2]=Math.sin(v.angle)*v.radius;
-          break;
-
-        case 2: // EXPLOSION — burst outward from center
-          var explodeForce=1+Math.sin(t*2)*.2;
-          p[idx]=b.x*explodeForce*2.5+Math.sin(t+i)*.3;
-          p[idx+1]=b.y*explodeForce*2.5+Math.cos(t+i)*.3;
-          p[idx+2]=b.z*explodeForce*1.5;
-          // Flash white-orange
-          c[idx]=.95;c[idx+1]=.6+Math.sin(t*3)*.2;c[idx+2]=Math.sin(t*5)*.1;
-          break;
-
-        case 3: // STREAM INWARD — reassemble from right
-          var targetX=(i/COUNT)*12-6;
-          var targetY=(Math.random()-.5)*4;
-          p[idx]+=(targetX-p[idx])*.02;
-          p[idx+1]+=(Math.sin(t+i*.05)*1.5-p[idx+1])*.02;
-          p[idx+2]+=(Math.cos(t*.5+i*.02)*2-p[idx+2])*.02;
+        case 0: // VORTEX — spiral inward assembling
+          m.a+=m.sp*1.2;
+          var vr=m.r*(1-Math.min(t*.03,.85));
+          p[idx]=Math.cos(m.a)*vr*1.5;
+          p[idx+1]=Math.sin(m.a)*vr*.5+Math.sin(t*.3+i)*.05;
+          p[idx+2]=Math.sin(m.a*.5)*vr*.8;
           c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
           break;
 
-        case 4: // FLOW LEFT TO RIGHT — drivetrain
-          p[idx]+=.06;
-          if(p[idx]>15)p[idx]=-15;
-          p[idx+1]=Math.sin(t+i*.05)*.8+b.y*.3;
-          p[idx+2]=Math.cos(t*.3+i*.02)*1.5;
+        case 1: // ORBIT — smooth elliptical
+          m.a+=m.sp*.5;
+          p[idx]=Math.cos(m.a)*m.r*1.2;
+          p[idx+1]=m.h*.4+Math.sin(t*.2+i*.01)*.1;
+          p[idx+2]=Math.sin(m.a)*m.r*.8;
           c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
           break;
 
-        case 5: // CONVERGE TO CENTER — CPU
-          var cx=0,cy=0,cz=0;
-          var pull=.03;
-          p[idx]+=(cx+Math.sin(t*2+i)*1.5-p[idx])*pull;
-          p[idx+1]+=(cy+Math.cos(t*1.5+i)*.8-p[idx+1])*pull;
-          p[idx+2]+=(cz+Math.sin(t+i*.1)*1-p[idx+2])*pull;
-          // Pulse brightness
-          var bright=.5+Math.sin(t*3+i*.1)*.5;
-          c[idx]=.91*bright+.3;c[idx+1]=.48*bright;c[idx+2]=0;
+        case 2: // EXPLODE — burst radially
+          var ef=1.5+Math.sin(t*1.5)*.3;
+          p[idx]+=(m.ox*ef*2-p[idx])*.04;
+          p[idx+1]+=(m.oy*ef*2-p[idx+1])*.04;
+          p[idx+2]+=(m.oz*ef-p[idx+2])*.04;
+          var flash=Math.sin(t*4+i)*.15;
+          c[idx]=.95+flash;c[idx+1]=.55+flash;c[idx+2]=.1+flash;
           break;
 
-        case 6: // FLOW ACROSS — dashboard data stream
-          p[idx]+=.08;
+        case 3: // STREAM INWARD — converge from edges
+          var tx=(i/COUNT)*16-8;
+          var ty=Math.sin(t*.8+i*.03)*2;
+          p[idx]+=(tx-p[idx])*.025;
+          p[idx+1]+=(ty-p[idx+1])*.025;
+          p[idx+2]+=(Math.cos(t*.4+i*.02)*2-p[idx+2])*.025;
+          c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
+          break;
+
+        case 4: // FLOW — left to right drivetrain
+          p[idx]+=.07;
+          if(p[idx]>16)p[idx]=-16;
+          p[idx+1]=Math.sin(t*.6+i*.04)*.6+m.h*.15;
+          p[idx+2]=Math.cos(t*.3+i*.02)*1.2;
+          c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
+          break;
+
+        case 5: // CONVERGE — all to center, pulsing
+          var pull=.035;
+          var target=Math.sin(t*2+i)*.8;
+          p[idx]+=(target-p[idx])*pull;
+          p[idx+1]+=(Math.cos(t*1.5+i*.5)*.5-p[idx+1])*pull;
+          p[idx+2]+=(Math.sin(t+i*.3)*.6-p[idx+2])*pull;
+          var bright=.5+Math.sin(t*3+i*.05)*.5;
+          c[idx]=(.91*bright)+.2;c[idx+1]=.48*bright;c[idx+2]=0;
+          break;
+
+        case 6: // DATA FLOW — horizontal streams
+          p[idx]+=.09;
           if(p[idx]>18)p[idx]=-18;
-          p[idx+1]=Math.sin(i*.1)*2+Math.sin(t+i*.05)*.3;
-          p[idx+2]=(i%20)*.15-1.5;
+          p[idx+1]=Math.sin(i*.08)*2.5+Math.sin(t*.4+i*.03)*.15;
+          p[idx+2]=(i%25)*.12-1.5;
           c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
           break;
 
-        case 7: // SETTLE — gentle orbit, reformed
-          v.angle+=v.speed*.3;
-          var settleR=v.radius*.8;
-          p[idx]+=(Math.cos(v.angle)*settleR*1.2-p[idx])*.03;
-          p[idx+1]+=(Math.sin(v.angle)*settleR*.4-p[idx+1])*.03;
-          p[idx+2]+=(b.z*.6+Math.sin(t*.2+i*.05)*.2-p[idx+2])*.03;
+        case 7: // SETTLE — gentle orbit reformed
+          m.a+=m.sp*.25;
+          var sr=m.r*.6;
+          p[idx]+=(Math.cos(m.a)*sr*1.1-p[idx])*.025;
+          p[idx+1]+=(Math.sin(m.a)*sr*.35-p[idx+1])*.025;
+          p[idx+2]+=(m.oz*.4+Math.sin(t*.15+i*.03)*.15-p[idx+2])*.025;
           c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
           break;
       }
@@ -427,19 +497,9 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     geo.attributes.position.needsUpdate=true;
     geo.attributes.color.needsUpdate=true;
 
-    // Scan beam
-    if(sc===0||sc===3||sc===5){
-      scanBeam.visible=true;
-      var scanY=-8+(t*2%16);
-      scanBeam.position.set(0,scanY,0);
-      scanMat.opacity=.2+Math.sin(t*4)*.1;
-    } else {
-      scanBeam.visible=false;
-    }
-
-    // Camera subtle movement
-    camera.position.x=Math.sin(t*.15)*.5;
-    camera.position.y=Math.cos(t*.1)*.3;
+    // Camera gentle drift
+    camera.position.x=Math.sin(t*.1)*.3;
+    camera.position.y=Math.cos(t*.08)*.2;
 
     renderer.render(scene,camera);
   }
