@@ -26,7 +26,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem}
 
 /* HERO - full height, video behind */
-.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2}
+.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2;background:transparent}
 .hero-content{position:relative;z-index:2;max-width:600px;padding:0 4rem}
 .hero-ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;animation:fu .6s .3s forwards}
 .hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);line-height:.93;letter-spacing:2px;opacity:0;animation:fu .7s .5s forwards}
@@ -120,7 +120,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 </nav>
 
 <!-- HERO -->
-<section class="hero" style="background:#000">
+<section class="hero" style="background:transparent">
   <div class="hero-content">
     <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:100px;width:auto;margin-bottom:1.2rem;opacity:0;animation:fu .5s .1s forwards">
     <div class="hero-ol">AI-Powered Sales Intelligence for Dealerships</div>
@@ -228,104 +228,173 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  var COUNT=8000;
+  var COUNT=15000;
   var PI2=Math.PI*2;
 
   // ═══ SHAPE GENERATORS ═══
   // Each returns Float32Array of COUNT*3 positions
 
-  // SHAPE 0: McLaren P1 style supercar - highly detailed
+  // SHAPE 0: McLaren P1 GTR - extremely detailed, 3/4 front view proportions
   function makeCar(){
     var pts=[];
+    // Helper: sample a point on the car body surface at position t (0=front, 1=rear)
+    // Returns height profile at that longitudinal position
+    function bodyProfile(t){
+      // P1 GTR profile: very low nose, rises to cockpit peak at ~40%, drops to rear
+      if(t<0.1) return 0.15+t*3; // front splitter to nose
+      if(t<0.2) return 0.45+Math.pow((t-0.1)*10,0.6)*0.4; // nose rising
+      if(t<0.3) return 0.85+(t-0.2)*3; // hood
+      if(t<0.4) return 1.15+(t-0.3)*8; // windshield steep rake
+      if(t<0.5) return 1.95+Math.sin((t-0.4)*Math.PI)*0.35; // roof peak (2.3)
+      if(t<0.6) return 2.2-Math.pow((t-0.5)*10,0.7)*0.3; // rear glass descending
+      if(t<0.75) return 1.9-Math.pow((t-0.6)*6.6,0.8)*0.5; // engine cover
+      if(t<0.85) return 1.4-(t-0.75)*3; // rear deck
+      return 1.1-(t-0.85)*4; // tail
+    }
+    // Width profile
+    function bodyWidth(t){
+      if(t<0.05) return 0.8; // front splitter narrow
+      if(t<0.15) return 0.8+(t-0.05)*8; // widening nose
+      if(t<0.3) return 1.6+Math.sin((t-0.15)*Math.PI/0.15)*0.2; // front fender bulge
+      if(t<0.45) return 1.5; // cockpit
+      if(t<0.55) return 1.5+(t-0.45)*3; // side intakes widen
+      if(t<0.75) return 1.8+Math.sin((t-0.55)*Math.PI/0.2)*0.3; // rear haunch bulge
+      if(t<0.9) return 1.7-(t-0.75)*2; // narrowing
+      return 1.4;
+    }
+
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-      z=(Math.random()-.5)*2.6;
-      var zAbs=Math.abs(z);
 
-      if(r<0.08){
-        // Front splitter - very low, wide, aggressive
-        x=-7+Math.random()*1.5;
-        y=-0.3+Math.random()*0.2;
-        z=(Math.random()-.5)*3;
-      }else if(r<0.18){
-        // Front nose - sharp, low, tapered
-        x=-6.5+Math.random()*1.5;
-        var noseH=0.3+Math.pow(Math.max(0,(x+5.5)/1.5),0.7)*0.6;
-        y=Math.random()*noseH;
-      }else if(r<0.25){
-        // Front fenders - bulging over wheels
-        x=-5+Math.random()*1.5;
-        var fenderBulge=1.2+Math.sin((x+4.2)*2)*0.4;
-        y=Math.random()*fenderBulge;
-        z=(Math.random()>0.5?1:-1)*(1.1+Math.sin((x+4.2)*2)*0.3);
-      }else if(r<0.32){
-        // Hood - low, sculpted with air intakes
-        x=-4.5+Math.random()*3;
-        y=0.6+Math.random()*0.3+Math.sin(x*1.5)*0.1;
-        if(Math.random()>0.7){y+=0.2;z*=0.3} // hood scoop
-      }else if(r<0.42){
-        // Windshield - steep, fighter-jet style rake
-        x=-2+Math.random()*1.5;
-        var windH=0.9+(x+2)*1.1;
-        y=windH+Math.random()*0.1;
-        z*=0.8; // narrower at top
+      if(r<0.45){
+        // BODY SURFACE - dense coverage
+        var t=Math.random(); // 0=front 1=rear
+        x=(t-0.5)*12; // car length ~12 units
+        var maxH=bodyProfile(t);
+        var maxW=bodyWidth(t);
+        // Sample on surface (top, sides, or bottom)
+        var surface=Math.random();
+        if(surface<0.3){
+          // Top surface
+          y=maxH-Math.random()*0.05;
+          z=(Math.random()-.5)*maxW*0.8;
+        }else if(surface<0.6){
+          // Side surfaces (left or right)
+          z=(Math.random()>0.5?1:-1)*maxW*(0.9+Math.random()*0.1);
+          y=Math.random()*maxH;
+        }else if(surface<0.8){
+          // Bottom/undertray
+          y=-0.1+Math.random()*0.15;
+          z=(Math.random()-.5)*maxW;
+        }else{
+          // Fill interior volume (denser)
+          y=Math.random()*maxH;
+          z=(Math.random()-.5)*maxW;
+        }
       }else if(r<0.52){
-        // Roof/canopy - teardrop shape, very low
-        x=-0.8+Math.random()*2;
-        var roofH=2.3+Math.sin((x+0.3)*1.2)*0.3;
-        y=roofH-Math.random()*0.15;
-        z*=0.7;
+        // FRONT SPLITTER - extends far forward, very low, wide and flat
+        x=-6.5+Math.random()*1.5;
+        y=-0.15+Math.random()*0.12;
+        z=(Math.random()-.5)*3.5;
       }else if(r<0.58){
-        // Side air intakes (behind doors) - signature P1 scoops
-        x=0.5+Math.random()*1.5;
-        y=0.3+Math.random()*1;
-        z=(Math.random()>0.5?1:-1)*(1.3+Math.random()*0.2);
+        // FRONT CANARDS/DIVE PLANES - small fins on front corners
+        var side=Math.random()>0.5?1:-1;
+        x=-5.8+Math.random()*0.6;
+        y=0.1+Math.random()*0.4;
+        z=side*(1.4+Math.random()*0.3);
+      }else if(r<0.62){
+        // SIDE AIR INTAKES (large, behind doors) - the iconic P1 scoops
+        var side=Math.random()>0.5?1:-1;
+        x=0.5+Math.random()*2;
+        y=0.2+Math.random()*1.3;
+        z=side*(1.45+Math.random()*0.15);
       }else if(r<0.65){
-        // Rear window/engine cover - descending with louvers
-        x=1.5+Math.random()*2;
-        var rearH=2.1-Math.pow(Math.max(0,(x-1.5)/2),0.8)*0.8;
-        y=rearH-Math.random()*0.2;
-        z*=0.75;
+        // DIHEDRAL DOORS outline
+        var side=Math.random()>0.5?1:-1;
+        x=-2+Math.random()*3;
+        var doorH=0.8+(x+2)*0.4;
+        y=Math.random()*doorH;
+        z=side*(1.4+Math.random()*0.05);
       }else if(r<0.72){
-        // Rear haunches - wide, muscular
-        x=2+Math.random()*2;
-        y=0.3+Math.random()*1.2;
-        z=(Math.random()>0.5?1:-1)*(1.2+Math.sin((x-2)*1.5)*0.3);
+        // GT WING - tall, wide, thick endplates
+        var wingPart=Math.random();
+        if(wingPart<0.5){
+          // Wing blade
+          x=4.5+Math.random()*1.2;
+          y=2.8+Math.random()*0.12;
+          z=(Math.random()-.5)*3.8;
+        }else if(wingPart<0.75){
+          // Wing pylons (2 tall supports)
+          var side=Math.random()>0.5?1:-1;
+          x=4.8+Math.random()*0.3;
+          y=1.3+Math.random()*1.5;
+          z=side*(0.7+Math.random()*0.15);
+        }else{
+          // Endplates
+          var side=Math.random()>0.5?1:-1;
+          x=4.3+Math.random()*1.5;
+          y=2.3+Math.random()*0.7;
+          z=side*(1.8+Math.random()*0.1);
+        }
       }else if(r<0.77){
-        // Active rear wing - high, wide
-        x=3.8+Math.random()*0.8;
-        y=2.5+Math.random()*0.15;
-        z=(Math.random()-.5)*3.2;
-      }else if(r<0.82){
-        // Wing supports
-        x=4;y=1.5+Math.random()*1;z=(Math.random()>0.5?1:-1)*0.8;
+        // REAR DIFFUSER - aggressive, multiple channels
+        x=5+Math.random()*1.2;
+        y=-0.2+Math.random()*0.6;
+        z=(Math.random()-.5)*2.8;
+        // Diffuser fins
+        if(Math.random()>0.5){z=Math.floor(Math.random()*5-2)*0.5;y=-0.1+Math.random()*0.5}
+      }else if(r<0.8){
+        // EXHAUST (center-mounted, triple)
+        x=5.8+Math.random()*0.3;
+        y=0.5+Math.random()*0.3;
+        var a=Math.random()*PI2;
+        z=Math.cos(a)*0.15+(Math.floor(Math.random()*3)-1)*0.3;
+        y+=Math.sin(a)*0.15;
       }else if(r<0.86){
-        // Rear diffuser + exhaust - aggressive, low
-        x=4+Math.random()*1;
-        y=-0.2+Math.random()*0.5;
-        z=(Math.random()-.5)*2.5;
-      }else if(r<0.9){
-        // Front wheels (large, detailed)
-        var a=Math.random()*PI2;var wr=0.55+Math.random()*0.1;
-        x=-4.3+Math.cos(a)*wr;
-        y=0.55+Math.sin(a)*wr;
-        z=(Math.random()>0.5?1:-1)*1.2;
+        // FRONT WHEELS - large with 5-spoke detail
+        var side=Math.random()>0.5?1:-1;
+        var a=Math.random()*PI2;
+        var wr=0.5+Math.random()*0.12;
+        x=-4+Math.cos(a)*wr;
+        y=0.5+Math.sin(a)*wr;
+        z=side*1.3;
         // Spokes
-        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=-4.3+Math.cos(sa)*wr*Math.random();y=0.55+Math.sin(sa)*wr*Math.random()}
-      }else if(r<0.94){
-        // Rear wheels (even larger)
-        var a=Math.random()*PI2;var wr=0.6+Math.random()*0.1;
-        x=2.8+Math.cos(a)*wr;
-        y=0.6+Math.sin(a)*wr;
-        z=(Math.random()>0.5?1:-1)*1.25;
-        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=2.8+Math.cos(sa)*wr*Math.random();y=0.6+Math.sin(sa)*wr*Math.random()}
+        if(Math.random()>0.5){var spoke=Math.floor(Math.random()*5)/5*PI2;var sr=Math.random()*wr;x=-4+Math.cos(spoke)*sr;y=0.5+Math.sin(spoke)*sr}
+        // Tire thickness
+        z+=side*(Math.random()*0.2);
+      }else if(r<0.92){
+        // REAR WHEELS - wider, larger
+        var side=Math.random()>0.5?1:-1;
+        var a=Math.random()*PI2;
+        var wr=0.55+Math.random()*0.15;
+        x=3.2+Math.cos(a)*wr;
+        y=0.55+Math.sin(a)*wr;
+        z=side*1.35;
+        if(Math.random()>0.5){var spoke=Math.floor(Math.random()*5)/5*PI2;var sr=Math.random()*wr;x=3.2+Math.cos(spoke)*sr;y=0.55+Math.sin(spoke)*sr}
+        z+=side*(Math.random()*0.25);
+      }else if(r<0.95){
+        // HEADLIGHTS - narrow slits wrapping around corners
+        x=-5.8+Math.random()*0.8;
+        y=0.3+Math.random()*0.25;
+        var side=Math.random()>0.5?1:-1;
+        z=side*(0.6+Math.random()*0.7);
       }else if(r<0.97){
-        // Headlights - narrow, angular
-        x=-6.3;y=0.4+Math.random()*0.3;z=(Math.random()>0.5?1:-1)*(0.5+Math.random()*0.5);
+        // TAILLIGHTS - horizontal light bar
+        x=5.3+Math.random()*0.3;
+        y=1.1+Math.random()*0.15;
+        z=(Math.random()-.5)*2.4;
+      }else if(r<0.99){
+        // ROOF SCOOP / SNORKEL
+        x=-0.3+Math.random()*0.5;
+        y=2.3+Math.random()*0.3;
+        z=(Math.random()-.5)*0.4;
       }else{
-        // Taillights - horizontal strip
-        x=4.5;y=1+Math.random()*0.2;z=(Math.random()-.5)*2.2;
+        // SIDE MIRRORS
+        var side=Math.random()>0.5?1:-1;
+        x=-1.5+Math.random()*0.3;
+        y=1.3+Math.random()*0.2;
+        z=side*(1.6+Math.random()*0.2);
       }
       pts.push(x,y,z);
     }
@@ -501,7 +570,7 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   sctx.fillStyle=grad;sctx.fillRect(0,0,64,64);
   var spriteTexture=new THREE.CanvasTexture(spriteCanvas);
 
-  var mat=new THREE.PointsMaterial({size:.18,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  var mat=new THREE.PointsMaterial({size:.14,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
   var points=new THREE.Points(geo,mat);
   scene.add(points);
 
@@ -613,8 +682,8 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     camera.position.set(camX,camY,camZ);
     camera.lookAt(0,0,0);
 
-    // Opacity: faint during hero, full after
-    mat.opacity=sp<0.12?0.3:0.8;
+    // Full opacity always - particles ARE the experience
+    mat.opacity=0.85;
 
     renderer.render(scene,camera);
   }
