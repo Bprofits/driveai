@@ -26,7 +26,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem}
 
 /* HERO - full height, video behind */
-.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2;background:transparent}
+.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2}
 .hero-content{position:relative;z-index:2;max-width:600px;padding:0 4rem}
 .hero-ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;animation:fu .6s .3s forwards}
 .hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);line-height:.93;letter-spacing:2px;opacity:0;animation:fu .7s .5s forwards}
@@ -120,7 +120,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 </nav>
 
 <!-- HERO -->
-<section class="hero" style="background:transparent">
+<section class="hero" style="background:#000">
   <div class="hero-content">
     <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:100px;width:auto;margin-bottom:1.2rem;opacity:0;animation:fu .5s .1s forwards">
     <div class="hero-ol">AI-Powered Sales Intelligence for Dealerships</div>
@@ -160,12 +160,12 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
   </div>
 </section>
 
-<!-- S3: COCKPIT - The Driver's Seat -->
+<!-- S3: DRIVETRAIN - The System -->
 <section class="psection" id="s-drive">
   <div class="psection-text">
-    <div class="ol rv">The Cockpit</div>
-    <div class="h2 rv rv-1">Your Team <em>Closes.</em><br>AI Handles the Rest.</div>
-    <div class="bd rv rv-2">Warm, qualified appointments land on their calendar with full context. Your salespeople sell cars. The AI handles follow-up, reminders, re-engagement, and every touchpoint in between.</div>
+    <div class="ol rv">The Drivetrain</div>
+    <div class="h2 rv rv-1"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
+    <div class="bd rv rv-2">7+ touchpoints over 30 days. Qualifies, follows up, books appointments, sends reminders, re-engages no-shows. Natural conversation, not robotic scripts.</div>
     <div class="stats-row rv rv-3">
       <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
       <div><div class="sv">7+</div><div class="sl">Touches</div></div>
@@ -222,273 +222,158 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
 (function(){
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight,.1,500);
-  camera.position.set(0,2,18);
-  camera.lookAt(0,0,0);
+  camera.position.set(4,2,20);
+  camera.lookAt(4,0,0);
   var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('stage'),alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  var COUNT=25000;
+  var COUNT=15000;
   var PI2=Math.PI*2;
 
   // ═══ SHAPE GENERATORS ═══
   // Each returns Float32Array of COUNT*3 positions
 
-  // SHAPE 0: McLaren P1 GTR - EDGE-TRACED for sharp recognizable silhouette
+  // SHAPE 0: McLaren P1 style supercar - highly detailed
   function makeCar(){
     var pts=[];
-    // The car profile as a series of (x,y) points tracing the OUTLINE
-    // These are the KEY LINES that make the P1 recognizable
-    var profile=[
-      [-6.5,.05],[-6.3,.05],[-6,.08],[-5.5,.12],[-5,.2],[-4.8,.3],[-4.5,.45],
-      [-4.2,.55],[-4,.6],[-3.5,.62],[-3,.63],[-2.5,.65],[-2,.67],[-1.5,.7],
-      [-1.2,.85],[-1,1.1],[-.8,1.4],[-.6,1.7],[-.4,1.95],[-.2,2.1],[0,2.2],
-      [.2,2.28],[.5,2.3],[.8,2.25],[1.2,2.15],[1.5,2],[1.8,1.85],[2.2,1.75],
-      [2.6,1.65],[3,1.55],[3.3,1.45],[3.6,1.35],[4,1.25],[4.3,1.15],[4.6,1.05],
-      [4.8,1],[5,.95],[5.3,.9],[5.5,.85]
-    ];
-    // Bottom profile (floor line)
-    var bottom=[[-6.5,.05],[-6,.02],[-5,0],[-4,0],[-3,0],[-2,0],[-1,0],[0,0],
-      [1,0],[2,0],[3,0],[4,0],[5,0],[5.5,.05]];
-    // Width at each x position
-    function W(xn){
-      var t=(xn+6.5)/12; // normalize 0-1
-      if(t<.05)return .7;if(t<.15)return .7+(t-.05)*10;
-      if(t<.25)return 1.7+Math.sin((t-.15)/.1*Math.PI)*.3;
-      if(t<.35)return 1.6-(t-.25)*3;if(t<.5)return 1.3;
-      if(t<.6)return 1.3+(t-.5)*7;
-      if(t<.75)return 2+Math.sin((t-.6)/.15*Math.PI)*.2;
-      if(t<.9)return 1.9-(t-.75)*3;return 1.45;
-    }
-
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
+      z=(Math.random()-.5)*2.6;
+      var zAbs=Math.abs(z);
 
-      if(r<.30){
-        // TOP PROFILE LINE - dense particles tracing the silhouette edge
-        var idx=Math.floor(Math.random()*(profile.length-1));
-        var t=Math.random();
-        var p0=profile[idx],p1=profile[idx+1];
-        x=p0[0]+(p1[0]-p0[0])*t;
-        y=p0[1]+(p1[1]-p0[1])*t;
-        z=(Math.random()-.5)*.08; // very thin line
-        // Also trace on both sides
-        if(Math.random()>.5){var side=Math.random()>.5?1:-1;z=side*W(x)*.95+(Math.random()-.5)*.05}
-      }else if(r<.42){
-        // BOTTOM PROFILE LINE
-        var idx=Math.floor(Math.random()*(bottom.length-1));
-        var t=Math.random();
-        var p0=bottom[idx],p1=bottom[idx+1];
-        x=p0[0]+(p1[0]-p0[0])*t;
-        y=p0[1]+(p1[1]-p0[1])*t;
-        z=(Math.random()-.5)*.06;
-        if(Math.random()>.5){var side=Math.random()>.5?1:-1;z=side*W(x)}
-      }else if(r<.52){
-        // SIDE OUTLINE - profile line running along the side at various heights
-        var idx=Math.floor(Math.random()*(profile.length-1));
-        var t=Math.random();
-        var p0=profile[idx],p1=profile[idx+1];
-        x=p0[0]+(p1[0]-p0[0])*t;
-        var maxY=p0[1]+(p1[1]-p0[1])*t;
-        var side=Math.random()>.5?1:-1;
-        z=side*W(x);
-        y=Math.random()*maxY;
-      }else if(r<.60){
-        // TOP SURFACE FILL (lighter density)
-        var idx=Math.floor(Math.random()*(profile.length-1));
-        var t=Math.random();
-        var p0=profile[idx],p1=profile[idx+1];
-        x=p0[0]+(p1[0]-p0[0])*t;
-        y=p0[1]+(p1[1]-p0[1])*t-(Math.random()*.05);
-        var w=W(x);
-        z=(Math.random()-.5)*w*.8;
-      }else if(r<.64){
-        // FRONT SPLITTER
-        x=-6.5+Math.random()*2;y=.02+Math.random()*.04;z=(Math.random()-.5)*3.2;
-        if(Math.random()>.6){x=-6.5;z=(Math.random()-.5)*3.2} // front edge
-      }else if(r<.67){
-        // FRONT WHEEL ARCHES (semicircular cutouts)
-        var side=Math.random()>.5?1:-1;
-        var a=Math.random()*Math.PI; // top half only
-        x=-4.2+Math.cos(a)*.65;y=Math.sin(a)*.65;z=side*1.3;
-      }else if(r<.70){
-        // REAR WHEEL ARCHES
-        var side=Math.random()>.5?1:-1;
-        var a=Math.random()*Math.PI;
-        x=3.5+Math.cos(a)*.7;y=Math.sin(a)*.7;z=side*1.4;
-      }else if(r<.77){
-        // GT WING
-        var wp=Math.random();
-        if(wp<.35){x=4.5+Math.random()*1.2;y=2.65+Math.random()*.04;z=(Math.random()-.5)*3.8}
-        else if(wp<.5){x=5.7;y=2.65+Math.random()*.16;z=(Math.random()-.5)*3.6} // gurney
-        else if(wp<.7){var side=Math.random()>.5?1:-1;var t=Math.random();x=4.2+t*.8;y=1.4+t*1.25;z=side*.6} // pylons
-        else{var side=Math.random()>.5?1:-1;x=4.3+Math.random()*1.5;y=2.1+Math.random()*.8;z=side*1.85} // endplates
-      }else if(r<.80){
-        // SIDE INTAKES
-        var side=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=.5+t*2.5;y=.1+Math.random()*(1.3-t*.4);z=side*1.5;
-        if(Math.random()>.7){x=.5;y=.1+Math.random()*1.3;z=side*1.52} // leading edge
-      }else if(r<.83){
-        // REAR DIFFUSER
-        var fin=Math.floor(Math.random()*7)-3;
-        x=5.2+Math.random()*1;y=Math.random()*.4;z=fin*.35;
-      }else if(r<.91){
-        // WHEELS - dense circles
-        var isR=Math.random()>.5;var side=Math.random()>.5?1:-1;
-        var cx=isR?3.5:-4.2;var cy=isR?.55:.5;var wr=isR?.6:.5;
-        var a=Math.random()*PI2;var p2=Math.random();
-        if(p2<.4){x=cx+Math.cos(a)*wr;y=cy+Math.sin(a)*wr;z=side*(isR?1.4:1.25)+(Math.random()-.5)*.2}
-        else if(p2<.6){var rr=wr*.7;x=cx+Math.cos(a)*rr;y=cy+Math.sin(a)*rr;z=side*(isR?1.4:1.25)}
-        else if(p2<.85){var sp=Math.floor(Math.random()*5)/5*PI2;var sd=Math.random()*wr*.6;x=cx+Math.cos(sp)*sd;y=cy+Math.sin(sp)*sd;z=side*(isR?1.4:1.25)}
-        else{x=cx+Math.cos(a)*.1;y=cy+Math.sin(a)*.1;z=side*(isR?1.42:1.27)}
-      }else if(r<.93){
-        // HEADLIGHTS
-        var side=Math.random()>.5?1:-1;var t=Math.random();
-        x=-5.6+t*1;y=.18+t*.12;z=side*(.3+t*.7);
-      }else if(r<.95){
-        // TAILLIGHTS
-        x=5.35+Math.random()*.1;y=1+Math.random()*.06;z=(Math.random()-.5)*2.4;
-      }else if(r<.97){
-        // ENGINE LOUVERS
-        var l=Math.floor(Math.random()*6);x=1.8+l*.4;y=1.85-l*.06;z=(Math.random()-.5)*1.4;
-      }else if(r<.99){
-        // DOOR LINES
-        var side=Math.random()>.5?1:-1;var t=Math.random();
-        x=-2+t*3.5;y=.1+Math.pow(t,.7)*1.8;z=side*W(x)*.97;
+      if(r<0.08){
+        // Front splitter - very low, wide, aggressive
+        x=-7+Math.random()*1.5;
+        y=-0.3+Math.random()*0.2;
+        z=(Math.random()-.5)*3;
+      }else if(r<0.18){
+        // Front nose - sharp, low, tapered
+        x=-6.5+Math.random()*1.5;
+        var noseH=0.3+Math.pow(Math.max(0,(x+5.5)/1.5),0.7)*0.6;
+        y=Math.random()*noseH;
+      }else if(r<0.25){
+        // Front fenders - bulging over wheels
+        x=-5+Math.random()*1.5;
+        var fenderBulge=1.2+Math.sin((x+4.2)*2)*0.4;
+        y=Math.random()*fenderBulge;
+        z=(Math.random()>0.5?1:-1)*(1.1+Math.sin((x+4.2)*2)*0.3);
+      }else if(r<0.32){
+        // Hood - low, sculpted with air intakes
+        x=-4.5+Math.random()*3;
+        y=0.6+Math.random()*0.3+Math.sin(x*1.5)*0.1;
+        if(Math.random()>0.7){y+=0.2;z*=0.3} // hood scoop
+      }else if(r<0.42){
+        // Windshield - steep, fighter-jet style rake
+        x=-2+Math.random()*1.5;
+        var windH=0.9+(x+2)*1.1;
+        y=windH+Math.random()*0.1;
+        z*=0.8; // narrower at top
+      }else if(r<0.52){
+        // Roof/canopy - teardrop shape, very low
+        x=-0.8+Math.random()*2;
+        var roofH=2.3+Math.sin((x+0.3)*1.2)*0.3;
+        y=roofH-Math.random()*0.15;
+        z*=0.7;
+      }else if(r<0.58){
+        // Side air intakes (behind doors) - signature P1 scoops
+        x=0.5+Math.random()*1.5;
+        y=0.3+Math.random()*1;
+        z=(Math.random()>0.5?1:-1)*(1.3+Math.random()*0.2);
+      }else if(r<0.65){
+        // Rear window/engine cover - descending with louvers
+        x=1.5+Math.random()*2;
+        var rearH=2.1-Math.pow(Math.max(0,(x-1.5)/2),0.8)*0.8;
+        y=rearH-Math.random()*0.2;
+        z*=0.75;
+      }else if(r<0.72){
+        // Rear haunches - wide, muscular
+        x=2+Math.random()*2;
+        y=0.3+Math.random()*1.2;
+        z=(Math.random()>0.5?1:-1)*(1.2+Math.sin((x-2)*1.5)*0.3);
+      }else if(r<0.77){
+        // Active rear wing - high, wide
+        x=3.8+Math.random()*0.8;
+        y=2.5+Math.random()*0.15;
+        z=(Math.random()-.5)*3.2;
+      }else if(r<0.82){
+        // Wing supports
+        x=4;y=1.5+Math.random()*1;z=(Math.random()>0.5?1:-1)*0.8;
+      }else if(r<0.86){
+        // Rear diffuser + exhaust - aggressive, low
+        x=4+Math.random()*1;
+        y=-0.2+Math.random()*0.5;
+        z=(Math.random()-.5)*2.5;
+      }else if(r<0.9){
+        // Front wheels (large, detailed)
+        var a=Math.random()*PI2;var wr=0.55+Math.random()*0.1;
+        x=-4.3+Math.cos(a)*wr;
+        y=0.55+Math.sin(a)*wr;
+        z=(Math.random()>0.5?1:-1)*1.2;
+        // Spokes
+        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=-4.3+Math.cos(sa)*wr*Math.random();y=0.55+Math.sin(sa)*wr*Math.random()}
+      }else if(r<0.94){
+        // Rear wheels (even larger)
+        var a=Math.random()*PI2;var wr=0.6+Math.random()*0.1;
+        x=2.8+Math.cos(a)*wr;
+        y=0.6+Math.sin(a)*wr;
+        z=(Math.random()>0.5?1:-1)*1.25;
+        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=2.8+Math.cos(sa)*wr*Math.random();y=0.6+Math.sin(sa)*wr*Math.random()}
+      }else if(r<0.97){
+        // Headlights - narrow, angular
+        x=-6.3;y=0.4+Math.random()*0.3;z=(Math.random()>0.5?1:-1)*(0.5+Math.random()*0.5);
       }else{
-        // MIRRORS
-        var side=Math.random()>.5?1:-1;x=-1.3;y=1.3;z=side*1.6;
+        // Taillights - horizontal strip
+        x=4.5;y=1+Math.random()*0.2;z=(Math.random()-.5)*2.2;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 1: V8 ENGINE - anatomically detailed
+  // SHAPE 1: ENGINE - V8 block with detail
   function makeEngine(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-
-      if(r<0.18){
-        // CYLINDER BANKS - 8 individual cylinders in V formation
+      if(r<0.3){
+        // Cylinder heads (2 banks, 4 per bank)
         var bank=Math.random()>0.5?1:-1;
-        var cylIdx=Math.floor(Math.random()*4);
+        var cyl=Math.floor(Math.random()*4);
         var a=Math.random()*PI2;
-        var cr=0.45;
-        var cx=cylIdx*1.4-2.1;
-        // V angle ~90 degrees
-        x=cx;
-        y=1.2+Math.sin(a)*cr+bank*0.8;
-        z=Math.cos(a)*cr+bank*1.2;
-        // Cylinder walls (dense ring)
-        if(Math.random()>0.5){var wa=Math.random()*PI2;x=cx;y=1.2+Math.sin(wa)*cr+bank*0.8;z=Math.cos(wa)*cr+bank*1.2}
-      }else if(r<0.28){
-        // VALVE COVERS - curved top surfaces over each bank
-        var bank=Math.random()>0.5?1:-1;
-        x=(Math.random()-.5)*5.5;
-        y=2+bank*0.3+Math.sin(x*0.8)*0.1;
-        z=bank*1.8+Math.random()*0.3*bank;
-      }else if(r<0.38){
-        // ENGINE BLOCK - main casting, rectangular mass
+        var cr=0.5+Math.random()*0.3;
+        x=cyl*1.5-2.25;
+        y=1.5*bank+Math.sin(a)*cr;
+        z=Math.cos(a)*cr;
+      }else if(r<0.5){
+        // Engine block (center mass)
         x=(Math.random()-.5)*6;
-        y=(Math.random())*2;
-        z=(Math.random()-.5)*2.2;
-        // Block surface detail
-        if(Math.abs(z)>0.9){z=Math.sign(z)*(1+Math.random()*0.15)}
-      }else if(r<0.46){
-        // INTAKE MANIFOLD + PLENUM - sits on top center
-        x=(Math.random()-.5)*4;
-        var plenum=Math.random();
-        if(plenum<0.4){
-          // Plenum box
-          y=2.5+Math.random()*0.8;z=(Math.random()-.5)*1.2;
-        }else{
-          // Individual runners (8 tubes curving down to ports)
-          var runner=Math.floor(Math.random()*8);
-          var rt=Math.random();
-          var rx=runner*0.65-2.3;
-          y=2.5-rt*1.2;z=(runner%2==0?1:-1)*(0.3+rt*0.8);
-          x=rx;
-        }
-      }else if(r<0.55){
-        // EXHAUST HEADERS - 4 tubes per side merging into collectors
-        var bank=Math.random()>0.5?1:-1;
-        var tube=Math.floor(Math.random()*4);
-        var t=Math.random();
-        var a=Math.random()*PI2;var tr=0.15;
-        x=tube*1.4-2.1+t*0.5;
-        y=-0.5-t*1.5+Math.sin(a)*tr;
-        z=bank*(2+t*0.8)+Math.cos(a)*tr;
-        // Collector merge
-        if(t>0.7){x=(Math.random()-.5)*1+1;z=bank*3}
-      }else if(r<0.6){
-        // TIMING COVER + WATER PUMP + PULLEYS (front face)
-        var a=Math.random()*PI2;
-        var which=Math.floor(Math.random()*3);
-        var pr=[1.2,0.6,0.8][which];
-        var py=[0.8,1.8,0][which];
-        x=-3.2-Math.random()*0.15;
-        y=py+Math.sin(a)*pr;
-        z=Math.cos(a)*pr;
-      }else if(r<0.66){
-        // SERPENTINE BELT path (connects pulleys)
-        var t=Math.random()*PI2;
-        var beltR=1.5+Math.sin(t*3)*0.4;
-        x=-3.3;
-        y=0.8+Math.sin(t)*beltR;
-        z=Math.cos(t)*beltR;
-      }else if(r<0.72){
-        // OIL PAN - deep sump underneath
-        x=(Math.random()-.5)*5;
-        y=-1.5-Math.random()*1;
+        y=(Math.random()-.5)*2;
         z=(Math.random()-.5)*2;
-        // Sump extension
-        if(Math.random()>0.6){x=(Math.random()-.5)*2;y=-2.5-Math.random()*0.5;z=(Math.random()-.5)*1.2}
-      }else if(r<0.77){
-        // ALTERNATOR + AC COMPRESSOR (accessories on sides)
-        var side=Math.random()>0.5?1:-1;
-        var a=Math.random()*PI2;var ar=0.5;
-        x=-2+Math.random()*1;
-        y=-0.3+Math.sin(a)*ar;
-        z=side*(2.2)+Math.cos(a)*ar;
-      }else if(r<0.82){
-        // SPARK PLUG WIRES (8 wires from distributor to cylinders)
-        var wire=Math.floor(Math.random()*8);
-        var t=Math.random();
-        var bank=wire<4?1:-1;
-        var cylX=(wire%4)*1.4-2.1;
-        x=-2+t*(cylX+2);
-        y=2.5-t*0.8;
-        z=t*bank*1.5;
-      }else if(r<0.87){
-        // FLYWHEEL/FLEXPLATE (rear face)
-        var a=Math.random()*PI2;
-        var fr=0.3+Math.random()*1.2;
-        x=3.2+Math.random()*0.1;
-        y=0.8+Math.sin(a)*fr;
-        z=Math.cos(a)*fr;
-      }else if(r<0.92){
-        // THROTTLE BODY (top of intake)
-        var a=Math.random()*PI2;var tbr=0.35;
-        x=0;y=3.3+Math.sin(a)*tbr;z=Math.cos(a)*tbr;
-        // Butterfly valve inside
-        if(Math.random()>0.7){y=3.3;z=(Math.random()-.5)*0.6}
-      }else if(r<0.96){
-        // FUEL RAILS (2 tubes along top of cylinder banks)
-        var bank=Math.random()>0.5?1:-1;
+      }else if(r<0.65){
+        // Intake manifold (top)
         x=(Math.random()-.5)*5;
-        y=2.3;z=bank*1.2;
-        // Injectors dangling down
-        if(Math.random()>0.6){var inj=Math.floor(Math.random()*4);x=inj*1.4-2.1;y=2.3-Math.random()*0.5;z=bank*1}
-      }else{
-        // ENGINE MOUNTS + BRACKETS
+        y=2+Math.random()*1.5;
+        z=(Math.random()-.5)*1.5;
+      }else if(r<0.75){
+        // Exhaust headers (bottom sides)
+        var side=Math.random()>0.5?1:-1;
+        x=(Math.random()-.5)*5;
+        y=-1-Math.random()*1.5;
+        z=side*(1.5+Math.random()*1);
+      }else if(r<0.85){
+        // Belts/pulleys (front)
         var a=Math.random()*PI2;
-        x=(Math.random()>0.5?-3:3)+Math.random()*0.5;
-        y=-0.5+Math.random()*0.5;
+        var pr=1+Math.random()*1.5;
+        x=-3.5;
+        y=Math.sin(a)*pr;
+        z=Math.cos(a)*pr;
+      }else{
+        // Oil pan/sump (bottom)
+        x=(Math.random()-.5)*4;
+        y=-2-Math.random()*0.8;
         z=(Math.random()-.5)*2.5;
       }
       pts.push(x,y,z);
@@ -496,254 +381,92 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     return new Float32Array(pts);
   }
 
-  // SHAPE 2: COCKPIT INTERIOR - steering wheel, dash, seats, center console
+  // SHAPE 2: DRIVETRAIN - transmission + driveshaft + diff + axles
   function makeDrivetrain(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-
-      if(r<.25){
-        // STEERING WHEEL RIM - thick circle, tilted toward driver
+      if(r<0.25){
+        // Transmission housing
+        x=(Math.random()-.5)*2.5-3;
+        y=(Math.random()-.5)*2;
+        z=(Math.random()-.5)*2;
+      }else if(r<0.45){
+        // Driveshaft (long tube)
         var a=Math.random()*PI2;
-        var rimR=2.8;
-        var rimThick=.18;
-        var ta=Math.random()*PI2;
-        x=Math.cos(a)*rimR+Math.cos(ta)*rimThick;
-        y=Math.sin(a)*rimR+Math.sin(ta)*rimThick;
-        z=(Math.random()-.5)*.15;
-        // Tilt the wheel ~25 degrees
-        var ty=y;y=ty*Math.cos(.44)-z*Math.sin(.44);z=ty*Math.sin(.44)+z*Math.cos(.44);
-      }else if(r<.33){
-        // STEERING WHEEL SPOKES (3 spokes, 120 degrees apart)
-        var spoke=Math.floor(Math.random()*3);
-        var spokeAngle=spoke*PI2/3-Math.PI/2; // bottom spoke centered
-        var t=Math.random();
-        var sw=.25-t*.1; // spoke width narrows toward center
-        x=Math.cos(spokeAngle)*t*2.5+(Math.random()-.5)*sw;
-        y=Math.sin(spokeAngle)*t*2.5+(Math.random()-.5)*sw;
-        z=(Math.random()-.5)*.1;
-        var ty=y;y=ty*Math.cos(.44)-z*Math.sin(.44);z=ty*Math.sin(.44)+z*Math.cos(.44);
-      }else if(r<.38){
-        // CENTER HUB / AIRBAG COVER
+        x=-1+Math.random()*7;
+        y=Math.sin(a)*0.2;
+        z=Math.cos(a)*0.2;
+      }else if(r<0.6){
+        // Differential housing
         var a=Math.random()*PI2;
-        var hr=.6+Math.random()*.3;
-        x=Math.cos(a)*hr;
-        y=Math.sin(a)*hr;
-        z=.05+Math.random()*.08;
-        var ty=y;y=ty*Math.cos(.44)-z*Math.sin(.44);z=ty*Math.sin(.44)+z*Math.cos(.44);
-        // Logo emblem at center
-        if(Math.random()>.7){var la=Math.random()*PI2;var lr=.2;x=Math.cos(la)*lr;y=Math.sin(la)*lr;z=.15}
-      }else if(r<.48){
-        // DASHBOARD - wide curved surface behind the wheel
-        var t=Math.random(); // left to right
-        x=(t-.5)*10;
-        y=1.5+Math.sin(t*Math.PI)*.8; // curved shape
-        z=-2-Math.random()*.6;
-        // Dashboard top surface
-        if(Math.random()>.5){y=1.5+Math.sin(t*Math.PI)*.8+(Math.random()-.5)*.05;z=-2}
-      }else if(r<.55){
-        // INSTRUMENT CLUSTER (behind steering wheel)
-        var t=Math.random();
-        x=(t-.5)*3;
-        y=1.8+Math.sin(t*Math.PI)*.4;
-        z=-1.8;
-        // Gauge circles (2 main gauges)
-        if(Math.random()>.5){
-          var gauge=Math.random()>.5?-0.8:0.8;
-          var a=Math.random()*PI2;
-          var gr=.5;
-          x=gauge+Math.cos(a)*gr;
-          y=2+Math.sin(a)*gr;
-          z=-1.8;
-        }
-      }else if(r<.62){
-        // CENTER CONSOLE - runs between seats
-        x=(Math.random()-.5)*1.2;
-        y=-1+Math.random()*2.5;
-        z=-1-Math.random()*2;
-        // Gear shifter
-        if(Math.random()>.7){x=(Math.random()-.5)*.3;y=0+Math.random()*.8;z=-1.5}
-        // Screen/infotainment
-        if(Math.random()>.8){x=(Math.random()-.5)*1.5;y=1+Math.random()*1;z=-1.6}
-      }else if(r<.72){
-        // SEATS (2 bucket seats, left and right)
-        var side=Math.random()>.5?1:-1;
-        var part=Math.random();
-        if(part<.4){
-          // Seat back
-          x=side*2.5+(Math.random()-.5)*.8;
-          y=-1+Math.random()*3;
-          z=-3-Math.random()*.3;
-        }else if(part<.7){
-          // Seat base
-          x=side*2.5+(Math.random()-.5)*.8;
-          y=-1+(Math.random()-.5)*.3;
-          z=-2-Math.random()*1.5;
-        }else{
-          // Headrest
-          x=side*2.5+(Math.random()-.5)*.4;
-          y=2.2+Math.random()*.8;
-          z=-3.2+(Math.random()-.5)*.2;
-        }
-      }else if(r<.78){
-        // WINDSHIELD (angled glass plane)
-        var t=Math.random();
-        x=(t-.5)*8;
-        y=1+t*1.5+Math.random()*.1;
-        z=-4+t*1.5;
-      }else if(r<.83){
-        // A-PILLARS (2 angled bars framing windshield)
-        var side=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=side*(3.5+t*.5);
-        y=.5+t*2.5;
-        z=-3.5+t*1;
-      }else if(r<.88){
-        // DOOR PANELS (left and right interior walls)
-        var side=Math.random()>.5?1:-1;
-        x=side*(4+(Math.random()-.5)*.15);
-        y=-1+Math.random()*2.5;
-        z=-1-Math.random()*2.5;
-      }else if(r<.92){
-        // PEDALS (3 at the footwell)
-        var pedal=Math.floor(Math.random()*3);
-        x=-1+pedal*.8;
-        y=-2+(Math.random()-.5)*.3;
-        z=-1-(Math.random()-.5)*.5;
-      }else if(r<.96){
-        // ROOF LINING
-        x=(Math.random()-.5)*7;
-        y=3+(Math.random()-.5)*.1;
-        z=-2-Math.random()*2;
+        var dr=0.8+Math.random()*0.5;
+        x=6+Math.cos(a)*dr*0.5;
+        y=Math.sin(a)*dr;
+        z=Math.cos(a)*dr;
+      }else if(r<0.8){
+        // Rear axles (left and right)
+        var side=Math.random()>0.5?1:-1;
+        x=6+Math.random()*0.5;
+        y=(Math.random()-.5)*0.3;
+        z=side*(1.5+Math.random()*2.5);
       }else{
-        // FLOOR
-        x=(Math.random()-.5)*7;
-        y=-2+(Math.random()-.5)*.1;
-        z=-1-Math.random()*3;
+        // Wheels at ends of axles
+        var side=Math.random()>0.5?1:-1;
+        var a=Math.random()*PI2;
+        var wr=1+Math.random()*0.3;
+        x=6;
+        y=Math.sin(a)*wr;
+        z=side*4+Math.cos(a)*wr*0.3;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 3: AI PROCESSOR - detailed chip + circuit board + neural network
+  // SHAPE 3: BRAIN/CPU - neural sphere with connections
   function makeBrain(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-
-      if(r<0.15){
-        // CPU DIE - the silicon chip itself (small square, glowing center)
-        x=(Math.random()-.5)*1.8;
-        y=(Math.random()-.5)*1.8;
-        z=0.3+Math.random()*0.05;
-        // Die surface circuit patterns
-        if(Math.random()>0.5){x=Math.floor(Math.random()*8-4)*0.25;y=Math.floor(Math.random()*8-4)*0.25}
-      }else if(r<0.25){
-        // HEAT SPREADER (IHS) - metal cap over the die
-        x=(Math.random()-.5)*2.5;
-        y=(Math.random()-.5)*2.5;
-        z=0.35+Math.random()*0.02;
-        // Edges
-        if(Math.abs(x)>1||Math.abs(y)>1){z=0.1+Math.random()*0.25}
-      }else if(r<0.35){
-        // PACKAGE SUBSTRATE - green PCB base
-        x=(Math.random()-.5)*3.5;
-        y=(Math.random()-.5)*3.5;
-        z=-Math.random()*0.1;
-      }else if(r<0.42){
-        // PIN GRID (hundreds of pins underneath)
-        var px=Math.floor(Math.random()*20-10)*0.16;
-        var py=Math.floor(Math.random()*20-10)*0.16;
-        x=px;y=py;z=-0.1-Math.random()*0.5;
-        // Pin stems
-        if(Math.random()>0.5){z=-0.1-Math.random()*0.3}
-      }else if(r<0.52){
-        // CIRCUIT TRACES radiating outward from chip
-        var angle=Math.floor(Math.random()*16)/16*PI2;
-        var dist=2+Math.random()*4;
-        x=Math.cos(angle)*dist;
-        y=Math.sin(angle)*dist;
-        z=0+Math.random()*0.05;
-        // Trace routing (manhattan style - horizontal/vertical segments)
-        if(Math.random()>0.5){var seg=Math.random();if(seg<0.5)y=Math.sin(angle)*2;else x=Math.cos(angle)*2}
-      }else if(r<0.62){
-        // CAPACITORS + RESISTORS on the board (small rectangles scattered)
-        var dist=2.5+Math.random()*3;
-        var angle=Math.random()*PI2;
-        x=Math.cos(angle)*dist;
-        y=Math.sin(angle)*dist;
-        z=0.05+Math.random()*0.15;
-      }else if(r<0.72){
-        // NEURAL NETWORK NODES - spherical clusters at connection points
-        var nodeIdx=Math.floor(Math.random()*12);
-        var nodeAngle=nodeIdx/12*PI2;
-        var nodeDist=3+Math.floor(nodeIdx/4)*1.5;
-        var nx=Math.cos(nodeAngle)*nodeDist;
-        var ny=Math.sin(nodeAngle)*nodeDist;
-        // Cluster of particles around each node
-        var a=Math.random()*PI2;var phi=Math.acos(2*Math.random()-1);
-        var nr=0.3+Math.random()*0.2;
-        x=nx+Math.sin(phi)*Math.cos(a)*nr;
-        y=ny+Math.sin(phi)*Math.sin(a)*nr;
-        z=Math.cos(phi)*nr;
-      }else if(r<0.82){
-        // NEURAL CONNECTIONS - lines between nodes (synapses)
-        var nodeA=Math.floor(Math.random()*12);
-        var nodeB=(nodeA+Math.floor(Math.random()*5)+1)%12;
-        var aAngle=nodeA/12*PI2;var bAngle=nodeB/12*PI2;
-        var aDist=3+Math.floor(nodeA/4)*1.5;
-        var bDist=3+Math.floor(nodeB/4)*1.5;
-        var t=Math.random();
-        x=Math.cos(aAngle)*aDist*(1-t)+Math.cos(bAngle)*bDist*t;
-        y=Math.sin(aAngle)*aDist*(1-t)+Math.sin(bAngle)*bDist*t;
-        z=(Math.random()-.5)*0.3;
-        // Slight curve to connections
-        z+=Math.sin(t*Math.PI)*0.5;
-      }else if(r<0.88){
-        // DATA STREAMS - flowing particles in arcs above the chip
-        var streamAngle=Math.random()*PI2;
-        var t=Math.random();
-        var streamR=2+t*4;
-        x=Math.cos(streamAngle)*streamR;
-        y=Math.sin(streamAngle)*streamR;
-        z=1+Math.sin(t*Math.PI)*2;
-      }else if(r<0.94){
-        // HOLOGRAPHIC DATA PANELS (floating rectangles)
-        var panel=Math.floor(Math.random()*4);
-        var pAngle=panel/4*PI2+0.4;
-        var pDist=5+Math.random()*1;
-        x=Math.cos(pAngle)*pDist+(Math.random()-.5)*1.5;
-        y=Math.sin(pAngle)*pDist+(Math.random()-.5)*1;
-        z=1+Math.random()*1.5;
-        // Panel border (denser on edges)
-        if(Math.random()>0.5){
-          var edge=Math.floor(Math.random()*4);
-          if(edge==0)x=Math.cos(pAngle)*pDist-0.75;
-          else if(edge==1)x=Math.cos(pAngle)*pDist+0.75;
-          else if(edge==2)y=Math.sin(pAngle)*pDist-0.5;
-          else y=Math.sin(pAngle)*pDist+0.5;
-        }
+      if(r<0.5){
+        // Brain sphere surface
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var br=3.5+Math.random()*0.3;
+        // Add brain-fold bumps
+        br+=Math.sin(phi*8)*0.2+Math.sin(theta*6)*0.15;
+        x=Math.sin(phi)*Math.cos(theta)*br;
+        y=Math.sin(phi)*Math.sin(theta)*br;
+        z=Math.cos(phi)*br;
+      }else if(r<0.7){
+        // Inner neural pathways (lines from center outward)
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var dist=Math.random()*3.5;
+        x=Math.sin(phi)*Math.cos(theta)*dist;
+        y=Math.sin(phi)*Math.sin(theta)*dist;
+        z=Math.cos(phi)*dist;
       }else{
-        // OUTER ENERGY RING - orbital ring around the whole assembly
-        var ringAngle=Math.random()*PI2;
-        var ringR=6.5+Math.random()*0.2;
-        x=Math.cos(ringAngle)*ringR;
-        y=Math.sin(ringAngle)*ringR;
-        z=Math.sin(ringAngle*3)*0.3;
+        // Synaptic tendrils extending beyond sphere
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var dist=3.5+Math.random()*3;
+        x=Math.sin(phi)*Math.cos(theta)*dist;
+        y=Math.sin(phi)*Math.sin(theta)*dist;
+        z=Math.cos(phi)*dist;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // Offset all shapes to the right so they don't block left-side text
-  function shiftRight(arr,dx){for(var i=0;i<arr.length;i+=3)arr[i]+=dx;return arr}
-  var XOFF=5;
-  var shapes=[shiftRight(makeCar(),XOFF),shiftRight(makeEngine(),XOFF),shiftRight(makeDrivetrain(),XOFF),shiftRight(makeBrain(),XOFF)];
-  var shapeNames=['VEHICLE','ENGINE','COCKPIT','AI BRAIN'];
+  // Shift all shapes center-right so text on left stays clean
+  function shiftX(a,dx){for(var i=0;i<a.length;i+=3)a[i]+=dx;return a}
+  var shapes=[shiftX(makeCar(),4),shiftX(makeEngine(),4),shiftX(makeDrivetrain(),4),shiftX(makeBrain(),4)];
+  var shapeNames=['VEHICLE','ENGINE','DRIVETRAIN','AI BRAIN'];
   var shapeTag=document.getElementById('shapeTag');
 
   // Scatter positions
@@ -780,7 +503,7 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   sctx.fillStyle=grad;sctx.fillRect(0,0,64,64);
   var spriteTexture=new THREE.CanvasTexture(spriteCanvas);
 
-  var mat=new THREE.PointsMaterial({size:.14,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  var mat=new THREE.PointsMaterial({size:.18,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
   var points=new THREE.Points(geo,mat);
   scene.add(points);
 
@@ -886,13 +609,13 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     points.rotation.y=scrollPct*Math.PI*0.8+t*0.03;
 
     // Camera position shifts per section
-    var camX=Math.sin(scrollPct*Math.PI*1.5)*3;
+    var camX=4+Math.sin(scrollPct*Math.PI*1.5)*4;
     var camY=2+Math.sin(scrollPct*Math.PI)*.8;
-    var camZ=18-scrollPct*3;
+    var camZ=20-scrollPct*4;
     camera.position.set(camX,camY,camZ);
-    camera.lookAt(XOFF,0,0);
+    camera.lookAt(4,0,0);
 
-    // Full opacity always - particles ARE the experience
+    // Always visible
     mat.opacity=0.85;
 
     renderer.render(scene,camera);
