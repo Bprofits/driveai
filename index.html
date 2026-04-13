@@ -352,56 +352,292 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     return new Float32Array(pts);
   }
 
-  // SHAPE 1: ENGINE (V8 block)
+  // SHAPE 1: CLASSIC V8 ENGINE - realistic proportions, viewed from 3/4 front
   function makeEngine(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();var x,y,z;
-      if(r<.25){
-        var bank=Math.random()>.5?1:-1;var cyl=Math.floor(Math.random()*4);
-        var a=Math.random()*PI2;var cr=.5;
-        x=cyl*1.5-2.25;y=1.2+Math.sin(a)*cr+bank*.8;z=Math.cos(a)*cr+bank*1.2;
-      }else if(r<.4){
-        x=(Math.random()-.5)*6;y=(Math.random())*2;z=(Math.random()-.5)*2.5;
-      }else if(r<.5){
-        x=(Math.random()-.5)*5;y=2.2+Math.random()*1.2;z=(Math.random()-.5)*1.5;
-      }else if(r<.6){
-        var side=Math.random()>.5?1:-1;x=(Math.random()-.5)*5;y=-1-Math.random()*1.5;z=side*(1.5+Math.random());
-      }else if(r<.7){
-        var a=Math.random()*PI2;var pr=1+Math.random()*1.5;x=-3.5;y=Math.sin(a)*pr;z=Math.cos(a)*pr;
-      }else if(r<.8){
-        x=(Math.random()-.5)*4;y=-2-Math.random()*.8;z=(Math.random()-.5)*2.5;
-      }else if(r<.9){
-        var a=Math.random()*PI2;x=3.2;y=.8+Math.sin(a)*1.2;z=Math.cos(a)*1.2;
+
+      if(r<.22){
+        // CYLINDER BANKS - 8 cylinders in 90-degree V, 4 per side
+        var bank=Math.random()>.5?1:-1;
+        var cyl=Math.floor(Math.random()*4);
+        var a=Math.random()*PI2;
+        var cr=.4+Math.random()*.05; // cylinder bore radius
+        var cx=cyl*1.3-1.95; // cylinder spacing along block
+        // V angle: each bank tilted 45 degrees from vertical
+        x=cx;
+        y=1+Math.sin(a)*cr+bank*Math.cos(.785)*.9;
+        z=Math.cos(a)*cr+bank*Math.sin(.785)*1.1;
+        // Cylinder wall rings (denser on the circumference)
+        if(Math.random()>.6){a=Math.random()*PI2;x=cx;y=1+Math.sin(a)*cr+bank*Math.cos(.785)*.9;z=Math.cos(a)*cr+bank*Math.sin(.785)*1.1}
+      }else if(r<.30){
+        // VALVE COVERS - rounded rectangular caps on top of each bank
+        var bank=Math.random()>.5?1:-1;
+        var t=Math.random();
+        x=(t-.5)*5.2;
+        var vcW=.6; // valve cover width
+        var vcOff=bank*1.6; // offset from center for each bank
+        y=2.2+bank*.3+Math.sin(t*Math.PI)*.15; // slight arch
+        z=vcOff+(Math.random()-.5)*vcW;
+        // Valve cover edges (denser outline)
+        if(Math.random()>.5){z=vcOff+((Math.random()>.5)?vcW*.5:-vcW*.5)}
+      }else if(r<.40){
+        // BLOCK - the main rectangular mass between the cylinder banks
+        var surface=Math.random();
+        if(surface<.3){
+          // Front face
+          x=-2.8+(Math.random()-.5)*.1;y=Math.random()*2.2;z=(Math.random()-.5)*2.2;
+        }else if(surface<.6){
+          // Rear face
+          x=2.8+(Math.random()-.5)*.1;y=Math.random()*2.2;z=(Math.random()-.5)*2.2;
+        }else if(surface<.8){
+          // Side walls
+          var side=Math.random()>.5?1:-1;
+          x=(Math.random()-.5)*5.6;y=Math.random()*2;z=side*(1.1+(Math.random()-.5)*.1);
+        }else{
+          // Valley between banks (top center of block)
+          x=(Math.random()-.5)*5.2;y=1.5+Math.random()*.3;z=(Math.random()-.5)*.4;
+        }
+      }else if(r<.48){
+        // INTAKE MANIFOLD + PLENUM - sits in the V valley on top
+        var part=Math.random();
+        if(part<.4){
+          // Plenum (rectangular box on top)
+          x=(Math.random()-.5)*3;y=2.8+Math.random()*.6;z=(Math.random()-.5)*1.2;
+        }else{
+          // 8 intake runners curving down from plenum to each cylinder port
+          var runner=Math.floor(Math.random()*8);
+          var bank2=runner<4?1:-1;
+          var cylIdx=runner%4;
+          var t2=Math.random();
+          x=cylIdx*1.3-1.95;
+          y=2.8-t2*1.2;
+          z=t2*bank2*1.2;
+        }
+      }else if(r<.56){
+        // EXHAUST HEADERS - 4 tubes per side curving down and merging
+        var bank=Math.random()>.5?1:-1;
+        var tube=Math.floor(Math.random()*4);
+        var t=Math.random();
+        var a=Math.random()*PI2;var tr=.12;
+        x=tube*1.3-1.95+t*.3*bank;
+        y=.8-t*1.8+Math.sin(a)*tr;
+        z=bank*(1.3+t*1)+Math.cos(a)*tr;
+        // Collector (tubes merge into one pipe)
+        if(t>.7){x=.5*bank;z=bank*(2.3+Math.random()*.3);y=-1+Math.random()*.5}
+      }else if(r<.62){
+        // FRONT ACCESSORIES - alternator, water pump, pulleys, belt
+        var part=Math.random();
+        if(part<.3){
+          // Water pump pulley (large, center)
+          var a=Math.random()*PI2;var pr=.8;
+          x=-3;y=1+Math.sin(a)*pr;z=Math.cos(a)*pr;
+        }else if(part<.5){
+          // Alternator (upper right)
+          var a=Math.random()*PI2;var pr=.45;
+          x=-3.1;y=1.8+Math.sin(a)*pr;z=1+Math.cos(a)*pr;
+        }else if(part<.7){
+          // Crank pulley (bottom center, large)
+          var a=Math.random()*PI2;var pr=.7;
+          x=-3.1;y=-.2+Math.sin(a)*pr;z=Math.cos(a)*pr;
+        }else{
+          // Serpentine belt path (connects all pulleys)
+          var t=Math.random()*PI2;
+          x=-3.15;
+          y=.8+Math.sin(t)*1.2;
+          z=Math.cos(t)*.9+Math.sin(t*2)*.3;
+        }
+      }else if(r<.68){
+        // OIL PAN - deep rectangle underneath the block
+        var surface=Math.random();
+        x=(Math.random()-.5)*4.5;
+        if(surface<.3){y=-1.5;z=(Math.random()-.5)*1.8} // bottom
+        else if(surface<.6){y=-1-Math.random()*.5;z=(Math.random()>.5?1:-1)*.9} // sides
+        else{y=-1-Math.random()*.5;x=(Math.random()>.5?-2.2:2.2)} // front/rear
+        // Deep sump
+        if(Math.random()>.7){x=(Math.random()-.5)*2;y=-1.8-Math.random()*.4;z=(Math.random()-.5)*1}
+      }else if(r<.72){
+        // DISTRIBUTOR / IGNITION (rear top center)
+        var a=Math.random()*PI2;var dr=.3;
+        x=3+Math.random()*.2;y=2+Math.sin(a)*dr;z=Math.cos(a)*dr;
+        // Spark plug wires radiating out
+        if(Math.random()>.5){var wire=Math.floor(Math.random()*8);var bank3=wire<4?1:-1;var t3=Math.random();x=3-t3*(3-((wire%4)*1.3-1.95));y=2-t3*.8;z=t3*bank3*1.3}
+      }else if(r<.76){
+        // FLYWHEEL (rear face, large disc)
+        var a=Math.random()*PI2;var fr=.4+Math.random()*.8;
+        x=3+Math.random()*.08;y=.8+Math.sin(a)*fr;z=Math.cos(a)*fr;
+      }else if(r<.80){
+        // THROTTLE BODY (top of plenum)
+        var a=Math.random()*PI2;var tbr=.3;
+        x=0;y=3.5+Math.sin(a)*tbr;z=Math.cos(a)*tbr;
+      }else if(r<.84){
+        // FUEL RAILS (2 tubes along top of valve covers)
+        var bank=Math.random()>.5?1:-1;
+        x=(Math.random()-.5)*4.5;y=2.5+bank*.2;z=bank*1.4;
+        // Injectors (8 small nubs)
+        if(Math.random()>.6){var inj=Math.floor(Math.random()*4);x=inj*1.3-1.95;y=2.3+bank*.2;z=bank*1.2}
+      }else if(r<.88){
+        // ENGINE MOUNTS + BRACKETS
+        var side=Math.random()>.5?1:-1;
+        x=(Math.random()>.5?-2.5:2.5);y=.5+Math.random()*.5;z=side*(1.3+Math.random()*.3);
+      }else if(r<.92){
+        // THERMOSTAT HOUSING + UPPER HOSE
+        var t=Math.random();
+        x=-2.5+t*1;y=2+t*.5;z=(Math.random()-.5)*.4;
+      }else if(r<.96){
+        // DIPSTICK TUBE
+        var t=Math.random();
+        x=1.5;y=-1+t*3;z=1+Math.random()*.1;
       }else{
-        x=(Math.random()-.5)*6;y=2.3;z=(Math.random()>.5?1:-1)*1.2;
+        // BOLTS / SURFACE DETAIL scattered on block faces
+        x=(Math.random()-.5)*5.6;
+        y=Math.random()*2.5;
+        z=(Math.random()>.5?1:-1)*(1+Math.random()*.2);
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 2: DRIVETRAIN
+  // SHAPE 2: COMPLETE DRIVETRAIN - realistic car powertrain layout
   function makeDrivetrain(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();var x,y,z;
-      if(r<.2){
-        var a=Math.random()*PI2;x=-4.5+Math.random()*.3;y=Math.sin(a)*1;z=Math.cos(a)*1;
-      }else if(r<.35){
-        x=-4.2+Math.random()*2.5;y=(Math.random()-.5)*1.8;z=(Math.random()-.5)*1.8;
-      }else if(r<.5){
-        var a=Math.random()*PI2;x=-1.5+Math.random()*9;y=Math.sin(a)*.15;z=Math.cos(a)*.15;
-      }else if(r<.62){
-        var a=Math.random()*PI2;var dr=1;x=7.5+Math.cos(a)*dr*.5;y=Math.sin(a)*dr;z=Math.cos(a)*dr;
-      }else if(r<.75){
-        var side=Math.random()>.5?1:-1;x=7.5;y=(Math.random()-.5)*.3;z=side*(1+Math.random()*3);
-      }else if(r<.9){
-        var side=Math.random()>.5?1:-1;var a=Math.random()*PI2;var wr=1.2;
-        x=7.5;y=Math.sin(a)*wr;z=side*4.5+Math.cos(a)*wr*.2;
-        if(Math.random()>.5){var sa=Math.floor(Math.random()*5)/5*PI2;var sd=Math.random()*wr;y=Math.sin(sa)*sd;z=side*4.5+Math.cos(sa)*sd*.2}
+
+      if(r<.10){
+        // TRANSMISSION BELL HOUSING - conical shape bolting to engine
+        var a=Math.random()*PI2;
+        var t=Math.random();
+        var bellR=.9-t*.2; // tapers from engine to gearbox
+        x=-4.5+t*.8;
+        y=Math.sin(a)*bellR;
+        z=Math.cos(a)*bellR;
+      }else if(r<.20){
+        // GEARBOX HOUSING - rectangular box with surface detail
+        var face=Math.random();
+        if(face<.25){x=-3.7+Math.random()*2;y=(Math.random()>.5?.8:-.8);z=(Math.random()-.5)*1.4} // top/bottom
+        else if(face<.5){x=-3.7+Math.random()*2;y=(Math.random()-.5)*1.6;z=(Math.random()>.5?.7:-.7)} // sides
+        else if(face<.75){x=-3.7;y=(Math.random()-.5)*1.6;z=(Math.random()-.5)*1.4} // front
+        else{x=-1.7;y=(Math.random()-.5)*1.4;z=(Math.random()-.5)*1.2} // rear
+      }else if(r<.25){
+        // INTERNAL GEARS visible through cutaway (gear pairs)
+        var gear=Math.floor(Math.random()*5); // 5 gear pairs
+        var a=Math.random()*PI2;
+        var gr=[.5,.45,.4,.35,.55][gear]; // different gear radii
+        var gx=-3.5+gear*.35;
+        x=gx;y=Math.sin(a)*gr;z=Math.cos(a)*gr;
+        // Gear teeth pattern
+        var teeth=24-gear*2;
+        var toothA=Math.floor(a/(PI2/teeth))*PI2/teeth;
+        y+=Math.cos(toothA*teeth)*.03;z+=Math.sin(toothA*teeth)*.03;
+      }else if(r<.38){
+        // DRIVESHAFT - long propeller shaft running down the center
+        var t=Math.random();
+        var a=Math.random()*PI2;
+        var dsr=.12;
+        x=-1.5+t*8.5;
+        y=Math.sin(a)*dsr;
+        z=Math.cos(a)*dsr;
+        // U-JOINTS at each end and middle (cross-shaped)
+        if(t<.03||t>.97||(t>.48&&t<.52)){
+          var ja=Math.random()*PI2;var jr=.22;
+          y=Math.sin(ja)*jr;z=Math.cos(ja)*jr;
+        }
+        // CENTER SUPPORT BEARING
+        if(t>.49&&t<.51){var ba=Math.random()*PI2;y=Math.sin(ba)*.28;z=Math.cos(ba)*.28}
+      }else if(r<.48){
+        // REAR DIFFERENTIAL - pumpkin-shaped housing
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var dr=.9;
+        x=7+Math.sin(phi)*Math.cos(theta)*dr*.5;
+        y=Math.sin(phi)*Math.sin(theta)*dr;
+        z=Math.cos(phi)*dr;
+        // Diff cover (round plate on back)
+        if(Math.random()>.7){var a=Math.random()*PI2;var cr2=.75;x=7.5;y=Math.sin(a)*cr2;z=Math.cos(a)*cr2}
+        // Ring gear inside
+        if(Math.random()>.8){var a=Math.random()*PI2;var rr=.7;x=7;y=Math.sin(a)*rr;z=Math.cos(a)*rr}
+      }else if(r<.56){
+        // HALF SHAFTS / CV AXLES - extend from diff to each wheel
+        var side=Math.random()>.5?1:-1;
+        var t=Math.random();
+        var a=Math.random()*PI2;var sr=.08;
+        x=7+Math.random()*.2;
+        y=Math.sin(a)*sr;
+        z=side*(1+t*3.2)+Math.cos(a)*sr;
+        // CV JOINT BOOTS at each end (accordion shape)
+        if(t<.08){var ca=Math.random()*PI2;var cr3=.18+Math.sin(t*40)*.04;y=Math.sin(ca)*cr3;z=side*1.2+Math.cos(ca)*cr3;x=7}
+        if(t>.92){var ca=Math.random()*PI2;var cr3=.18+Math.sin(t*40)*.04;y=Math.sin(ca)*cr3;z=side*4.1+Math.cos(ca)*cr3;x=7}
+      }else if(r<.68){
+        // WHEELS + TIRES at the ends of axles
+        var side=Math.random()>.5?1:-1;
+        var a=Math.random()*PI2;
+        var part=Math.random();
+        if(part<.35){
+          // Tire (dense outer ring)
+          var wr=1.1;
+          x=7;y=Math.sin(a)*wr;z=side*4.5+Math.cos(a)*wr*.2;
+          // Tire width
+          x+=((Math.random()-.5)*.3);
+        }else if(part<.55){
+          // Rim circle
+          var rr=.8;x=7;y=Math.sin(a)*rr;z=side*4.5+Math.cos(a)*rr*.15;
+        }else if(part<.8){
+          // 5 spokes
+          var sp=Math.floor(Math.random()*5)/5*PI2;
+          var sd=Math.random()*.75;
+          x=7;y=Math.sin(sp)*sd;z=side*4.5+Math.cos(sp)*sd*.15;
+        }else{
+          // Brake rotor (disc behind wheel)
+          var rr=.85;x=7-.15;y=Math.sin(a)*rr;z=side*4.3;
+          // Drilled holes
+          if(Math.random()>.6){var ha=Math.random()*PI2;var hr=.3+Math.random()*.4;x=7-.15;y=Math.sin(ha)*hr;z=side*4.3}
+        }
+      }else if(r<.73){
+        // BRAKE CALIPERS (one per wheel)
+        var side=Math.random()>.5?1:-1;
+        x=7-.2+Math.random()*.3;
+        y=.7+Math.random()*.3;
+        z=side*4.25+(Math.random()-.5)*.15;
+      }else if(r<.80){
+        // EXHAUST SYSTEM running along one side
+        var t=Math.random();
+        var a=Math.random()*PI2;
+        var er=.12;
+        x=-4+t*12;
+        y=-1+Math.sin(a)*er;
+        z=1.2+Math.cos(a)*er;
+        // Catalytic converters (2 bulges)
+        if((t>.15&&t<.22)||(t>.3&&t<.37)){var ca=Math.random()*PI2;y=-1+Math.sin(ca)*.25;z=1.2+Math.cos(ca)*.25}
+        // Muffler (larger cylinder near rear)
+        if(t>.8&&t<.95){var ma=Math.random()*PI2;y=-.8+Math.sin(ma)*.3;z=1.2+Math.cos(ma)*.3}
+        // Exhaust tips
+        if(t>.97){var ta=Math.random()*PI2;y=-.8+Math.sin(ta)*.1;z=1.2+Math.cos(ta)*.1}
+      }else if(r<.88){
+        // CHASSIS FRAME RAILS (2 long beams running the length)
+        var side=Math.random()>.5?1:-1;
+        x=-5+Math.random()*12.5;
+        y=-1.3;
+        z=side*1.3;
+        // Cross members (every ~2 units)
+        if(Math.random()>.7){
+          var cm=Math.floor(Math.random()*5);
+          x=-4+cm*2.8;z=(Math.random()-.5)*2.6;y=-1.3;
+        }
+      }else if(r<.93){
+        // TRANSFER CASE / OUTPUT FLANGE (between trans and driveshaft)
+        var a=Math.random()*PI2;
+        var tcr=.5+Math.random()*.15;
+        x=-1.5+Math.random()*.3;y=Math.sin(a)*tcr;z=Math.cos(a)*tcr;
       }else{
-        x=-5+Math.random()*13;y=-1.5+Math.random()*.15;z=(Math.random()>.5?1:-1)*1.5;
+        // FUEL TANK (flat rectangle under the car, mid-section)
+        x=1+Math.random()*3;
+        y=-1.6+Math.random()*.15;
+        z=(Math.random()-.5)*2;
+        // Tank straps
+        if(Math.random()>.7){var strap=Math.floor(Math.random()*2);x=1.5+strap*2;y=-1.6+Math.random()*.3;z=(Math.random()-.5)*2.2}
       }
       pts.push(x,y,z);
     }
