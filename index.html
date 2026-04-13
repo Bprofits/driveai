@@ -235,186 +235,104 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   sx.fillStyle=gr;sx.fillRect(0,0,64,64);
   var sprite=new THREE.CanvasTexture(sc);
 
-  // SHAPE 0: HUMAN BRAIN - clean, no weird appendages, no disconnected parts, no lines
+  // SHAPE 0: HUMAN BRAIN - ONE solid connected mass, no separate parts
   function makeBrainOuter(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
-      var x,y,z;
-      var r=Math.random();
+      // Single deformed ellipsoid - everything is one shape, nothing floating
+      var phi=Math.acos(2*Math.random()-1);
+      var theta=Math.random()*PI2;
 
-      if(r<.75){
-        // CEREBRUM - the entire main brain mass as one clean deformed sphere
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        // Start with an ellipsoid: wider front-to-back than top-to-bottom
-        var rx=4.2; // front-back
-        var ry=2.8; // top-bottom
-        var rz=2.8; // left-right
+      // Brain proportions: 1.4x wider(front-back) than tall
+      var rx=4.5,ry=3,rz=3;
+      var x=Math.sin(phi)*Math.cos(theta)*rx;
+      var y=Math.cos(phi)*ry+.3;
+      var z=Math.sin(phi)*Math.sin(theta)*rz;
 
-        x=Math.sin(phi)*Math.cos(theta)*rx;
-        y=Math.cos(phi)*ry+.5;
-        z=Math.sin(phi)*Math.sin(theta)*rz;
+      // Sculpt the brain profile:
+      // Frontal lobe rounds forward
+      if(x<-2&&y>.5)x-=.5;
+      // Top dome slight peak
+      if(y>2.5)y+=.2;
+      // Back slopes down
+      if(x>2.5)y-=(x-2.5)*.4;
+      // Bottom is flatter than top
+      if(y<-.5)y=-.5-(y+.5)*.3;
+      // Temporal regions widen slightly lower on sides
+      if(Math.abs(z)>2&&y<1)y-=.3;
 
-        // Shape the profile to look like a brain from the side:
-        // Frontal lobe: push forward and round it
-        if(x<-2&&y>0){x-=.4*(1-y/3);y+=.3}
-        // Parietal dome: slightly raise the top
-        if(y>2&&Math.abs(x)<2){y+=.2}
-        // Occipital: round the back, slope it down
-        if(x>2){y-=(x-2)*.25}
-        // Temporal lobes: extend lower on the sides
-        if(y<0&&Math.abs(z)>1.5){y-=.5}
-        // Flatten the bottom slightly
-        if(y<-.5){y=-.5-(y+.5)*.4}
-
-        // GYRI/SULCI wrinkle texture on the surface
-        var fold=0;
-        fold+=Math.sin(phi*13+theta*3)*.11;
-        fold+=Math.sin(phi*8+theta*10)*.07;
-        fold+=Math.sin(phi*19-theta*6)*.05;
-        fold+=Math.sin(phi*5+theta*14)*.05;
-        fold+=Math.sin(phi*26+theta*5)*.03;
-        var nx=Math.sin(phi)*Math.cos(theta);
-        var ny=Math.cos(phi);
-        var nz=Math.sin(phi)*Math.sin(theta);
-        x+=nx*fold;
-        y+=ny*fold*.6;
-        z+=nz*fold*.5;
-
-      }else if(r<.88){
-        // CEREBELLUM - tightly folded smaller structure, tucked under the back
-        // Positioned at back-bottom, NOT sticking out or disconnected
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var cr=1.3;
-        // Very tight folds
-        cr+=Math.sin(phi*30)*.03+Math.sin(theta*26)*.025;
-        // Position: behind and below the main cerebrum, overlapping slightly
-        x=Math.sin(phi)*Math.cos(theta)*cr*.9+2.5;
-        y=Math.cos(phi)*cr*.4-1.8;
-        z=Math.sin(phi)*Math.sin(theta)*cr*.8;
-        // Clip: don't let it go above the cerebrum
-        if(y>-.8)y=-.8;
-        // Don't let it stick out too far back
-        if(x>4)x=4;
-
-      }else{
-        // BRAINSTEM - short, directly connected to bottom of cerebellum
-        // No gap, no disconnection
-        var t=Math.random();
-        var a=Math.random()*PI2;
-        var sr=.25-.04*t; // gentle taper
-        x=2+Math.cos(a)*sr;
-        y=-2.2-t*1; // short, not too long
-        z=Math.sin(a)*sr;
-      }
+      // Wrinkled surface (gyri folds)
+      var fold=Math.sin(phi*14+theta*3)*.1+Math.sin(phi*9+theta*11)*.07+Math.sin(phi*21-theta*7)*.04+Math.sin(phi*6+theta*16)*.05+Math.sin(phi*28)*.03;
+      x+=Math.sin(phi)*Math.cos(theta)*fold;
+      y+=Math.cos(phi)*fold*.5;
+      z+=Math.sin(phi)*Math.sin(theta)*fold*.5;
 
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 1: V8 ENGINE - Chevy 350 SBC proportions (26.5x26x19 inch envelope, nearly cubic)
-  // Scaled so total height ~5 units. V-angle 90 degrees (45 each side)
+  // SHAPE 1: V8 ENGINE - clean solid block, recognizable shape
   function makeEngine(){
     var pts=[];
-    // Cylinder centers along the block (4 per bank, 4.4" spacing = 1.16 units)
-    var cylX=[-1.74,-.58,.58,1.74];
-    var VANG=.785; // 45 degrees in radians
     for(var i=0;i<COUNT;i++){
       var r=Math.random();var x,y,z;
-      if(r<.20){
-        // 8 CYLINDERS - dense rings at 45-degree V angle
-        var bank=Math.random()>.5?1:-1;
-        var cIdx=Math.floor(Math.random()*4);
-        var a=Math.random()*PI2;
-        var bore=.5; // bore radius
-        x=cylX[cIdx];
-        // Rotate cylinder position by V angle
-        var cy=Math.sin(a)*bore;var cz=Math.cos(a)*bore;
-        y=1.8+cy*Math.cos(VANG)+cz*Math.sin(VANG)*bank;
-        z=(-cy*Math.sin(VANG)+cz*Math.cos(VANG))*bank;
-      }else if(r<.30){
-        // BLOCK - the main iron casting, W-shaped cross section
-        var face=Math.random();
-        if(face<.2){x=-2.3;y=Math.random()*2.5;z=(Math.random()-.5)*2.8} // front
-        else if(face<.4){x=2.3;y=Math.random()*2.5;z=(Math.random()-.5)*2.8} // rear
-        else if(face<.6){var side=Math.random()>.5?1:-1;x=(Math.random()-.5)*4.6;y=Math.random()*1.5;z=side*1.4} // lower sides
-        else if(face<.8){
-          // Deck surfaces (angled at 45 degrees, where heads bolt on)
-          var bank=Math.random()>.5?1:-1;
-          x=(Math.random()-.5)*4.6;
-          var deckT=Math.random();
-          y=1.5+deckT*Math.cos(VANG)*1.2;
-          z=bank*(deckT*Math.sin(VANG)*1.2+.3);
-        }else{
-          // Valley (the V between the banks, top center)
-          x=(Math.random()-.5)*4.4;y=1.5+Math.random()*.4;z=(Math.random()-.5)*.5;
-        }
-      }else if(r<.38){
-        // VALVE COVERS - long rounded caps on each bank, tilted at 45 deg
-        var bank=Math.random()>.5?1:-1;
-        x=(Math.random()-.5)*4.4;
-        var vcA=Math.random()*PI2;var vcR=.35;
-        var lcy=Math.sin(vcA)*vcR;var lcz=Math.cos(vcA)*vcR;
-        y=2.8+lcy*Math.cos(VANG)+lcz*Math.sin(VANG)*bank;
-        z=bank*1.5+(-lcy*Math.sin(VANG)+lcz*Math.cos(VANG))*bank;
-      }else if(r<.46){
-        // INTAKE MANIFOLD sitting in the valley
-        var part=Math.random();
-        if(part<.35){
-          // Plenum box
-          x=(Math.random()-.5)*2.5;y=3.2+Math.random()*.5;z=(Math.random()-.5)*1;
-        }else{
-          // 8 runners curving from plenum down to each port
-          var runner=Math.floor(Math.random()*8);
-          var bank2=runner<4?1:-1;
-          var cIdx2=runner%4;
-          var t2=Math.random();
-          x=cylX[cIdx2];
-          y=3.2-t2*1;z=t2*bank2*1;
-        }
-      }else if(r<.54){
-        // EXHAUST HEADERS - tubular, 4 per side, sweep down and merge
-        var bank=Math.random()>.5?1:-1;
-        var tube=Math.floor(Math.random()*4);
+      if(r<.35){
+        // MAIN BLOCK + HEADS - solid mass with V-shape top
         var t=Math.random();
-        var a=Math.random()*PI2;var tr=.1;
-        x=cylX[tube]+t*.2;
-        y=1.2-t*2.2+Math.sin(a)*tr;
-        z=bank*(1.6+t*.8)+Math.cos(a)*tr;
-        if(t>.75){x=(Math.random()-.5)*.8;z=bank*2.5;y=-1+Math.random()*.4}
-      }else if(r<.60){
-        // FRONT: water pump + crank pulley + alternator + belt
-        var part=Math.random();
-        if(part<.25){var a=Math.random()*PI2;x=-2.5;y=1+Math.sin(a)*.7;z=Math.cos(a)*.7} // water pump
-        else if(part<.45){var a=Math.random()*PI2;x=-2.6;y=-.2+Math.sin(a)*.6;z=Math.cos(a)*.6} // harmonic balancer
-        else if(part<.65){var a=Math.random()*PI2;x=-2.6;y=2+Math.sin(a)*.4;z=.9+Math.cos(a)*.4} // alternator
-        else{var t=Math.random()*PI2;x=-2.55;y=.8+Math.sin(t)*1.1;z=Math.cos(t)*.8} // belt
-      }else if(r<.66){
-        // OIL PAN
-        x=(Math.random()-.5)*4;
-        var op=Math.random();
-        if(op<.3){y=-1.3;z=(Math.random()-.5)*1.6} // bottom
-        else if(op<.6){y=-.8-Math.random()*.5;z=(Math.random()>.5?1:-1)*.8} // sides
-        else{y=-1.3-Math.random()*.5;z=(Math.random()-.5)*1;x=(Math.random()-.5)*2} // sump
-      }else if(r<.70){
-        // FLYWHEEL (rear)
-        var a=Math.random()*PI2;var fr=Math.random()*1;
-        x=2.4;y=.8+Math.sin(a)*fr;z=Math.cos(a)*fr;
-      }else if(r<.74){
-        // DISTRIBUTOR + PLUG WIRES
-        var a=Math.random()*PI2;x=1.5;y=2.5+Math.sin(a)*.25;z=Math.cos(a)*.25;
-        if(Math.random()>.4){var w=Math.floor(Math.random()*8);var b=w<4?1:-1;var t=Math.random();x=1.5-t*(1.5-cylX[w%4]);y=2.5-t*.8;z=t*b*1.3}
-      }else if(r<.78){
-        // CARBURETOR / THROTTLE BODY on top
-        var a=Math.random()*PI2;x=0;y=3.8+Math.sin(a)*.25;z=Math.cos(a)*.25;
-        if(Math.random()>.5){x=(Math.random()-.5)*.5;y=3.7+Math.random()*.3;z=(Math.random()-.5)*.5} // air cleaner base
-      }else{
-        // FUEL RAILS, BRACKETS, SENSORS, SURFACE DETAIL
+        x=(t-.5)*5;
+        var cross=Math.random();
+        if(cross<.4){
+          y=Math.random()*1.8;z=(Math.random()-.5)*2.4;
+        }else{
+          var bank=Math.random()>.5?1:-1;
+          var h=Math.random();
+          y=1.8+h*1.4;z=bank*(1.2-h*.8);
+        }
+        if(Math.random()>.6){
+          var face=Math.floor(Math.random()*3);
+          if(face==0)z=(Math.random()>.5?1:-1)*1.2;
+          else if(face==1)y=0;
+          else x=(Math.random()>.5?-2.5:2.5);
+        }
+      }else if(r<.48){
+        // VALVE COVERS
         var bank=Math.random()>.5?1:-1;
-        x=(Math.random()-.5)*4.4;y=3+bank*.15;z=bank*1.3;
-        if(Math.random()>.5){x=(Math.random()-.5)*4.6;y=Math.random()*3.5;z=(Math.random()>.5?1:-1)*(1+Math.random()*.5)}
+        x=(Math.random()-.5)*4.6;
+        y=2.8+Math.random()*.15;z=bank*(.8+Math.random()*.2);
+      }else if(r<.58){
+        // INTAKE MANIFOLD
+        x=(Math.random()-.5)*3.5;y=2.5+Math.random()*.8;z=(Math.random()-.5)*1.2;
+      }else if(r<.65){
+        // OIL PAN
+        x=(Math.random()-.5)*4;y=-.2-Math.random()*1.2;z=(Math.random()-.5)*1.8;
+      }else if(r<.72){
+        // FRONT PULLEYS
+        x=-2.6;var a=Math.random()*PI2;
+        var which=Math.floor(Math.random()*3);
+        var pr=[.9,.5,.6][which];var cy2=[.2,1.2,2][which];
+        y=cy2+Math.sin(a)*pr;z=Math.cos(a)*pr;
+      }else if(r<.78){
+        // EXHAUST MANIFOLDS (solid shapes on sides)
+        var bank=Math.random()>.5?1:-1;
+        x=(Math.random()-.5)*4;y=.8+Math.random()*1;z=bank*(1.5+Math.random()*.4);
+      }else if(r<.83){
+        // CARBURETOR on top
+        var a=Math.random()*PI2;var cr2=.3;
+        x=Math.cos(a)*cr2;y=3.4+Math.random()*.4;z=Math.sin(a)*cr2;
+      }else if(r<.88){
+        // FLYWHEEL (rear disc)
+        var a=Math.random()*PI2;var fr=Math.random()*1.1;
+        x=2.6;y=.9+Math.sin(a)*fr;z=Math.cos(a)*fr;
+      }else if(r<.93){
+        // DISTRIBUTOR (rear top)
+        var a=Math.random()*PI2;
+        x=1.8;y=2.8+Math.sin(a)*.2;z=Math.cos(a)*.2;
+      }else{
+        // ACCESSORIES on sides
+        var side=Math.random()>.5?1:-1;
+        var a=Math.random()*PI2;var ar=.35;
+        x=-2+Math.random();y=1.5+Math.sin(a)*ar;z=side*1.5+Math.cos(a)*ar;
       }
       pts.push(x,y,z);
     }
