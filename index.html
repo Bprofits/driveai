@@ -27,13 +27,11 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 /* HERO - full height, video behind */
 .hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2}
-.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.1) 55%,rgba(0,0,0,.4) 100%)}
 .hero-content{position:relative;z-index:2;max-width:600px;padding:0 4rem}
 .hero-ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;animation:fu .6s .3s forwards}
 .hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);line-height:.93;letter-spacing:2px;opacity:0;animation:fu .7s .5s forwards}
 .hero-h1 em{font-style:normal;color:#E87A00}
-.hero-bd{font-size:.88rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.45);margin-top:1rem;opacity:0;animation:fu .6s .7s forwards}
+.hero-bd{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.75);margin-top:1rem;opacity:0;animation:fu .6s .7s forwards}
 .hero-cta{display:flex;gap:.8rem;margin-top:1.5rem;opacity:0;animation:fu .6s .9s forwards}
 @keyframes fu{from{opacity:0;transform:translateY(1.5rem)}to{opacity:1;transform:translateY(0)}}
 .scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;opacity:0;animation:fu .5s 1.5s forwards;display:flex;flex-direction:column;align-items:center;gap:.4rem}
@@ -54,10 +52,10 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .psection-text::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.5) 70%,transparent 100%);z-index:-1;pointer-events:none}
 
 .ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.5rem}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);line-height:1;letter-spacing:1px;margin-bottom:.6rem}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1;letter-spacing:1px;margin-bottom:.8rem}
 .h2 em{font-style:normal;color:#E87A00}
-.bd{font-size:.82rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.35)}
-.bd strong{color:rgba(255,255,255,.6);font-weight:500}
+.bd{font-size:.95rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.7)}
+.bd strong{color:#fff;font-weight:500}
 
 /* SHAPE INDICATOR */
 .shape-tag{position:fixed;top:50%;right:3rem;transform:translateY(-50%);z-index:50;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:rgba(232,122,0,.1);writing-mode:vertical-rl;transition:opacity .4s,color .4s}
@@ -65,8 +63,8 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 /* STATS */
 .stats-row{display:flex;gap:2rem;margin-top:1rem}
-.sv{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#E87A00;line-height:1}
-.sl{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.15)}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#E87A00;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
 
 /* PILLS */
 .pills{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.8rem}
@@ -75,8 +73,8 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 /* RESULTS */
 .rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
 .rr:last-child{border:none}
-.rr-l{font-size:.72rem;color:rgba(255,255,255,.2)}
-.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#E87A00}
+.rr-l{font-size:.85rem;color:rgba(255,255,255,.5)}
+.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#E87A00}
 
 /* CTA SECTION */
 .cta-section{position:relative;z-index:2;text-align:center;padding:6rem 4rem;border-top:1px solid rgba(255,255,255,.04)}
@@ -122,13 +120,9 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <video class="hero-video" id="heroVid" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg">
-    <source src="hero-desktop.mp4" type="video/mp4">
-  </video>
-  <div class="hero-overlay"></div>
+<section class="hero" style="background:#000">
   <div class="hero-content">
-    <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:90px;width:auto;margin-bottom:1rem;opacity:0;animation:fu .5s .1s forwards">
+    <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:100px;width:auto;margin-bottom:1.2rem;opacity:0;animation:fu .5s .1s forwards">
     <div class="hero-ol">AI-Powered Sales Intelligence for Dealerships</div>
     <h1 class="hero-h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
     <p class="hero-bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds. Text, email, voice. 24/7.</p>
@@ -222,9 +216,6 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
 // REVEAL
 (function(){var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('show');obs.unobserve(e.target)}})},{threshold:.15});document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)})})();
 
-// VIDEO
-(function(){var v=document.getElementById('heroVid');v.muted=true;var p=function(){v.play().catch(function(){setTimeout(p,500)})};window.addEventListener('load',p)})();
-
 // ═══════════════════════════════════════════
 // THREE.JS PARTICLE MORPHING - THE MAIN EVENT
 // ═══════════════════════════════════════════
@@ -237,60 +228,104 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  var COUNT=5000;
+  var COUNT=8000;
   var PI2=Math.PI*2;
 
   // ═══ SHAPE GENERATORS ═══
   // Each returns Float32Array of COUNT*3 positions
 
-  // SHAPE 0: CAR - detailed profile with depth
+  // SHAPE 0: McLaren P1 style supercar - highly detailed
   function makeCar(){
     var pts=[];
-    // Car profile points (x,y pairs for the outline)
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-      z=(Math.random()-.5)*2.8; // car width
-      if(r<0.15){
-        // Front bumper/hood area
-        x=-6+Math.random()*2;
-        y=Math.random()*1.2;
-      }else if(r<0.35){
-        // Windshield + roof
-        x=-4+Math.random()*3;
-        var roofH=2+Math.sin((x+2.5)*0.8)*1;
-        y=Math.random()*roofH;
-      }else if(r<0.5){
-        // Rear window + trunk
-        x=-1+Math.random()*3;
-        var trunkH=2.2-Math.max(0,(x+0.5)*0.4);
-        y=Math.random()*trunkH;
-      }else if(r<0.6){
-        // Rear
-        x=2+Math.random()*1.5;
-        y=Math.random()*1.5;
-      }else if(r<0.7){
-        // Undercarriage
-        x=-6+Math.random()*9.5;
-        y=-0.2+Math.random()*0.3;
+      z=(Math.random()-.5)*2.6;
+      var zAbs=Math.abs(z);
+
+      if(r<0.08){
+        // Front splitter - very low, wide, aggressive
+        x=-7+Math.random()*1.5;
+        y=-0.3+Math.random()*0.2;
         z=(Math.random()-.5)*3;
-      }else if(r<0.8){
-        // Front wheel
-        var a=Math.random()*PI2;
-        x=-4.5+Math.cos(a)*0.7;
-        y=0.2+Math.sin(a)*0.7;
-        z=z>0?1.5:-1.5;
+      }else if(r<0.18){
+        // Front nose - sharp, low, tapered
+        x=-6.5+Math.random()*1.5;
+        var noseH=0.3+Math.pow(Math.max(0,(x+5.5)/1.5),0.7)*0.6;
+        y=Math.random()*noseH;
+      }else if(r<0.25){
+        // Front fenders - bulging over wheels
+        x=-5+Math.random()*1.5;
+        var fenderBulge=1.2+Math.sin((x+4.2)*2)*0.4;
+        y=Math.random()*fenderBulge;
+        z=(Math.random()>0.5?1:-1)*(1.1+Math.sin((x+4.2)*2)*0.3);
+      }else if(r<0.32){
+        // Hood - low, sculpted with air intakes
+        x=-4.5+Math.random()*3;
+        y=0.6+Math.random()*0.3+Math.sin(x*1.5)*0.1;
+        if(Math.random()>0.7){y+=0.2;z*=0.3} // hood scoop
+      }else if(r<0.42){
+        // Windshield - steep, fighter-jet style rake
+        x=-2+Math.random()*1.5;
+        var windH=0.9+(x+2)*1.1;
+        y=windH+Math.random()*0.1;
+        z*=0.8; // narrower at top
+      }else if(r<0.52){
+        // Roof/canopy - teardrop shape, very low
+        x=-0.8+Math.random()*2;
+        var roofH=2.3+Math.sin((x+0.3)*1.2)*0.3;
+        y=roofH-Math.random()*0.15;
+        z*=0.7;
+      }else if(r<0.58){
+        // Side air intakes (behind doors) - signature P1 scoops
+        x=0.5+Math.random()*1.5;
+        y=0.3+Math.random()*1;
+        z=(Math.random()>0.5?1:-1)*(1.3+Math.random()*0.2);
+      }else if(r<0.65){
+        // Rear window/engine cover - descending with louvers
+        x=1.5+Math.random()*2;
+        var rearH=2.1-Math.pow(Math.max(0,(x-1.5)/2),0.8)*0.8;
+        y=rearH-Math.random()*0.2;
+        z*=0.75;
+      }else if(r<0.72){
+        // Rear haunches - wide, muscular
+        x=2+Math.random()*2;
+        y=0.3+Math.random()*1.2;
+        z=(Math.random()>0.5?1:-1)*(1.2+Math.sin((x-2)*1.5)*0.3);
+      }else if(r<0.77){
+        // Active rear wing - high, wide
+        x=3.8+Math.random()*0.8;
+        y=2.5+Math.random()*0.15;
+        z=(Math.random()-.5)*3.2;
+      }else if(r<0.82){
+        // Wing supports
+        x=4;y=1.5+Math.random()*1;z=(Math.random()>0.5?1:-1)*0.8;
+      }else if(r<0.86){
+        // Rear diffuser + exhaust - aggressive, low
+        x=4+Math.random()*1;
+        y=-0.2+Math.random()*0.5;
+        z=(Math.random()-.5)*2.5;
       }else if(r<0.9){
-        // Rear wheel
-        var a=Math.random()*PI2;
-        x=1.5+Math.cos(a)*0.7;
-        y=0.2+Math.sin(a)*0.7;
-        z=z>0?1.5:-1.5;
+        // Front wheels (large, detailed)
+        var a=Math.random()*PI2;var wr=0.55+Math.random()*0.1;
+        x=-4.3+Math.cos(a)*wr;
+        y=0.55+Math.sin(a)*wr;
+        z=(Math.random()>0.5?1:-1)*1.2;
+        // Spokes
+        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=-4.3+Math.cos(sa)*wr*Math.random();y=0.55+Math.sin(sa)*wr*Math.random()}
+      }else if(r<0.94){
+        // Rear wheels (even larger)
+        var a=Math.random()*PI2;var wr=0.6+Math.random()*0.1;
+        x=2.8+Math.cos(a)*wr;
+        y=0.6+Math.sin(a)*wr;
+        z=(Math.random()>0.5?1:-1)*1.25;
+        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=2.8+Math.cos(sa)*wr*Math.random();y=0.6+Math.sin(sa)*wr*Math.random()}
+      }else if(r<0.97){
+        // Headlights - narrow, angular
+        x=-6.3;y=0.4+Math.random()*0.3;z=(Math.random()>0.5?1:-1)*(0.5+Math.random()*0.5);
       }else{
-        // Headlights/taillights
-        if(Math.random()>0.5){x=-6.2;y=0.8+Math.random()*0.4}
-        else{x=3.4;y=0.8+Math.random()*0.4}
-        z=(Math.random()-.5)*2;
+        // Taillights - horizontal strip
+        x=4.5;y=1+Math.random()*0.2;z=(Math.random()-.5)*2.2;
       }
       pts.push(x,y,z);
     }
@@ -443,13 +478,30 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   var sizes=new Float32Array(COUNT);
   for(var i=0;i<COUNT;i++){
     pos[i*3]=shapes[0][i*3];pos[i*3+1]=shapes[0][i*3+1];pos[i*3+2]=shapes[0][i*3+2];
-    col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0;
+    // Mixed orange palette: deep orange, bright orange, cream/white
+    var colorR=Math.random();
+    if(colorR<0.5){col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0}         // #E87A00
+    else if(colorR<0.75){col[i*3]=1;col[i*3+1]=.55;col[i*3+2]=0}      // bright orange
+    else if(colorR<0.9){col[i*3]=.72;col[i*3+1]=.37;col[i*3+2]=0}     // #B85E00 deep
+    else{col[i*3]=.96;col[i*3+1]=.87;col[i*3+2]=.78}                   // #F4DEC9 cream
     sizes[i]=Math.random()*2+1;
   }
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   geo.setAttribute('color',new THREE.BufferAttribute(col,3));
 
-  var mat=new THREE.PointsMaterial({size:.12,vertexColors:true,transparent:true,opacity:.8,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  // Create round particle sprite
+  var spriteCanvas=document.createElement('canvas');
+  spriteCanvas.width=64;spriteCanvas.height=64;
+  var sctx=spriteCanvas.getContext('2d');
+  var grad=sctx.createRadialGradient(32,32,0,32,32,32);
+  grad.addColorStop(0,'rgba(255,255,255,1)');
+  grad.addColorStop(0.2,'rgba(255,200,120,0.8)');
+  grad.addColorStop(0.5,'rgba(232,122,0,0.4)');
+  grad.addColorStop(1,'rgba(232,122,0,0)');
+  sctx.fillStyle=grad;sctx.fillRect(0,0,64,64);
+  var spriteTexture=new THREE.CanvasTexture(spriteCanvas);
+
+  var mat=new THREE.PointsMaterial({size:.18,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
   var points=new THREE.Points(geo,mat);
   scene.add(points);
 
@@ -535,12 +587,16 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
       p[idx+1]+=(ty-p[idx+1])*lerpSpeed;
       p[idx+2]+=(tz-p[idx+2])*lerpSpeed;
 
-      // Colors: brighter + whiter during scatter
+      // Colors: flash white/cream during scatter, mixed oranges at rest
       if(scatterAmt>0.1){
-        var flash=scatterAmt*0.5;
-        c[idx]=.91+flash*.1;c[idx+1]=.48+flash*.3;c[idx+2]=flash*.2;
+        var flash=scatterAmt;
+        c[idx]=.96+flash*.04;c[idx+1]=.7+flash*.17;c[idx+2]=flash*.5;
       }else{
-        c[idx]=.91;c[idx+1]=.48;c[idx+2]=0;
+        var cr=((i*7)%100)/100;
+        if(cr<0.5){c[idx]=.91;c[idx+1]=.48;c[idx+2]=0}
+        else if(cr<0.75){c[idx]=1;c[idx+1]=.55;c[idx+2]=0}
+        else if(cr<0.9){c[idx]=.72;c[idx+1]=.37;c[idx+2]=0}
+        else{c[idx]=.96;c[idx+1]=.87;c[idx+2]=.78}
       }
     }
 
