@@ -222,8 +222,8 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
 (function(){
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight,.1,500);
-  camera.position.set(6,2,18);
-  camera.lookAt(3,0,0);
+  camera.position.set(12,3,14);
+  camera.lookAt(4,0,0);
   var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('stage'),alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
@@ -234,210 +234,232 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   // ═══ SHAPE GENERATORS ═══
   // Each returns Float32Array of COUNT*3 positions
 
-  // SHAPE 0: McLaren P1 GTR - SURFACE-TRACED, not volume filled
+  // SHAPE 0: McLaren P1 GTR - surface-only, from 3/4 front angle reference
   function makeCar(){
     var pts=[];
-    // Precise height profile (side silhouette)
+    // Height profile: EXTREMELY low front, dramatic roof peak, fast descent
     function H(t){
-      if(t<.05)return .1+t*2;          // splitter lip
-      if(t<.12)return .2+(t-.05)*5;     // nose rises sharply
-      if(t<.18)return .55+(t-.12)*2.5;  // front fender peak
-      if(t<.28)return .7+(t-.18)*1;     // hood (low, flat)
-      if(t<.32)return .8;               // cowl
-      if(t<.42)return .8+(t-.32)*14;    // windshield (steep!)
-      if(t<.48)return 2.2+Math.sin((t-.42)/.06*Math.PI)*.15; // roof peak
-      if(t<.55)return 2.3-(t-.48)*4;    // rear glass drops fast
-      if(t<.65)return 2.02-(t-.55)*3;   // engine cover (vented)
-      if(t<.78)return 1.72-(t-.65)*3;   // rear deck descending
-      if(t<.88)return 1.33-(t-.78)*4;   // tail narrowing
-      return .93-(t-.88)*3;             // rear end
+      if(t<.04)return .08;              // splitter - paper thin
+      if(t<.08)return .08+(t-.04)*3;    // lip to nose (barely rising)
+      if(t<.14)return .2+(t-.08)*7;     // nose ramp up to fender
+      if(t<.20)return .62;              // front fender top (flat, wide)
+      if(t<.30)return .62+(t-.20)*.5;   // hood between fenders (VERY low and flat)
+      if(t<.35)return .67;              // cowl area
+      if(t<.44)return .67+(t-.35)*17;   // windshield STEEP rake (rises 1.5 in 9% of length)
+      if(t<.50)return 2.2+Math.sin((t-.44)/.06*Math.PI)*.12; // tiny roof bubble peak ~2.3
+      if(t<.56)return 2.28-(t-.50)*6;   // rear glass drops FAST
+      if(t<.66)return 1.92-(t-.56)*2;   // engine cover with vents
+      if(t<.78)return 1.72-(t-.66)*3.5; // rear deck falling
+      if(t<.90)return 1.3-(t-.78)*3;    // tail section
+      return .94-(t-.90)*5;             // rear bumper
     }
-    // Width profile
+    // Width profile: DRAMATIC fender bulges, narrow cockpit, WIDE rear
     function W(t){
-      if(t<.05)return .6;
-      if(t<.15)return .6+(t-.05)*10;    // widening fast
-      if(t<.22)return 1.6+Math.sin((t-.15)/.07*Math.PI)*.25; // front fender bulge
-      if(t<.32)return 1.55-(t-.22)*1;   // waist pinch before cockpit
-      if(t<.45)return 1.45;             // cockpit narrow
-      if(t<.55)return 1.45+(t-.45)*5;   // side intakes WIDEN dramatically
-      if(t<.72)return 1.95+Math.sin((t-.55)/.17*Math.PI)*.2; // rear haunch BULGE
-      if(t<.85)return 1.85-(t-.72)*3;   // narrowing to tail
-      return 1.46-(t-.85)*3;
+      if(t<.04)return .7;               // splitter width
+      if(t<.10)return .7+(t-.04)*13;    // widens FAST to fenders
+      if(t<.20)return 1.5+Math.pow(Math.sin((t-.10)/.10*Math.PI),.7)*.4; // BULGING front fenders
+      if(t<.28)return 1.5-(t-.20)*2;    // sharp waist pinch (like a wasp)
+      if(t<.42)return 1.34;             // narrow cockpit (tiny greenhouse)
+      if(t<.52)return 1.34+(t-.42)*6;   // side intakes EXPLODE outward
+      if(t<.68)return 1.94+Math.pow(Math.sin((t-.52)/.16*Math.PI),.6)*.25; // rear haunches BULGE
+      if(t<.82)return 1.9-(t-.68)*2;    // narrowing
+      return 1.62-(t-.82)*4;            // tail
     }
 
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
 
-      if(r<.55){
-        // BODY SHELL - particles on the SURFACE only, not inside
+      if(r<.50){
+        // BODY SHELL SURFACE - dense, surface-only sampling
         var t=Math.random();
         x=(t-.5)*13;
-        var h=H(t), w=W(t);
+        var h=H(t),w=W(t);
         var face=Math.random();
-        if(face<.25){
-          // TOP skin
-          y=h+(Math.random()-.5)*.03;
-          z=(Math.random()-.5)*w*.85;
-        }else if(face<.55){
-          // SIDE skin (left or right wall)
+        if(face<.30){
+          // TOP SURFACE (roof, hood, engine cover) - particles sit ON the skin
+          y=h;
+          z=(Math.random()-.5)*w*(t<.35?.9:.75); // narrower on top toward roof
+        }else if(face<.60){
+          // SIDE WALLS - particles trace the side profile
           var side=Math.random()>.5?1:-1;
-          z=side*w*(.95+Math.random()*.05);
-          y=Math.random()*h;
-        }else if(face<.7){
-          // BOTTOM flat floor
-          y=-.05+(Math.random()-.5)*.04;
+          z=side*w;
+          // Height follows a smooth shoulder line (not random)
+          var shoulderH=h*.7+Math.random()*h*.3;
+          y=shoulderH;
+        }else if(face<.72){
+          // LOWER BODY / SILL LINE - dense line running along the bottom edge
+          var side=Math.random()>.5?1:-1;
+          z=side*(w-.1+Math.random()*.1);
+          y=.1+Math.random()*.15;
+        }else if(face<.82){
+          // UNDERBODY - flat floor
+          y=0;
           z=(Math.random()-.5)*w;
         }else{
-          // Panel lines / body creases (concentrated on surface)
-          var crease=Math.floor(Math.random()*4);
-          var ct=[.18,.32,.55,.72][crease]; // fender line, cowl, intake, haunch
-          t=ct+(Math.random()-.5)*.03;
-          x=(t-.5)*13;h=H(t);w=W(t);
+          // SHOULDER LINE crease - a sharp line running along the upper body
           var side=Math.random()>.5?1:-1;
-          z=side*w;y=Math.random()*h;
+          z=side*w*.95;
+          y=h*.55+Math.random()*.05;
         }
-      }else if(r<.59){
-        // FRONT SPLITTER
-        x=-6.8+Math.random()*2;
-        y=-.18+Math.random()*.08;
-        z=(Math.random()-.5)*3.2;
-      }else if(r<.62){
-        // FRONT CANARDS
-        var side=Math.random()>.5?1:-1;
-        x=-5.5+Math.random()*.8;
-        y=.05+Math.random()*.35;
-        z=side*(1.4+Math.random()*.15);
-      }else if(r<.67){
-        // SIDE INTAKE SCOOPS - the iconic P1 feature
+      }else if(r<.55){
+        // FRONT SPLITTER - massive, extends far forward, flat blade
+        x=-6.8+Math.random()*2.5;
+        y=-.02+Math.random()*.06;
+        z=(Math.random()-.5)*3.4;
+        // Splitter edge (dense front lip)
+        if(Math.random()>.6){x=-6.8+Math.random()*.3;z=(Math.random()-.5)*3.4}
+      }else if(r<.58){
+        // FRONT CANARDS / DIVE PLANES - aggressive aero fins
         var side=Math.random()>.5?1:-1;
         var t=Math.random();
-        x=.8+t*2.2;
-        // Scoop opening shape (tall, narrow mouth)
-        y=.15+t*.3+Math.random()*(1.4-t*.5);
-        z=side*(1.5+Math.random()*.08);
-        // Scoop inner wall
-        if(Math.random()>.6){z=side*(1.35+Math.random()*.15);y=.3+Math.random()*1}
-      }else if(r<.70){
-        // DIHEDRAL DOOR LINES
+        x=-5.5+t*.7;
+        y=.02+t*.35;
+        z=side*(1.35+t*.2);
+      }else if(r<.63){
+        // FRONT AIR CHANNEL - the deep black gap between nose and fenders
+        var side=Math.random()>.5?1:-1;
+        x=-4.5+Math.random()*1.5;
+        y=.15+Math.random()*.4;
+        z=side*(1+Math.random()*.3);
+      }else if(r<.68){
+        // SIDE INTAKE SCOOPS - massive, iconic P1 feature
         var side=Math.random()>.5?1:-1;
         var t=Math.random();
-        x=-1.8+t*3.2;
-        y=.1+t*.5+Math.pow(t,2)*1.2;
-        z=side*(1.45+Math.random()*.03);
-      }else if(r<.77){
-        // GT WING - massive, detailed
+        x=.5+t*2.5;
+        // Scoop has a tall opening that narrows as it goes back
+        var scoopH=1.3-t*.4;
+        y=.1+Math.random()*scoopH;
+        z=side*(1.5+Math.random()*.06);
+        // Leading edge of scoop (dense vertical line)
+        if(Math.random()>.7){x=.5;y=.1+Math.random()*1.3;z=side*1.52}
+      }else if(r<.71){
+        // DIHEDRAL DOOR CUT LINES
+        var side=Math.random()>.5?1:-1;
+        var t=Math.random();
+        x=-2+t*3.5;
+        y=.1+Math.pow(t,.8)*1.8;
+        z=side*W(.5+t*.15)*.98;
+      }else if(r<.78){
+        // GT WING - the massive P1 GTR rear wing
         var wp=Math.random();
-        if(wp<.4){
-          // Main plane
-          x=4.8+Math.random()*1;
-          y=2.7+(Math.random()-.5)*.06;
+        if(wp<.35){
+          // Main plane (wide, flat)
+          x=4.5+Math.random()*1.2;
+          y=2.65+Math.random()*.05;
+          z=(Math.random()-.5)*3.8;
+        }else if(wp<.48){
+          // Gurney flap trailing edge
+          x=5.75+Math.random()*.08;
+          y=2.65+Math.random()*.18;
           z=(Math.random()-.5)*3.6;
-        }else if(wp<.55){
-          // Gurney flap (trailing edge)
-          x=5.85+Math.random()*.1;
-          y=2.7+Math.random()*.15;
-          z=(Math.random()-.5)*3.4;
-        }else if(wp<.75){
-          // Swan-neck pylons (2 mounts from roof, curving up)
+        }else if(wp<.65){
+          // Swan-neck pylons (curve upward from rear deck)
           var side=Math.random()>.5?1:-1;
           var t=Math.random();
-          x=4.2+t*.8;
-          y=1.5+t*1.2+Math.sin(t*Math.PI)*.3;
-          z=side*(.6+Math.random()*.1);
-        }else{
-          // Endplates (vertical fins)
+          x=4+t*1;
+          y=1.5+t*1.15+Math.sin(t*Math.PI)*.2;
+          z=side*(.55+Math.random()*.08);
+        }else if(wp<.82){
+          // Endplates - large vertical fins
           var side=Math.random()>.5?1:-1;
-          x=4.5+Math.random()*1.4;
-          y=2.2+Math.random()*.7;
-          z=side*(1.75+Math.random()*.06);
+          x=4.3+Math.random()*1.5;
+          y=2.1+Math.random()*.8;
+          z=side*(1.85+Math.random()*.05);
+        }else{
+          // Wing underside
+          x=4.5+Math.random()*1.2;
+          y=2.6;
+          z=(Math.random()-.5)*3.6;
         }
-      }else if(r<.81){
-        // REAR DIFFUSER with fins
-        x=5.2+Math.random()*1.3;
-        y=-.15+Math.random()*.5;
-        z=(Math.random()-.5)*2.6;
-        if(Math.random()>.5){
-          var fin=Math.floor(Math.random()*7-3)*.35;
-          z=fin;y=-.1+Math.random()*.45;
+      }else if(r<.82){
+        // REAR DIFFUSER + EXHAUST EXIT
+        var dp=Math.random();
+        if(dp<.6){
+          // Diffuser fins (7 vertical channels)
+          var fin=Math.floor(Math.random()*7)-3;
+          x=5.2+Math.random()*1.2;
+          y=-.05+Math.random()*.45;
+          z=fin*.38;
+        }else if(dp<.8){
+          // Diffuser floor
+          x=5+Math.random()*1.5;y=-.05;z=(Math.random()-.5)*2.6;
+        }else{
+          // Triple exhaust
+          var ex=Math.floor(Math.random()*3)-1;
+          var a=Math.random()*PI2;
+          x=5.9;y=.6+Math.sin(a)*.1;z=ex*.3+Math.cos(a)*.1;
         }
-      }else if(r<.83){
-        // EXHAUST - center high mount
-        var a=Math.random()*PI2;
-        x=5.8+Math.random()*.15;
-        y=.65+Math.sin(a)*.12;
-        z=Math.cos(a)*.12+(Math.floor(Math.random()*3)-1)*.25;
-      }else if(r<.89){
-        // WHEELS - dense, realistic circles with spokes
+      }else if(r<.90){
+        // WHEELS - very dense, clear circles
         var isRear=Math.random()>.5;
         var side=Math.random()>.5?1:-1;
         var cx=isRear?3.5:-4.2;
-        var cy=isRear?.55:.5;
-        var wr=isRear?.6:.5;
+        var cy=isRear?.55:.48;
+        var wr=isRear?.58:.48;
         var a=Math.random()*PI2;
-        var part=Math.random();
-        if(part<.4){
-          // Tire outer ring (dense)
+        var p2=Math.random();
+        if(p2<.35){
+          // TIRE - dense ring (very important for recognizability)
           x=cx+Math.cos(a)*wr;
           y=cy+Math.sin(a)*wr;
-          z=side*(isRear?1.35:1.25)+(Math.random()-.5)*(isRear?.28:.2);
-        }else if(part<.65){
-          // Rim edge
-          var rimR=wr*.7;
-          x=cx+Math.cos(a)*rimR;
-          y=cy+Math.sin(a)*rimR;
-          z=side*(isRear?1.35:1.25);
-        }else if(part<.85){
-          // 5 spokes
+          z=side*(isRear?1.4:1.25)+(Math.random()-.5)*(isRear?.25:.18);
+        }else if(p2<.50){
+          // INNER tire ring
+          var ir=wr*.85;
+          x=cx+Math.cos(a)*ir;y=cy+Math.sin(a)*ir;
+          z=side*(isRear?1.4:1.25);
+        }else if(p2<.70){
+          // RIM EDGE circle
+          var rr=wr*.65;
+          x=cx+Math.cos(a)*rr;y=cy+Math.sin(a)*rr;
+          z=side*(isRear?1.4:1.25);
+        }else if(p2<.88){
+          // 5 Y-SPOKES (forked)
           var spoke=Math.floor(Math.random()*5)/5*PI2;
-          var sd=Math.random()*wr*.65;
-          x=cx+Math.cos(spoke)*sd;
-          y=cy+Math.sin(spoke)*sd;
-          z=side*(isRear?1.35:1.25);
+          var sd=Math.random()*wr*.6;
+          x=cx+Math.cos(spoke)*sd;y=cy+Math.sin(spoke)*sd;
+          z=side*(isRear?1.4:1.25);
+          // Fork at outer end
+          if(sd>wr*.4){var fork=(Math.random()>.5?.08:-.08);x+=Math.cos(spoke+fork)*sd*.2;y+=Math.sin(spoke+fork)*sd*.2}
         }else{
-          // Center hub
-          x=cx+Math.cos(a)*.12;
-          y=cy+Math.sin(a)*.12;
-          z=side*(isRear?1.35:1.25);
+          // CENTER HUB + lug nuts
+          var hr=.1;
+          x=cx+Math.cos(a)*hr;y=cy+Math.sin(a)*hr;z=side*(isRear?1.42:1.27);
         }
-      }else if(r<.91){
-        // HEADLIGHTS - thin angular slits
+      }else if(r<.92){
+        // HEADLIGHTS - very thin horizontal slits wrapping corners
         var side=Math.random()>.5?1:-1;
         var t=Math.random();
-        x=-5.8+t*.9;
-        y=.25+t*.15;
-        z=side*(.4+t*.6);
-      }else if(r<.93){
-        // TAILLIGHTS - signature P1 horizontal bar
-        var t=Math.random();
-        x=5.4+Math.random()*.15;
-        y=1.05+Math.random()*.08;
-        z=(t-.5)*2.4;
-      }else if(r<.95){
-        // ROOF SNORKEL / air intake
-        x=-.2+Math.random()*.6;
-        y=2.3+Math.random()*.25;
-        z=(Math.random()-.5)*.5;
-      }else if(r<.97){
-        // ENGINE COVER VENTS (louvers)
+        x=-5.6+t*1;
+        y=.2+t*.12;
+        z=side*(.35+t*.7);
+      }else if(r<.94){
+        // TAILLIGHTS - thin horizontal bar across rear
+        x=5.35+Math.random()*.12;
+        y=1.02+Math.random()*.06;
+        z=(Math.random()-.5)*2.6;
+      }else if(r<.96){
+        // ROOF SNORKEL (small air intake on top)
+        x=-.1+Math.random()*.4;
+        y=2.32+Math.random()*.2;
+        z=(Math.random()-.5)*.35;
+      }else if(r<.98){
+        // ENGINE COVER LOUVERS (6 horizontal slats)
         var louver=Math.floor(Math.random()*6);
-        x=2+louver*.35;
-        y=1.8-louver*.05+(Math.random()-.5)*.03;
-        z=(Math.random()-.5)*1.6;
-      }else if(r<.99){
-        // SIDE MIRRORS
-        var side=Math.random()>.5?1:-1;
-        var a=Math.random()*PI2;
-        x=-1.2+Math.cos(a)*.12;
-        y=1.35+Math.sin(a)*.08;
-        z=side*(1.6+Math.random()*.15);
+        x=1.8+louver*.4;
+        y=1.85-louver*.06;
+        z=(Math.random()-.5)*1.5;
       }else{
-        // A-PILLAR lines
-        var side=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=-1.8+t*1;
-        y=.8+t*1.4;
-        z=side*(.7-t*.15);
+        // SIDE MIRRORS + A-PILLARS
+        if(Math.random()>.5){
+          var side=Math.random()>.5?1:-1;
+          x=-1.3;y=1.3;z=side*(1.55+Math.random()*.12);
+        }else{
+          var side=Math.random()>.5?1:-1;
+          var t=Math.random();
+          x=-1.8+t*1;y=.7+t*1.5;z=side*(.65-t*.12);
+        }
       }
       pts.push(x,y,z);
     }
@@ -961,11 +983,11 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     points.rotation.y=scrollPct*Math.PI*0.8+t*0.03;
 
     // Camera position shifts per section
-    var camX=7-scrollPct*5;
-    var camY=2+Math.sin(scrollPct*Math.PI)*2;
-    var camZ=18-scrollPct*5;
+    var camX=12-scrollPct*8;
+    var camY=3+Math.sin(scrollPct*Math.PI)*1.5;
+    var camZ=14-scrollPct*4;
     camera.position.set(camX,camY,camZ);
-    camera.lookAt(2,.5,0);
+    camera.lookAt(4,.5,0);
 
     // Full opacity always - particles ARE the experience
     mat.opacity=0.85;
