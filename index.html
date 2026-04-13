@@ -235,114 +235,117 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   sx.fillStyle=gr;sx.fillRect(0,0,64,64);
   var sprite=new THREE.CanvasTexture(sc);
 
-  // SHAPE 0: HUMAN BRAIN - anatomically proportioned, surface detail
+  // SHAPE 0: HUMAN BRAIN - side profile view, dense surface particles, like reference image
   function makeBrainOuter(){
     var pts=[];
-    // A real brain is: ~15cm wide, ~13cm deep (front-back), ~10cm tall
-    // Scaled: x=wide(L/R), y=tall, z=deep(front/back)
-    // Two hemispheres separated by longitudinal fissure
-    // Frontal lobe bulges forward, occipital lobe rounds at back
-    // Temporal lobes extend below on the sides
+    // Brain profile from SIDE VIEW (x=front/back, y=up/down, z=left/right)
+    // Classic side profile: frontal lobe bulges forward-top, temporal lobe hangs below,
+    // parietal on top-back, occipital rounds at rear, cerebellum tucked under back
+
+    // Brain outline as profile curve (side view)
+    // Returns the OUTER RADIUS at angle a (0=front, PI/2=top, PI=back, 3PI/2=bottom)
+    function brainR(a){
+      // Base ellipse: taller front, rounder back
+      var base=3.2+Math.cos(a)*.4; // slightly elongated
+      // Frontal lobe bulge (front-top, ~330-30 degrees)
+      if(a<.6||a>5.7)base+=.5*Math.cos(a)*.8;
+      // Parietal dome (top, ~60-120 degrees)
+      if(a>1&&a<2.2)base+=.3;
+      // Occipital rounding (back, ~150-210 degrees)
+      if(a>2.5&&a<3.7)base+=.15;
+      // Temporal lobe hangs lower (bottom-front, ~240-320 degrees)
+      if(a>4&&a<5.5)base+=.6*Math.sin((a-4)/1.5*Math.PI);
+      // Indentation where cerebellum meets cerebrum (back-bottom ~200-240)
+      if(a>3.3&&a<4.2)base-=.5*Math.sin((a-3.3)/.9*Math.PI);
+      return base;
+    }
+
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
 
-      if(r<.60){
-        // CEREBRAL HEMISPHERE SURFACE - the main brain mass
-        var hemi=Math.random()>.5?1:-1; // left or right hemisphere
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
+      if(r<.62){
+        // CEREBRUM SURFACE - dense, uniform coverage with fold texture
+        // Sample on sphere surface, then deform into brain shape
+        var phi=Math.acos(2*Math.random()-1); // vertical angle
+        var theta=Math.random()*PI2; // horizontal angle
 
-        // Egg-shaped base (wider than tall, elongated front-back)
-        var rx=2.8; // left-right half-width
-        var ry=2.2; // height
-        var rz=3.2; // front-back depth
+        // Get the profile radius for this angle
+        var sideAngle=Math.atan2(-Math.cos(phi),Math.sin(phi)*Math.cos(theta));
+        if(sideAngle<0)sideAngle+=PI2;
+        var rad=brainR(sideAngle);
 
-        x=Math.sin(phi)*Math.cos(theta)*rx;
-        y=Math.cos(phi)*ry+.5;
-        z=Math.sin(phi)*Math.sin(theta)*rz;
+        // Base position on deformed sphere
+        x=Math.sin(phi)*Math.cos(theta)*rad;
+        y=Math.cos(phi)*rad*.85+.8; // squash vertically, shift up
+        z=Math.sin(phi)*Math.sin(theta)*rad*.7; // narrower side-to-side
 
-        // Only keep the correct hemisphere
-        if(hemi==1&&x<.08)x=.08+Math.random()*.1;
-        if(hemi==-1&&x>-.08)x=-.08-Math.random()*.1;
-
-        // GYRI AND SULCI - the wrinkled folds that make a brain look like a brain
-        // Multiple frequencies of sine waves create realistic folding
+        // GYRI/SULCI FOLDS - dense wrinkled surface texture
         var fold=0;
-        fold+=Math.sin(phi*14+theta*2)*.12;   // primary folds (large ridges)
-        fold+=Math.sin(phi*8+theta*10)*.08;    // secondary folds
-        fold+=Math.sin(phi*20-theta*6)*.05;    // tertiary fine detail
-        fold+=Math.sin(phi*5+theta*15)*.06;    // cross-hatching
-        fold+=Math.sin(phi*12+theta*8)*.04;    // micro wrinkles
-
-        // Apply folds as displacement along surface normal
+        fold+=Math.sin(phi*16+theta*3)*.1;
+        fold+=Math.sin(phi*10+theta*12)*.07;
+        fold+=Math.sin(phi*22-theta*8)*.04;
+        fold+=Math.sin(phi*7+theta*18)*.05;
+        fold+=Math.sin(phi*30+theta*5)*.03;
         var nx=Math.sin(phi)*Math.cos(theta);
         var ny=Math.cos(phi);
         var nz=Math.sin(phi)*Math.sin(theta);
-        x+=nx*fold;
-        y+=ny*fold*.8;
-        z+=nz*fold;
-
-        // Frontal lobe: bulge at front
-        if(z>2){var fb=(z-2)*.15;x*=(1+fb*.1);y+=fb*.2}
-
-        // Temporal lobes: extend lower on the sides
-        if(Math.abs(x)>1.8&&y<.5){y-=.4*(Math.abs(x)-1.8)}
+        x+=nx*fold;y+=ny*fold*.7;z+=nz*fold*.5;
 
       }else if(r<.70){
-        // LONGITUDINAL FISSURE - the deep gap between hemispheres (top center)
-        x=(Math.random()-.5)*.06;
-        z=(Math.random()-.5)*5.5;
-        y=1.5+Math.sqrt(Math.max(0,1-Math.pow(z/3,2)))*1.2; // follows the curved top
-        // Fissure depth
-        y-=Math.random()*.6;
+        // LONGITUDINAL FISSURE - the central split viewed from side
+        z=(Math.random()-.5)*.05;
+        x=(Math.random()-.5)*5;
+        var topY=brainR(Math.PI/2)*.85+.8;
+        y=topY-Math.random()*.8;
 
       }else if(r<.76){
-        // LATERAL SULCUS (Sylvian fissure) - major groove on each side
-        var hemi=Math.random()>.5?1:-1;
+        // SYLVIAN FISSURE - the big horizontal groove on the side
+        var side=Math.random()>.5?1:-1;
         var t=Math.random();
-        x=hemi*(1.8+t*.8);
-        y=.3+t*.4+Math.sin(t*3)*.1;
-        z=-1+t*3;
+        x=-1+t*3.5;
+        y=.2+t*.3+Math.sin(t*2.5)*.15;
+        z=side*(2.2+Math.random()*.1);
 
-      }else if(r<.82){
-        // CENTRAL SULCUS - vertical groove separating frontal/parietal lobes
-        var hemi=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=hemi*(.5+t*2);
-        y=1.5+Math.sin(t*2)*.3;
-        z=.5+(Math.random()-.5)*.15;
-
-      }else if(r<.88){
-        // CEREBELLUM - smaller, very finely folded structure at lower back
+      }else if(r<.85){
+        // CEREBELLUM - tightly folded, sits below and behind cerebrum
         var phi=Math.acos(2*Math.random()-1);
         var theta=Math.random()*PI2;
-        var cr=1.4;
-        // Very fine, parallel folds (cerebellum has tighter ridges than cerebrum)
-        cr+=Math.sin(phi*25)*.06+Math.sin(theta*20)*.04;
-        x=Math.sin(phi)*Math.cos(theta)*cr*1.1;
-        y=Math.cos(phi)*cr*.6-1.8;
-        z=Math.sin(phi)*Math.sin(theta)*cr-.8;
-        // Flatten the top where it meets the cerebrum
-        if(y>-1.2)y=-1.2;
+        var cr=1.2;
+        // Very tight parallel folds
+        cr+=Math.sin(phi*30)*.04+Math.sin(theta*25)*.03;
+        x=Math.sin(phi)*Math.cos(theta)*cr*1.1-1.5;
+        y=Math.cos(phi)*cr*.5-2;
+        z=Math.sin(phi)*Math.sin(theta)*cr*.8;
+        if(y>-1)y=-1; // don't overlap cerebrum
 
-      }else if(r<.93){
-        // BRAIN STEM - medulla, pons, midbrain (short, tapered cylinder)
+      }else if(r<.90){
+        // BRAIN STEM - descends from bottom-back
         var t=Math.random();
         var a=Math.random()*PI2;
-        var stemR=.35-.1*t; // tapers downward
-        x=Math.cos(a)*stemR;
-        y=-2.2-t*1.2;
-        z=Math.sin(a)*stemR-1.2;
+        var sr=.3-.08*t;
+        x=-1.2+Math.cos(a)*sr;
+        y=-2.5-t*1.5;
+        z=Math.sin(a)*sr;
 
       }else{
-        // SYNAPTIC GLOW - sparse particles around the brain suggesting neural activity
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var dist=4+Math.random()*1.5;
-        x=Math.sin(phi)*Math.cos(theta)*dist;
-        y=Math.cos(phi)*dist*.7+.5;
-        z=Math.sin(phi)*Math.sin(theta)*dist;
+        // NEURAL NETWORK CONNECTIONS - faint lines/dots in space around the brain
+        // Like the reference image background
+        var nodeAngle=Math.random()*PI2;
+        var nodeDist=4.5+Math.random()*3;
+        var nodeY=(Math.random()-.5)*6;
+        x=Math.cos(nodeAngle)*nodeDist;
+        y=nodeY;
+        z=Math.sin(nodeAngle)*nodeDist;
+        // Create connection lines between nearby nodes
+        if(Math.random()>.6){
+          var t2=Math.random();
+          var a2=nodeAngle+Math.random()*.8-.4;
+          var d2=nodeDist+Math.random()*2-1;
+          x=Math.cos(nodeAngle)*nodeDist*(1-t2)+Math.cos(a2)*d2*t2;
+          y=nodeY*(1-t2)+(Math.random()-.5)*5*t2;
+          z=Math.sin(nodeAngle)*nodeDist*(1-t2)+Math.sin(a2)*d2*t2;
+        }
       }
       pts.push(x,y,z);
     }
