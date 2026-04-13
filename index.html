@@ -239,34 +239,46 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   function makeBrainOuter(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
-      // Single deformed ellipsoid - everything is one shape, nothing floating
-      var phi=Math.acos(2*Math.random()-1);
-      var theta=Math.random()*PI2;
+      var r=Math.random();
+      var x,y,z;
 
-      // Brain proportions: 1.4x wider(front-back) than tall
-      var rx=4.5,ry=3,rz=3;
-      var x=Math.sin(phi)*Math.cos(theta)*rx;
-      var y=Math.cos(phi)*ry+.3;
-      var z=Math.sin(phi)*Math.sin(theta)*rz;
+      if(r<.65){
+        // CEREBRUM - big wrinkly mass, shaped like a brain from the side
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var rx=4.5,ry=3,rz=3;
+        x=Math.sin(phi)*Math.cos(theta)*rx;
+        y=Math.cos(phi)*ry+.5;
+        z=Math.sin(phi)*Math.sin(theta)*rz;
+        if(x<-2&&y>.5){x-=.5;y+=.15}
+        if(y>2.8)y+=.15;
+        if(x>2)y-=(x-2)*.5;
+        if(y<-.3)y=-.3-(y+.3)*.35;
+        if(Math.abs(z)>2&&y<.8)y-=.4;
+        var fold=Math.sin(phi*14+theta*3)*.1+Math.sin(phi*9+theta*11)*.07+Math.sin(phi*21-theta*7)*.04+Math.sin(phi*6+theta*16)*.05+Math.sin(phi*28)*.025;
+        x+=Math.sin(phi)*Math.cos(theta)*fold;
+        y+=Math.cos(phi)*fold*.5;
+        z+=Math.sin(phi)*Math.sin(theta)*fold*.4;
 
-      // Sculpt the brain profile:
-      // Frontal lobe rounds forward
-      if(x<-2&&y>.5)x-=.5;
-      // Top dome slight peak
-      if(y>2.5)y+=.2;
-      // Back slopes down
-      if(x>2.5)y-=(x-2.5)*.4;
-      // Bottom is flatter than top
-      if(y<-.5)y=-.5-(y+.5)*.3;
-      // Temporal regions widen slightly lower on sides
-      if(Math.abs(z)>2&&y<1)y-=.3;
+      }else if(r<.85){
+        // CEREBELLUM - overlaps with back-bottom of cerebrum, tighter folds
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var cr=1.4+Math.sin(phi*28)*.03+Math.sin(theta*24)*.025;
+        x=Math.sin(phi)*Math.cos(theta)*cr*1.1+2.8;
+        y=Math.cos(phi)*cr*.5-1.5;
+        z=Math.sin(phi)*Math.sin(theta)*cr*.9;
 
-      // Wrinkled surface (gyri folds)
-      var fold=Math.sin(phi*14+theta*3)*.1+Math.sin(phi*9+theta*11)*.07+Math.sin(phi*21-theta*7)*.04+Math.sin(phi*6+theta*16)*.05+Math.sin(phi*28)*.03;
-      x+=Math.sin(phi)*Math.cos(theta)*fold;
-      y+=Math.cos(phi)*fold*.5;
-      z+=Math.sin(phi)*Math.sin(theta)*fold*.5;
-
+      }else{
+        // BRAINSTEM - connects from cerebellum downward, no gap
+        var t=Math.random();
+        var a=Math.random()*PI2;
+        var sr=.3-t*.08;
+        if(t<.3)sr+=.1;
+        x=2.8+Math.cos(a)*sr;
+        y=-1.5-t*1.5;
+        z=Math.sin(a)*sr;
+      }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
