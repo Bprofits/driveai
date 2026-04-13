@@ -3,121 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drive AI Sales Inc. — AI-Powered Lead Response for Dealerships</title>
+<title>Drive AI Sales Inc. - AI-Powered Lead Response for Dealerships</title>
 <meta name="description" content="Drive AI responds to every dealership lead in under 60 seconds. Text, email, voice. 24/7.">
 <link rel="icon" type="image/png" href="logo/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{background:#050508;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* THREE.JS CANVAS — fixed, fullscreen, always visible */
-#c{position:fixed;inset:0;z-index:0}
+/* ── AURORA BLOBS (animated background) ── */
+.aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:.25;will-change:transform}
+.blob-1{width:500px;height:500px;background:#E87A00;top:-150px;left:-100px;animation:aFloat1 20s ease-in-out infinite}
+.blob-2{width:400px;height:400px;background:#B85E00;top:50%;right:-120px;animation:aFloat2 25s ease-in-out infinite}
+.blob-3{width:350px;height:350px;background:#E87A00;bottom:-150px;left:35%;animation:aFloat3 18s ease-in-out infinite}
+@keyframes aFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(80px,60px) scale(1.1)}66%{transform:translate(-40px,30px) scale(.95)}}
+@keyframes aFloat2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-60px,-50px) scale(1.15)}66%{transform:translate(50px,-25px) scale(.9)}}
+@keyframes aFloat3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,-80px) scale(1.1)}}
 
-/* SCROLL SPACER — this is what creates the scrollable area */
-.spacer{height:600vh;pointer-events:none}
+/* ── ORB SHADER CANVAS ── */
+#orb{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;border-radius:50%;width:min(50vw,500px);height:min(50vw,500px)}
 
-/* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between}
-.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#fff;text-decoration:none}
+/* ── PARTICLE CANVAS ── */
+#particles{position:fixed;inset:0;z-index:2;pointer-events:none}
+
+/* ── CONTENT LAYER ── */
+.scroll-space{height:600vh;position:relative;z-index:3;pointer-events:none}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,8,.6);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.04)}
+.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:#fff;text-decoration:none}
 .nav-mark span{color:#E87A00}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);text-decoration:none;transition:color .3s}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);text-decoration:none;transition:color .3s}
 .nav-links a:hover{color:#E87A00}
-.nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem;transition:background .3s!important}
-.nav-cta:hover{background:#FF8C00!important}
+.nav-cta{background:#E87A00!important;color:#000!important;padding:.4rem 1rem;transition:all .3s!important}
+.nav-cta:hover{background:#FF8C00!important;box-shadow:0 0 20px rgba(232,122,0,.3)!important}
 
-/* TEXT PANELS — fixed, fade in/out based on scroll */
-.panel{position:fixed;z-index:10;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(20px);pointer-events:none}
+/* ── PANELS (glassmorphism) ── */
+.panel{position:fixed;z-index:10;opacity:0;transition:opacity .6s cubic-bezier(.215,.61,.355,1),transform .6s cubic-bezier(.215,.61,.355,1);transform:translateY(20px);pointer-events:none}
 .panel.show{opacity:1;transform:translateY(0);pointer-events:auto}
 
+/* Glass effect */
+.glass{background:rgba(255,255,255,.03);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:16px;padding:2.5rem;border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 0 rgba(255,255,255,.04),0 0 40px rgba(0,0,0,.3),0 20px 60px rgba(0,0,0,.2);position:relative;overflow:hidden}
+/* Animated gradient border */
+.glass::before{content:'';position:absolute;inset:0;border-radius:16px;padding:1px;background:conic-gradient(from var(--ba,0deg),#E87A00,#B85E00,#F4DEC9,#E87A00);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:rotBorder 6s linear infinite;opacity:.3}
+@property --ba{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes rotBorder{to{--ba:360deg}}
+
 /* Panel positions */
-.p-hero{top:50%;left:4rem;transform:translateY(-50%);max-width:550px}
+.p-hero{top:50%;left:4rem;transform:translateY(-50%);max-width:520px}
 .p-hero.show{transform:translateY(-50%)}
+.p-right{top:50%;right:4rem;transform:translateY(-50%);max-width:420px;text-align:right}
+.p-right.show{transform:translateY(-50%)}
+.p-left{top:50%;left:4rem;transform:translateY(-50%);max-width:420px}
+.p-left.show{transform:translateY(-50%)}
 .p-center{top:50%;left:50%;transform:translate(-50%,-50%);max-width:500px;text-align:center}
 .p-center.show{transform:translate(-50%,-50%)}
-.p-left{top:50%;left:4rem;transform:translateY(-50%);max-width:450px}
-.p-left.show{transform:translateY(-50%)}
-.p-right{top:50%;right:4rem;transform:translateY(-50%);max-width:450px;text-align:right}
-.p-right.show{transform:translateY(-50%)}
-.p-bottom{bottom:6rem;left:50%;transform:translateX(-50%);max-width:600px;text-align:center}
-.p-bottom.show{transform:translateX(-50%)}
 
-/* TEXT STYLES */
+/* ── TYPOGRAPHY ── */
 .ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.6rem}
-.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);line-height:.93;letter-spacing:2px}
-.h1 em{font-style:normal;color:#E87A00}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3rem);line-height:1;letter-spacing:1px}
-.h2 em{font-style:normal;color:#E87A00}
-.bd{font-size:.85rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.4);margin-top:.8rem}
-.bd strong{color:rgba(255,255,255,.65);font-weight:500}
-.p-right .bd{margin-left:auto;max-width:22rem}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);line-height:.93;letter-spacing:2px}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1;letter-spacing:1px}
+.h1 em,.h2 em{font-style:normal}
+/* Shimmer text effect */
+.shimmer{background:linear-gradient(90deg,#E87A00 0%,#FF8C00 20%,#F4DEC9 40%,#FF8C00 60%,#E87A00 80%,#E87A00 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite}
+@keyframes shimmer{to{background-position:200% center}}
+.bd{font-size:.82rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.35);margin-top:.8rem}
+.bd strong{color:rgba(255,255,255,.55);font-weight:500}
+.p-right .bd{margin-left:auto;max-width:20rem}
 .p-center .bd{margin:0 auto}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s;margin-top:1.2rem}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.3rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
 .btn-fill{background:#E87A00;color:#000}
-.btn-fill:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.3)}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08);margin-left:.5rem}
+.btn-fill:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.4)}
+/* Magnetic effect applied via JS */
+.btn-fill::after{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);border-radius:inherit;opacity:0;transition:opacity .3s}
+.btn-fill:hover::after{opacity:1}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.06)}
 .btn-ghost:hover{border-color:#E87A00;color:#E87A00}
 
-/* STATS */
-.stats{display:flex;gap:2rem;margin-top:1.2rem}
-.sv{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#E87A00;line-height:1}
-.sl{font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18)}
+/* ── STATS ── */
+.stats{display:flex;gap:2rem;margin-top:1rem}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#E87A00;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.15)}
 
-/* RESULTS */
-.rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+/* ── RESULTS (with tilt) ── */
+.results{margin-top:1rem;max-width:18rem}
+.p-right .results{margin-left:auto}
+.rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
 .rr:last-child{border:none}
-.rr-l{font-size:.7rem;color:rgba(255,255,255,.25)}
+.rr-l{font-size:.7rem;color:rgba(255,255,255,.2)}
 .rr-v{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#E87A00}
 
-/* SCROLL PROGRESS */
-.prog{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:.4rem}
-.prog-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .3s;cursor:pointer}
-.prog-dot.on{background:#E87A00;box-shadow:0 0 6px rgba(232,122,0,.4)}
+/* ── PILLS ── */
+.pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:1rem}
+.pill{background:rgba(232,122,0,.06);border:1px solid rgba(232,122,0,.1);color:#E87A00;padding:.25rem .6rem;font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
 
-/* LOADING */
-.loader{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;transition:opacity .6s}
-.loader.done{opacity:0;pointer-events:none}
-.loader-text{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:#fff}
-.loader-text span{color:#E87A00}
-.loader-bar{width:160px;height:2px;background:rgba(255,255,255,.06);overflow:hidden}
-.loader-fill{height:100%;background:#E87A00;width:0%;transition:width .3s}
+/* ── SCROLL PROGRESS ── */
+.prog{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:.4rem}
+.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.08);cursor:pointer;transition:all .3s;position:relative}
+.dot.on{background:#E87A00;box-shadow:0 0 6px rgba(232,122,0,.4)}
+.dot.on::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid rgba(232,122,0,.3);animation:pulseRing 2s ease-out infinite}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}
 
-/* FOOTER */
-.footer{position:relative;z-index:10;border-top:1px solid rgba(255,255,255,.04);background:#000}
-.footer-inner{max-width:1200px;margin:0 auto;padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center}
-.footer-c{font-size:.5rem;color:rgba(255,255,255,.1)}
+/* ── SCENE LABEL ── */
+.slabel{position:fixed;bottom:2rem;left:3rem;z-index:50;font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.1);transition:opacity .3s}
+
+/* ── SCROLL CUE ── */
+.cue{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:50;display:flex;flex-direction:column;align-items:center;gap:.4rem;transition:opacity .5s}
+.cue.hide{opacity:0}
+.cue-line{width:1px;height:30px;background:linear-gradient(to bottom,transparent,#E87A00);animation:cuePulse 2s ease infinite}
+@keyframes cuePulse{0%,100%{opacity:.2;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.2)}}
+.cue-text{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.1)}
+
+/* ── DATA STREAM ── */
+.dstream{font-family:'SF Mono','Fira Code',monospace;font-size:9px;color:rgba(232,122,0,.3);line-height:1.4;overflow:hidden;white-space:pre;mask-image:linear-gradient(to bottom,transparent 0%,black 20%,black 80%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 20%,black 80%,transparent 100%);height:60px;margin-top:.8rem}
+
+/* ── FOOTER ── */
+.footer{position:relative;z-index:10;border-top:1px solid rgba(255,255,255,.04);background:rgba(5,5,8,.95);backdrop-filter:blur(12px)}
+.footer-inner{max-width:1100px;margin:0 auto;padding:2rem 3rem;display:flex;justify-content:space-between;align-items:center}
+.footer-c{font-size:.5rem;color:rgba(255,255,255,.08)}
 .footer-l{display:flex;gap:1.2rem}
-.footer-l a{font-size:.5rem;color:rgba(255,255,255,.1);text-decoration:none}
+.footer-l a{font-size:.5rem;color:rgba(255,255,255,.08);text-decoration:none}
 .footer-l a:hover{color:#E87A00}
 
+/* ── RESPONSIVE ── */
 @media(max-width:768px){
-  .nav{padding:1rem 1.5rem}.nav-links .hm{display:none}
-  .p-hero,.p-left,.p-right{left:2rem;right:2rem;max-width:none;text-align:left}
-  .p-right .bd{margin-left:0}
-  .p-center,.p-bottom{left:2rem;right:2rem;max-width:none;transform:none!important}
-  .stats{flex-wrap:wrap;gap:1rem}
-  .prog{display:none}
+  .nav{padding:1rem 1.2rem}.nav-links .hm{display:none}
+  .p-hero,.p-left,.p-right,.p-center{left:1.5rem;right:1.5rem;max-width:none;text-align:left;padding:1.8rem}
+  .p-right .bd,.p-right .results{margin-left:0}
+  .p-center{transform:none!important;top:auto;bottom:10vh}
+  .stats{flex-wrap:wrap;gap:1rem}.prog,.slabel,.cue{display:none}
+  #orb{width:80vw;height:80vw;opacity:.4}
 }
 </style>
 </head>
 <body>
 
-<!-- LOADER -->
-<div class="loader" id="loader">
-  <div class="loader-text">DRIVE <span>AI</span> SALES</div>
-  <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
-</div>
+<!-- AURORA BACKGROUND -->
+<div class="aurora"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
 
-<!-- THREE.JS CANVAS -->
-<canvas id="c"></canvas>
+<!-- SHADER ORB -->
+<canvas id="orb"></canvas>
 
-<!-- SCROLL SPACER -->
-<div class="spacer"></div>
+<!-- INTERACTIVE PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- SCROLL SPACE -->
+<div class="scroll-space"></div>
 
 <!-- NAV -->
 <nav class="nav">
@@ -130,19 +165,25 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 <!-- PROGRESS -->
 <div class="prog" id="prog"></div>
+<div class="slabel" id="slabel"></div>
+<div class="cue" id="cue"><div class="cue-line"></div><div class="cue-text">Scroll</div></div>
 
-<!-- PANELS -->
-<div class="panel p-hero" id="p0">
-  <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:140px;width:auto;margin-bottom:1.5rem">
-  <div class="h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></div>
-  <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds.</div>
-  <div><a href="diagnostic.html" class="btn btn-fill">Free Diagnostic &rarr;</a><a href="#" class="btn btn-ghost" onclick="scrollTo(0,document.documentElement.scrollHeight*.18);return false">How It Works</a></div>
+<!-- ── PANELS ── -->
+
+<div class="panel p-hero glass" id="p0">
+  <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:100px;width:auto;margin-bottom:1.2rem">
+  <div class="h1">Your Leads Are<br>Calling Back.<br><em class="shimmer">Just Not You.</em></div>
+  <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds. Text, email, voice. 24/7.</div>
+  <div style="margin-top:1.5rem;display:flex;gap:.6rem">
+    <a href="diagnostic.html" class="btn btn-fill" data-magnetic>Free Diagnostic</a>
+    <a href="#" class="btn btn-ghost" onclick="goScene(2);return false">How It Works</a>
+  </div>
 </div>
 
-<div class="panel p-right" id="p1">
+<div class="panel p-right glass" id="p1">
   <div class="ol">The Problem</div>
-  <div class="h2">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
-  <div class="bd"><strong>$15K–$45K/month</strong> lost to slow response, broken follow-up, and no-shows.</div>
+  <div class="h2">Your CRM Captures Leads.<br>It Can't <em class="shimmer">Work</em> Them.</div>
+  <div class="bd"><strong>$15K-$45K/month</strong> lost to slow response, broken follow-up, and no-shows.</div>
   <div class="stats">
     <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
     <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
@@ -150,15 +191,18 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
   </div>
 </div>
 
-<div class="panel p-left" id="p2">
+<div class="panel p-left glass" id="p2">
   <div class="ol">The Solution</div>
-  <div class="h2">An Engine That Works<br>While Your Team <em>Sleeps</em></div>
-  <div class="bd">Drive AI plugs into your CRM — CDK, DealerTrack, VinSolutions. Under a day. No migration. Your team doesn't even know it's there.</div>
+  <div class="h2">An Engine That Works<br>While Your Team <em class="shimmer">Sleeps</em></div>
+  <div class="bd">Drive AI plugs into your CRM. CDK, DealerTrack, VinSolutions. Under a day. No migration. Your team doesn't even know it's there.</div>
+  <div class="pills">
+    <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div>
+  </div>
 </div>
 
-<div class="panel p-right" id="p3">
+<div class="panel p-right glass" id="p3">
   <div class="ol">The Drivetrain</div>
-  <div class="h2"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
+  <div class="h2"><em class="shimmer">AI Takes Point.</em><br>Every Lead. Every Time.</div>
   <div class="bd">Under 60 seconds. Text, email, voice. 7+ touchpoints over 30 days. Books appointments. Re-engages no-shows.</div>
   <div class="stats">
     <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
@@ -167,184 +211,209 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
   </div>
 </div>
 
-<div class="panel p-left" id="p4">
+<div class="panel p-left glass" id="p4">
   <div class="ol">Results</div>
-  <div class="h2">The Numbers<br>Speak <em>Dealer.</em></div>
-  <div style="margin-top:1rem;max-width:18rem">
-    <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs → 47s</span></div>
-    <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% → 68%</span></div>
+  <div class="h2">The Numbers<br>Speak <em class="shimmer">Dealer.</em></div>
+  <div class="results">
+    <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs to 47s</span></div>
+    <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% to 68%</span></div>
     <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
     <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
   </div>
+  <div class="dstream" id="dstream"></div>
 </div>
 
-<div class="panel p-center" id="p5">
+<div class="panel p-center glass" id="p5">
   <div class="ol">Free Assessment</div>
-  <div class="h2">How Much Are You<br><em>Leaving on the Table?</em></div>
+  <div class="h2">How Much Are You<br><em class="shimmer">Leaving on the Table?</em></div>
   <div class="bd">7 questions. 2 minutes. Your score and revenue leak estimate.</div>
-  <div style="margin-top:1.5rem"><a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a><a href="discovery.html" class="btn btn-ghost">Book a Call</a></div>
+  <div style="margin-top:1.5rem;display:flex;gap:.6rem;justify-content:center">
+    <a href="diagnostic.html" class="btn btn-fill" data-magnetic>Take the Diagnostic</a>
+    <a href="discovery.html" class="btn btn-ghost">Book a Call</a>
+  </div>
 </div>
 
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-c">&copy; 2026 Drive AI Sales Inc. &middot; Edmonton, AB</div>
+    <div class="footer-c">2026 Drive AI Sales Inc. Edmonton, AB</div>
     <div class="footer-l"><a href="diagnostic.html">Diagnostic</a><a href="pricing.html">Pricing</a><a href="discovery.html">Book a Call</a></div>
   </div>
 </footer>
 
 <script>
-var PANELS=6;
-var currentPanel=-1;
-var scrollPct=0;
+// ── GLOBALS ──
+var PANELS=6,cur=-1,scrollPct=0;
+var labels=['','The Problem','The Solution','The Drivetrain','Results','Assessment'];
 
-// Progress dots
-(function(){var d=document.getElementById('prog');for(var i=0;i<PANELS;i++){var dot=document.createElement('div');dot.className='prog-dot';dot.dataset.i=i;dot.onclick=function(){var t=(parseInt(this.dataset.i)/PANELS)*(document.documentElement.scrollHeight-window.innerHeight);window.scrollTo({top:t,behavior:'smooth'})};d.appendChild(dot)}})();
+// ── PROGRESS DOTS ──
+(function(){var c=document.getElementById('prog');for(var i=0;i<PANELS;i++){var d=document.createElement('div');d.className='dot';d.dataset.i=i;d.onclick=function(){goScene(parseInt(this.dataset.i))};c.appendChild(d)}})();
 
-// Scroll handler
+function goScene(i){var h=document.documentElement.scrollHeight-window.innerHeight;window.scrollTo({top:(i/PANELS)*h,behavior:'smooth'})}
+
+// ── SCROLL ──
 window.addEventListener('scroll',function(){
-  var t=window.pageYOffset||document.documentElement.scrollTop;
-  var h=document.documentElement.scrollHeight-window.innerHeight;
+  var t=window.pageYOffset;var h=document.documentElement.scrollHeight-window.innerHeight;
   scrollPct=h>0?t/h:0;
-
-  // Which panel is active?
-  var p=Math.floor(scrollPct*PANELS);
-  if(p>=PANELS)p=PANELS-1;
-  if(p!==currentPanel){
-    currentPanel=p;
-    for(var i=0;i<PANELS;i++){
-      var el=document.getElementById('p'+i);
-      if(el)el.classList.toggle('show',i===p);
-    }
-    document.querySelectorAll('.prog-dot').forEach(function(d,i){d.classList.toggle('on',i===p)});
+  var p=Math.min(Math.floor(scrollPct*PANELS),PANELS-1);
+  if(p!==cur){cur=p;
+    for(var i=0;i<PANELS;i++){var el=document.getElementById('p'+i);if(el)el.classList.toggle('show',i===p)}
+    document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('on',i===p)});
+    document.getElementById('slabel').textContent=labels[p]||'';
   }
+  document.getElementById('cue').classList.toggle('hide',scrollPct>.03);
 },{passive:true});
-
-// Show first panel
 document.getElementById('p0').classList.add('show');
 
-// ─── THREE.JS ───
+// ── DATA STREAM ──
 (function(){
-  var scene=new THREE.Scene();
-  var camera=new THREE.PerspectiveCamera(40,window.innerWidth/window.innerHeight,.1,200);
-  var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.8;
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  renderer.setClearColor(0x000000);
+  var el=document.getElementById('dstream');if(!el)return;
+  var chars='01>>=<<|//{}[]ABCDEF0123456789.LEAD.RESP.APPT.SYNC.';
+  var cols=45,rows=4,lines=[];
+  for(var i=0;i<rows;i++){var l='';for(var j=0;j<cols;j++)l+=chars[Math.floor(Math.random()*chars.length)];lines.push(l)}
+  setInterval(function(){lines.shift();var l='';for(var j=0;j<cols;j++)l+=chars[Math.floor(Math.random()*chars.length)];lines.push(l);el.textContent=lines.join('\n')},120);
+})();
 
-  // Lighting
-  var spot=new THREE.SpotLight(0xE87A00,4,50,Math.PI/4,.5,1);
-  spot.position.set(10,10,10);scene.add(spot);
-  var spot2=new THREE.SpotLight(0xFF8C00,2,40,Math.PI/4,.6,1);
-  spot2.position.set(-8,5,-5);scene.add(spot2);
-  var rim=new THREE.PointLight(0xE87A00,1.5,30);
-  rim.position.set(0,3,-10);scene.add(rim);
-  scene.add(new THREE.AmbientLight(0x080808));
+// ── MAGNETIC BUTTONS ──
+document.querySelectorAll('[data-magnetic]').forEach(function(btn){
+  btn.addEventListener('mousemove',function(e){var r=btn.getBoundingClientRect();var x=e.clientX-r.left-r.width/2;var y=e.clientY-r.top-r.height/2;btn.style.transform='translate('+x*.25+'px,'+y*.25+'px)'});
+  btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0,0)'});
+});
 
-  // Load car
-  var carGroup=new THREE.Group();
-  var loaded=false;
-  var loader=new THREE.GLTFLoader();
-  var loaderFill=document.getElementById('loaderFill');
-  var loaderEl=document.getElementById('loader');
+// ── SHADER ORB (WebGL) ──
+(function(){
+  var canvas=document.getElementById('orb');
+  var gl=canvas.getContext('webgl');
+  if(!gl)return;
 
-  loader.load('car.glb',
-    function(gltf){
-      var model=gltf.scene;
-      // Glass/holographic material for all meshes
-      model.traverse(function(child){
-        if(child.isMesh){
-          child.material=new THREE.MeshPhysicalMaterial({
-            color:0x112240,
-            metalness:.95,
-            roughness:.12,
-            clearcoat:1,
-            clearcoatRoughness:.05,
-            envMapIntensity:2,
-            transparent:true,
-            opacity:.85
-          });
-        }
-      });
-      carGroup.add(model);
-      scene.add(carGroup);
-      loaded=true;
-      // Hide loader
-      loaderFill.style.width='100%';
-      setTimeout(function(){loaderEl.classList.add('done')},500);
-    },
-    function(xhr){
-      if(xhr.total>0){
-        var pct=Math.round(xhr.loaded/xhr.total*100);
-        loaderFill.style.width=pct+'%';
-      }
-    },
-    function(){
-      // Error fallback — hide loader anyway
-      loaderEl.classList.add('done');
+  function resize(){var s=Math.min(window.innerWidth*.5,500);canvas.width=s*devicePixelRatio;canvas.height=s*devicePixelRatio;canvas.style.width=s+'px';canvas.style.height=s+'px';gl.viewport(0,0,canvas.width,canvas.height)}
+
+  var vertSrc='attribute vec2 a_position;void main(){gl_Position=vec4(a_position,0.0,1.0);}';
+  var fragSrc=`
+    precision highp float;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+    uniform float u_scroll;
+    uniform vec2 u_mouse;
+
+    vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec2 mod289(vec2 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec3 permute(vec3 x){return mod289(((x*34.0)+1.0)*x);}
+
+    float snoise(vec2 v){
+      const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+      vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);
+      vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+      vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod289(i);
+      vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+      vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);
+      m=m*m;m=m*m;
+      vec3 x=2.0*fract(p*C.www)-1.0;vec3 h=abs(x)-0.5;vec3 ox=floor(x+0.5);vec3 a0=x-ox;
+      m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+      vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+      return 130.0*dot(m,g);
     }
-  );
 
-  // Camera keyframes: [x, y, z] positions at each scroll section
-  // The camera orbits around the car at origin
-  var camKeys=[
-    {x:6, y:2, z:10},    // 0: hero — 3/4 front view
-    {x:10, y:1.5, z:2},  // 1: side view
-    {x:5, y:4, z:-6},    // 2: high rear 3/4
-    {x:-8, y:1.5, z:-3}, // 3: opposite side
-    {x:-4, y:3, z:8},    // 4: front left
-    {x:0, y:6, z:12},    // 5: high front center — pull back
-  ];
+    float fbm(vec2 p){float f=0.0;float amp=0.5;for(int i=0;i<5;i++){f+=amp*snoise(p);p*=2.1;amp*=0.5;}return f;}
 
-  function lerp(a,b,t){return a+(b-a)*t}
+    void main(){
+      vec2 uv=(gl_FragCoord.xy-0.5*u_resolution)/min(u_resolution.x,u_resolution.y);
+      vec2 mouse=(u_mouse-0.5*u_resolution)/min(u_resolution.x,u_resolution.y);
+      float t=u_time*0.3;
+      float d=length(uv);
+      float mouseDist=length(uv-mouse*0.3);
+      float mouseInf=smoothstep(0.8,0.0,mouseDist)*0.06;
+      float n1=fbm(uv*3.0+t*0.5);
+      float n2=fbm(uv*2.0-t*0.3+3.14);
 
-  // Resize
-  window.addEventListener('resize',function(){
-    camera.aspect=window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
-  });
+      // Orb size pulses with scroll
+      float orbR=0.3+n1*0.04+mouseInf+u_scroll*0.08;
+      float orbMask=smoothstep(orbR+0.01,orbR-0.02,d);
 
-  // Animate
-  var clock=new THREE.Clock();
+      // Drive AI colors: orange, cream, deep orange
+      vec3 col1=vec3(0.91,0.48,0.0);   // #E87A00
+      vec3 col2=vec3(1.0,0.55,0.0);    // bright orange
+      vec3 col3=vec3(0.72,0.37,0.0);   // #B85E00
+      vec3 col4=vec3(0.96,0.87,0.78);  // #F4DEC9
+
+      float n=n1*0.5+0.5;
+      vec3 innerColor=mix(
+        mix(col1,col2,smoothstep(0.3,0.7,n+sin(t)*0.2)),
+        mix(col3,col4,smoothstep(0.3,0.7,n2*0.5+0.5)),
+        smoothstep(0.2,0.8,n*n2+cos(t*0.7)*0.3)
+      );
+
+      // Fresnel rim
+      float fresnel=pow(smoothstep(0.0,orbR,d),3.0);
+      vec3 rimColor=mix(col4,col1,fresnel);
+      innerColor=mix(innerColor,rimColor,fresnel*0.5);
+
+      // Specular
+      vec2 lightDir=normalize(vec2(0.3,0.5)+mouse*0.1);
+      float spec=pow(max(dot(normalize(uv),lightDir),0.0),16.0)*0.4;
+      innerColor+=spec;
+
+      // Outer glow
+      float glow1=exp(-d*3.0)*0.4;
+      float glow2=exp(-d*6.0)*0.25;
+      float glow3=exp(-d*12.0)*0.15;
+      vec3 glowColor=col1*glow1+col3*glow2+col4*glow3;
+
+      vec3 finalColor=innerColor*orbMask+glowColor*(1.0-orbMask*0.5);
+      finalColor*=1.0-d*0.3;
+      vec3 bg=vec3(0.02,0.02,0.03)+glowColor*0.25;
+      finalColor=mix(bg,finalColor,max(orbMask,length(glowColor)));
+
+      gl_FragColor=vec4(finalColor,max(orbMask,length(glowColor)*0.8));
+    }
+  `;
+
+  function createShader(type,source){var s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(s));gl.deleteShader(s);return null}return s}
+  var vs=createShader(gl.VERTEX_SHADER,vertSrc),fs=createShader(gl.FRAGMENT_SHADER,fragSrc);
+  if(!vs||!fs)return;
+  var prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);gl.useProgram(prog);
+  var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  var aPos=gl.getAttribLocation(prog,'a_position');gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
+  var uRes=gl.getUniformLocation(prog,'u_resolution'),uTime=gl.getUniformLocation(prog,'u_time'),uScroll=gl.getUniformLocation(prog,'u_scroll'),uMouse=gl.getUniformLocation(prog,'u_mouse');
+  var mx=0,my=0;
+  document.addEventListener('mousemove',function(e){mx=e.clientX*devicePixelRatio;my=(window.innerHeight-e.clientY)*devicePixelRatio});
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  resize();window.addEventListener('resize',resize);
+  var startTime=performance.now();
+  function render(){var t=(performance.now()-startTime)/1000;gl.uniform2f(uRes,canvas.width,canvas.height);gl.uniform1f(uTime,t);gl.uniform1f(uScroll,scrollPct);gl.uniform2f(uMouse,mx,my);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(render)}
+  render();
+})();
+
+// ── INTERACTIVE PARTICLES ──
+(function(){
+  var c=document.getElementById('particles'),ctx=c.getContext('2d');
+  var w,h,particles=[],mouse={x:null,y:null,radius:120};
+  var COUNT=120,CONN=100;
+
+  function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+
+  for(var i=0;i<COUNT;i++)particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,size:Math.random()*1.5+.3,opacity:Math.random()*.25+.05});
+
+  c.addEventListener('mousemove',function(e){mouse.x=e.clientX;mouse.y=e.clientY});
+  c.addEventListener('mouseleave',function(){mouse.x=null;mouse.y=null});
+
   function animate(){
-    requestAnimationFrame(animate);
-    var t=clock.getElapsedTime();
-
-    // Scroll-driven camera
-    var totalKeys=camKeys.length-1;
-    var raw=scrollPct*totalKeys;
-    var idx=Math.floor(raw);
-    var frac=raw-idx;
-    if(idx>=totalKeys){idx=totalKeys-1;frac=1}
-    var a=camKeys[idx],b=camKeys[idx+1]||camKeys[idx];
-
-    // Smooth interpolation
-    var cx=lerp(a.x,b.x,frac);
-    var cy=lerp(a.y,b.y,frac);
-    var cz=lerp(a.z,b.z,frac);
-    camera.position.set(cx,cy,cz);
-    camera.lookAt(0,.5,0);
-
-    // Subtle car float
-    if(loaded){
-      carGroup.position.y=Math.sin(t*.5)*.03;
-      carGroup.rotation.y=Math.sin(t*.15)*.02;
+    ctx.clearRect(0,0,w,h);
+    for(var i=0;i<COUNT;i++){
+      var p=particles[i];
+      if(mouse.x!==null){var dx=p.x-mouse.x,dy=p.y-mouse.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<mouse.radius){var force=(mouse.radius-dist)/mouse.radius;p.vx+=(dx/dist)*force*.3;p.vy+=(dy/dist)*force*.3}}
+      p.vx*=.99;p.vy*=.99;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle='rgba(232,122,0,'+p.opacity+')';ctx.fill();
     }
-
-    // Light orbits
-    spot.position.x=Math.cos(t*.3)*12;
-    spot.position.z=Math.sin(t*.3)*12;
-
-    renderer.render(scene,camera);
+    // Connections
+    for(var i=0;i<COUNT;i++){for(var j=i+1;j<COUNT;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<CONN){var op=(1-dist/CONN)*.08;ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(232,122,0,'+op+')';ctx.lineWidth=.4;ctx.stroke()}}}
+    // Mouse connections
+    if(mouse.x!==null){for(var i=0;i<COUNT;i++){var dx=particles[i].x-mouse.x,dy=particles[i].y-mouse.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<mouse.radius){var op=(1-dist/mouse.radius)*.2;ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(mouse.x,mouse.y);ctx.strokeStyle='rgba(232,122,0,'+op+')';ctx.lineWidth=.5;ctx.stroke()}}}
+    requestAnimationFrame(animate);
   }
   animate();
-
-  // Fallback loader timeout
-  setTimeout(function(){loaderEl.classList.add('done')},8000);
 })();
 </script>
 </body>
