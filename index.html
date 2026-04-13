@@ -223,7 +223,7 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
 
-  var COUNT=20000;
+  var COUNT=25000;
   var PI2=Math.PI*2;
 
   // Round glowing particle sprite
@@ -235,409 +235,283 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   sx.fillStyle=gr;sx.fillRect(0,0,64,64);
   var sprite=new THREE.CanvasTexture(sc);
 
-  // SHAPE 0: HUMAN BRAIN - side profile view, dense surface particles, like reference image
+  // SHAPE 0: HUMAN BRAIN - built from anatomical landmark coordinates
   function makeBrainOuter(){
     var pts=[];
-    // Brain profile from SIDE VIEW (x=front/back, y=up/down, z=left/right)
-    // Classic side profile: frontal lobe bulges forward-top, temporal lobe hangs below,
-    // parietal on top-back, occipital rounds at rear, cerebellum tucked under back
-
-    // Brain outline as profile curve (side view)
-    // Returns the OUTER RADIUS at angle a (0=front, PI/2=top, PI=back, 3PI/2=bottom)
-    function brainR(a){
-      // Base ellipse: taller front, rounder back
-      var base=3.2+Math.cos(a)*.4; // slightly elongated
-      // Frontal lobe bulge (front-top, ~330-30 degrees)
-      if(a<.6||a>5.7)base+=.5*Math.cos(a)*.8;
-      // Parietal dome (top, ~60-120 degrees)
-      if(a>1&&a<2.2)base+=.3;
-      // Occipital rounding (back, ~150-210 degrees)
-      if(a>2.5&&a<3.7)base+=.15;
-      // Temporal lobe hangs lower (bottom-front, ~240-320 degrees)
-      if(a>4&&a<5.5)base+=.6*Math.sin((a-4)/1.5*Math.PI);
-      // Indentation where cerebellum meets cerebrum (back-bottom ~200-240)
-      if(a>3.3&&a<4.2)base-=.5*Math.sin((a-3.3)/.9*Math.PI);
-      return base;
+    // Side-profile outline points (x=front-back, y=up-down) from anatomical data
+    // Normalized so brain spans roughly -5 to +5 on x, -3 to +4 on y
+    var outline=[
+      [-5,.75],[-4.5,2.5],[-3.25,3.4],[-1.75,3.6],[-.5,3.5],[1.25,3.1],[2.5,3.25],[5,.5],
+      [4,-1],[1.5,-2.1],[-.5,-2.25],[-2.5,-2],[-5,.75]
+    ];
+    // Interpolate outline to get y-bounds at any x
+    function outlineY(xq,top){
+      // top=true returns upper profile, top=false returns lower
+      for(var j=0;j<outline.length-1;j++){
+        var p0=outline[j],p1=outline[j+1];
+        if((p0[0]<=xq&&p1[0]>=xq)||(p0[0]>=xq&&p1[0]<=xq)){
+          var t2=(xq-p0[0])/(p1[0]-p0[0]);
+          return p0[1]+(p1[1]-p0[1])*t2;
+        }
+      }
+      return 0;
+    }
+    // Width (z) varies: widest at middle, narrow at front/back
+    function brainW(xn){
+      var t=(xn+5)/10; // 0=front, 1=back
+      return 2.8*Math.sin(Math.max(0,Math.min(1,t))*Math.PI)*.85+.4;
     }
 
     for(var i=0;i<COUNT;i++){
-      var r=Math.random();
-      var x,y,z;
-
-      if(r<.62){
-        // CEREBRUM SURFACE - dense, uniform coverage with fold texture
-        // Sample on sphere surface, then deform into brain shape
-        var phi=Math.acos(2*Math.random()-1); // vertical angle
-        var theta=Math.random()*PI2; // horizontal angle
-
-        // Get the profile radius for this angle
-        var sideAngle=Math.atan2(-Math.cos(phi),Math.sin(phi)*Math.cos(theta));
-        if(sideAngle<0)sideAngle+=PI2;
-        var rad=brainR(sideAngle);
-
-        // Base position on deformed sphere
-        x=Math.sin(phi)*Math.cos(theta)*rad;
-        y=Math.cos(phi)*rad*.85+.8; // squash vertically, shift up
-        z=Math.sin(phi)*Math.sin(theta)*rad*.7; // narrower side-to-side
-
-        // GYRI/SULCI FOLDS - dense wrinkled surface texture
-        var fold=0;
-        fold+=Math.sin(phi*16+theta*3)*.1;
-        fold+=Math.sin(phi*10+theta*12)*.07;
-        fold+=Math.sin(phi*22-theta*8)*.04;
-        fold+=Math.sin(phi*7+theta*18)*.05;
-        fold+=Math.sin(phi*30+theta*5)*.03;
-        var nx=Math.sin(phi)*Math.cos(theta);
-        var ny=Math.cos(phi);
-        var nz=Math.sin(phi)*Math.sin(theta);
-        x+=nx*fold;y+=ny*fold*.7;z+=nz*fold*.5;
-
-      }else if(r<.70){
-        // LONGITUDINAL FISSURE - the central split viewed from side
-        z=(Math.random()-.5)*.05;
-        x=(Math.random()-.5)*5;
-        var topY=brainR(Math.PI/2)*.85+.8;
-        y=topY-Math.random()*.8;
-
-      }else if(r<.76){
-        // SYLVIAN FISSURE - the big horizontal groove on the side
-        var side=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=-1+t*3.5;
-        y=.2+t*.3+Math.sin(t*2.5)*.15;
-        z=side*(2.2+Math.random()*.1);
-
-      }else if(r<.85){
-        // CEREBELLUM - tightly folded, sits below and behind cerebrum
+      var r=Math.random();var x,y,z;
+      if(r<.60){
+        // CEREBRUM SURFACE with gyri folds
         var phi=Math.acos(2*Math.random()-1);
         var theta=Math.random()*PI2;
-        var cr=1.2;
-        // Very tight parallel folds
-        cr+=Math.sin(phi*30)*.04+Math.sin(theta*25)*.03;
-        x=Math.sin(phi)*Math.cos(theta)*cr*1.1-1.5;
-        y=Math.cos(phi)*cr*.5-2;
-        z=Math.sin(phi)*Math.sin(theta)*cr*.8;
-        if(y>-1)y=-1; // don't overlap cerebrum
-
-      }else if(r<.90){
-        // BRAIN STEM - descends from bottom-back
+        // Egg shape scaled to brain proportions: longer front-back, narrower L-R
+        var rx=4.5,ry=3,rz=2.5;
+        x=Math.sin(phi)*Math.cos(theta)*rx;
+        y=Math.cos(phi)*ry+.8;
+        z=Math.sin(phi)*Math.sin(theta)*rz;
+        // Deform to match brain profile: flatten bottom, round top
+        if(y<0){y*=.6} // temporal region hangs lower but not as far
+        if(x<-2&&y>2){x-=.3;y+=.2} // frontal lobe bulge
+        if(x>2&&y>1){y-=.3} // occipital slopes down
+        // GYRI FOLDS - 5 frequencies of wrinkles
+        var fold=Math.sin(phi*14+theta*3)*.12+Math.sin(phi*9+theta*11)*.08+Math.sin(phi*20-theta*7)*.05+Math.sin(phi*6+theta*16)*.06+Math.sin(phi*28+theta*4)*.03;
+        var nx=Math.sin(phi)*Math.cos(theta),ny=Math.cos(phi),nz=Math.sin(phi)*Math.sin(theta);
+        x+=nx*fold;y+=ny*fold*.7;z+=nz*fold*.6;
+      }else if(r<.68){
+        // LONGITUDINAL FISSURE (top center gap between hemispheres)
+        x=(Math.random()-.5)*8;
+        z=(Math.random()-.5)*.06;
+        var topH=3+Math.sin((x/4.5)*Math.PI*.5)*.5;
+        y=topH-Math.random()*.7+.8;
+      }else if(r<.74){
+        // SYLVIAN FISSURE (major horizontal groove)
+        var side=Math.random()>.5?1:-1;
         var t=Math.random();
-        var a=Math.random()*PI2;
-        var sr=.3-.08*t;
-        x=-1.2+Math.cos(a)*sr;
-        y=-2.5-t*1.5;
-        z=Math.sin(a)*sr;
-
+        x=-2.5+t*4;y=.3+t*.3+Math.sin(t*2.5)*.15;z=side*(2.4+Math.random()*.08);
+      }else if(r<.78){
+        // CENTRAL SULCUS (vertical, divides frontal/parietal)
+        var side=Math.random()>.5?1:-1;
+        var t=Math.random();
+        x=-.5+(Math.random()-.5)*.2;y=.5+t*3;z=side*(1+t*.8);
+      }else if(r<.86){
+        // CEREBELLUM (densely ridged, below and behind)
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var cr=1.5+Math.sin(phi*28)*.04+Math.sin(theta*24)*.03;
+        x=Math.sin(phi)*Math.cos(theta)*cr*1.1+3;
+        y=Math.cos(phi)*cr*.45-2.2;
+        z=Math.sin(phi)*Math.sin(theta)*cr*.9;
+        if(y>-1.2)y=-1.2;
+      }else if(r<.90){
+        // BRAIN STEM
+        var t=Math.random();var a=Math.random()*PI2;var sr=.28-.06*t;
+        x=2.5+Math.cos(a)*sr;y=-2.8-t*1.5;z=Math.sin(a)*sr;
       }else{
-        // NEURAL NETWORK CONNECTIONS - faint lines/dots in space around the brain
-        // Like the reference image background
-        var nodeAngle=Math.random()*PI2;
-        var nodeDist=4.5+Math.random()*3;
-        var nodeY=(Math.random()-.5)*6;
-        x=Math.cos(nodeAngle)*nodeDist;
-        y=nodeY;
-        z=Math.sin(nodeAngle)*nodeDist;
-        // Create connection lines between nearby nodes
-        if(Math.random()>.6){
-          var t2=Math.random();
-          var a2=nodeAngle+Math.random()*.8-.4;
-          var d2=nodeDist+Math.random()*2-1;
-          x=Math.cos(nodeAngle)*nodeDist*(1-t2)+Math.cos(a2)*d2*t2;
-          y=nodeY*(1-t2)+(Math.random()-.5)*5*t2;
-          z=Math.sin(nodeAngle)*nodeDist*(1-t2)+Math.sin(a2)*d2*t2;
-        }
+        // NEURAL NETWORK GLOW (sparse dots + connection lines in space)
+        var na=Math.random()*PI2;var nd=5+Math.random()*3;var ny2=(Math.random()-.5)*6;
+        x=Math.cos(na)*nd;y=ny2;z=Math.sin(na)*nd;
+        if(Math.random()>.5){var t2=Math.random();var a2=na+Math.random()-.5;x=Math.cos(na)*nd*(1-t2)+Math.cos(a2)*(nd+1)*t2;y=ny2*(1-t2)+(Math.random()-.5)*5*t2;z=Math.sin(na)*nd*(1-t2)+Math.sin(a2)*(nd+1)*t2}
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 1: CLASSIC V8 ENGINE - realistic proportions, viewed from 3/4 front
+  // SHAPE 1: V8 ENGINE - Chevy 350 SBC proportions (26.5x26x19 inch envelope, nearly cubic)
+  // Scaled so total height ~5 units. V-angle 90 degrees (45 each side)
   function makeEngine(){
     var pts=[];
+    // Cylinder centers along the block (4 per bank, 4.4" spacing = 1.16 units)
+    var cylX=[-1.74,-.58,.58,1.74];
+    var VANG=.785; // 45 degrees in radians
     for(var i=0;i<COUNT;i++){
       var r=Math.random();var x,y,z;
-
-      if(r<.22){
-        // CYLINDER BANKS - 8 cylinders in 90-degree V, 4 per side
+      if(r<.20){
+        // 8 CYLINDERS - dense rings at 45-degree V angle
         var bank=Math.random()>.5?1:-1;
-        var cyl=Math.floor(Math.random()*4);
+        var cIdx=Math.floor(Math.random()*4);
         var a=Math.random()*PI2;
-        var cr=.4+Math.random()*.05; // cylinder bore radius
-        var cx=cyl*1.3-1.95; // cylinder spacing along block
-        // V angle: each bank tilted 45 degrees from vertical
-        x=cx;
-        y=1+Math.sin(a)*cr+bank*Math.cos(.785)*.9;
-        z=Math.cos(a)*cr+bank*Math.sin(.785)*1.1;
-        // Cylinder wall rings (denser on the circumference)
-        if(Math.random()>.6){a=Math.random()*PI2;x=cx;y=1+Math.sin(a)*cr+bank*Math.cos(.785)*.9;z=Math.cos(a)*cr+bank*Math.sin(.785)*1.1}
+        var bore=.5; // bore radius
+        x=cylX[cIdx];
+        // Rotate cylinder position by V angle
+        var cy=Math.sin(a)*bore;var cz=Math.cos(a)*bore;
+        y=1.8+cy*Math.cos(VANG)+cz*Math.sin(VANG)*bank;
+        z=(-cy*Math.sin(VANG)+cz*Math.cos(VANG))*bank;
       }else if(r<.30){
-        // VALVE COVERS - rounded rectangular caps on top of each bank
-        var bank=Math.random()>.5?1:-1;
-        var t=Math.random();
-        x=(t-.5)*5.2;
-        var vcW=.6; // valve cover width
-        var vcOff=bank*1.6; // offset from center for each bank
-        y=2.2+bank*.3+Math.sin(t*Math.PI)*.15; // slight arch
-        z=vcOff+(Math.random()-.5)*vcW;
-        // Valve cover edges (denser outline)
-        if(Math.random()>.5){z=vcOff+((Math.random()>.5)?vcW*.5:-vcW*.5)}
-      }else if(r<.40){
-        // BLOCK - the main rectangular mass between the cylinder banks
-        var surface=Math.random();
-        if(surface<.3){
-          // Front face
-          x=-2.8+(Math.random()-.5)*.1;y=Math.random()*2.2;z=(Math.random()-.5)*2.2;
-        }else if(surface<.6){
-          // Rear face
-          x=2.8+(Math.random()-.5)*.1;y=Math.random()*2.2;z=(Math.random()-.5)*2.2;
-        }else if(surface<.8){
-          // Side walls
-          var side=Math.random()>.5?1:-1;
-          x=(Math.random()-.5)*5.6;y=Math.random()*2;z=side*(1.1+(Math.random()-.5)*.1);
+        // BLOCK - the main iron casting, W-shaped cross section
+        var face=Math.random();
+        if(face<.2){x=-2.3;y=Math.random()*2.5;z=(Math.random()-.5)*2.8} // front
+        else if(face<.4){x=2.3;y=Math.random()*2.5;z=(Math.random()-.5)*2.8} // rear
+        else if(face<.6){var side=Math.random()>.5?1:-1;x=(Math.random()-.5)*4.6;y=Math.random()*1.5;z=side*1.4} // lower sides
+        else if(face<.8){
+          // Deck surfaces (angled at 45 degrees, where heads bolt on)
+          var bank=Math.random()>.5?1:-1;
+          x=(Math.random()-.5)*4.6;
+          var deckT=Math.random();
+          y=1.5+deckT*Math.cos(VANG)*1.2;
+          z=bank*(deckT*Math.sin(VANG)*1.2+.3);
         }else{
-          // Valley between banks (top center of block)
-          x=(Math.random()-.5)*5.2;y=1.5+Math.random()*.3;z=(Math.random()-.5)*.4;
+          // Valley (the V between the banks, top center)
+          x=(Math.random()-.5)*4.4;y=1.5+Math.random()*.4;z=(Math.random()-.5)*.5;
         }
-      }else if(r<.48){
-        // INTAKE MANIFOLD + PLENUM - sits in the V valley on top
+      }else if(r<.38){
+        // VALVE COVERS - long rounded caps on each bank, tilted at 45 deg
+        var bank=Math.random()>.5?1:-1;
+        x=(Math.random()-.5)*4.4;
+        var vcA=Math.random()*PI2;var vcR=.35;
+        var lcy=Math.sin(vcA)*vcR;var lcz=Math.cos(vcA)*vcR;
+        y=2.8+lcy*Math.cos(VANG)+lcz*Math.sin(VANG)*bank;
+        z=bank*1.5+(-lcy*Math.sin(VANG)+lcz*Math.cos(VANG))*bank;
+      }else if(r<.46){
+        // INTAKE MANIFOLD sitting in the valley
         var part=Math.random();
-        if(part<.4){
-          // Plenum (rectangular box on top)
-          x=(Math.random()-.5)*3;y=2.8+Math.random()*.6;z=(Math.random()-.5)*1.2;
+        if(part<.35){
+          // Plenum box
+          x=(Math.random()-.5)*2.5;y=3.2+Math.random()*.5;z=(Math.random()-.5)*1;
         }else{
-          // 8 intake runners curving down from plenum to each cylinder port
+          // 8 runners curving from plenum down to each port
           var runner=Math.floor(Math.random()*8);
           var bank2=runner<4?1:-1;
-          var cylIdx=runner%4;
+          var cIdx2=runner%4;
           var t2=Math.random();
-          x=cylIdx*1.3-1.95;
-          y=2.8-t2*1.2;
-          z=t2*bank2*1.2;
+          x=cylX[cIdx2];
+          y=3.2-t2*1;z=t2*bank2*1;
         }
-      }else if(r<.56){
-        // EXHAUST HEADERS - 4 tubes per side curving down and merging
+      }else if(r<.54){
+        // EXHAUST HEADERS - tubular, 4 per side, sweep down and merge
         var bank=Math.random()>.5?1:-1;
         var tube=Math.floor(Math.random()*4);
         var t=Math.random();
-        var a=Math.random()*PI2;var tr=.12;
-        x=tube*1.3-1.95+t*.3*bank;
-        y=.8-t*1.8+Math.sin(a)*tr;
-        z=bank*(1.3+t*1)+Math.cos(a)*tr;
-        // Collector (tubes merge into one pipe)
-        if(t>.7){x=.5*bank;z=bank*(2.3+Math.random()*.3);y=-1+Math.random()*.5}
-      }else if(r<.62){
-        // FRONT ACCESSORIES - alternator, water pump, pulleys, belt
+        var a=Math.random()*PI2;var tr=.1;
+        x=cylX[tube]+t*.2;
+        y=1.2-t*2.2+Math.sin(a)*tr;
+        z=bank*(1.6+t*.8)+Math.cos(a)*tr;
+        if(t>.75){x=(Math.random()-.5)*.8;z=bank*2.5;y=-1+Math.random()*.4}
+      }else if(r<.60){
+        // FRONT: water pump + crank pulley + alternator + belt
         var part=Math.random();
-        if(part<.3){
-          // Water pump pulley (large, center)
-          var a=Math.random()*PI2;var pr=.8;
-          x=-3;y=1+Math.sin(a)*pr;z=Math.cos(a)*pr;
-        }else if(part<.5){
-          // Alternator (upper right)
-          var a=Math.random()*PI2;var pr=.45;
-          x=-3.1;y=1.8+Math.sin(a)*pr;z=1+Math.cos(a)*pr;
-        }else if(part<.7){
-          // Crank pulley (bottom center, large)
-          var a=Math.random()*PI2;var pr=.7;
-          x=-3.1;y=-.2+Math.sin(a)*pr;z=Math.cos(a)*pr;
-        }else{
-          // Serpentine belt path (connects all pulleys)
-          var t=Math.random()*PI2;
-          x=-3.15;
-          y=.8+Math.sin(t)*1.2;
-          z=Math.cos(t)*.9+Math.sin(t*2)*.3;
-        }
-      }else if(r<.68){
-        // OIL PAN - deep rectangle underneath the block
-        var surface=Math.random();
-        x=(Math.random()-.5)*4.5;
-        if(surface<.3){y=-1.5;z=(Math.random()-.5)*1.8} // bottom
-        else if(surface<.6){y=-1-Math.random()*.5;z=(Math.random()>.5?1:-1)*.9} // sides
-        else{y=-1-Math.random()*.5;x=(Math.random()>.5?-2.2:2.2)} // front/rear
-        // Deep sump
-        if(Math.random()>.7){x=(Math.random()-.5)*2;y=-1.8-Math.random()*.4;z=(Math.random()-.5)*1}
-      }else if(r<.72){
-        // DISTRIBUTOR / IGNITION (rear top center)
-        var a=Math.random()*PI2;var dr=.3;
-        x=3+Math.random()*.2;y=2+Math.sin(a)*dr;z=Math.cos(a)*dr;
-        // Spark plug wires radiating out
-        if(Math.random()>.5){var wire=Math.floor(Math.random()*8);var bank3=wire<4?1:-1;var t3=Math.random();x=3-t3*(3-((wire%4)*1.3-1.95));y=2-t3*.8;z=t3*bank3*1.3}
-      }else if(r<.76){
-        // FLYWHEEL (rear face, large disc)
-        var a=Math.random()*PI2;var fr=.4+Math.random()*.8;
-        x=3+Math.random()*.08;y=.8+Math.sin(a)*fr;z=Math.cos(a)*fr;
-      }else if(r<.80){
-        // THROTTLE BODY (top of plenum)
-        var a=Math.random()*PI2;var tbr=.3;
-        x=0;y=3.5+Math.sin(a)*tbr;z=Math.cos(a)*tbr;
-      }else if(r<.84){
-        // FUEL RAILS (2 tubes along top of valve covers)
-        var bank=Math.random()>.5?1:-1;
-        x=(Math.random()-.5)*4.5;y=2.5+bank*.2;z=bank*1.4;
-        // Injectors (8 small nubs)
-        if(Math.random()>.6){var inj=Math.floor(Math.random()*4);x=inj*1.3-1.95;y=2.3+bank*.2;z=bank*1.2}
-      }else if(r<.88){
-        // ENGINE MOUNTS + BRACKETS
-        var side=Math.random()>.5?1:-1;
-        x=(Math.random()>.5?-2.5:2.5);y=.5+Math.random()*.5;z=side*(1.3+Math.random()*.3);
-      }else if(r<.92){
-        // THERMOSTAT HOUSING + UPPER HOSE
-        var t=Math.random();
-        x=-2.5+t*1;y=2+t*.5;z=(Math.random()-.5)*.4;
-      }else if(r<.96){
-        // DIPSTICK TUBE
-        var t=Math.random();
-        x=1.5;y=-1+t*3;z=1+Math.random()*.1;
+        if(part<.25){var a=Math.random()*PI2;x=-2.5;y=1+Math.sin(a)*.7;z=Math.cos(a)*.7} // water pump
+        else if(part<.45){var a=Math.random()*PI2;x=-2.6;y=-.2+Math.sin(a)*.6;z=Math.cos(a)*.6} // harmonic balancer
+        else if(part<.65){var a=Math.random()*PI2;x=-2.6;y=2+Math.sin(a)*.4;z=.9+Math.cos(a)*.4} // alternator
+        else{var t=Math.random()*PI2;x=-2.55;y=.8+Math.sin(t)*1.1;z=Math.cos(t)*.8} // belt
+      }else if(r<.66){
+        // OIL PAN
+        x=(Math.random()-.5)*4;
+        var op=Math.random();
+        if(op<.3){y=-1.3;z=(Math.random()-.5)*1.6} // bottom
+        else if(op<.6){y=-.8-Math.random()*.5;z=(Math.random()>.5?1:-1)*.8} // sides
+        else{y=-1.3-Math.random()*.5;z=(Math.random()-.5)*1;x=(Math.random()-.5)*2} // sump
+      }else if(r<.70){
+        // FLYWHEEL (rear)
+        var a=Math.random()*PI2;var fr=Math.random()*1;
+        x=2.4;y=.8+Math.sin(a)*fr;z=Math.cos(a)*fr;
+      }else if(r<.74){
+        // DISTRIBUTOR + PLUG WIRES
+        var a=Math.random()*PI2;x=1.5;y=2.5+Math.sin(a)*.25;z=Math.cos(a)*.25;
+        if(Math.random()>.4){var w=Math.floor(Math.random()*8);var b=w<4?1:-1;var t=Math.random();x=1.5-t*(1.5-cylX[w%4]);y=2.5-t*.8;z=t*b*1.3}
+      }else if(r<.78){
+        // CARBURETOR / THROTTLE BODY on top
+        var a=Math.random()*PI2;x=0;y=3.8+Math.sin(a)*.25;z=Math.cos(a)*.25;
+        if(Math.random()>.5){x=(Math.random()-.5)*.5;y=3.7+Math.random()*.3;z=(Math.random()-.5)*.5} // air cleaner base
       }else{
-        // BOLTS / SURFACE DETAIL scattered on block faces
-        x=(Math.random()-.5)*5.6;
-        y=Math.random()*2.5;
-        z=(Math.random()>.5?1:-1)*(1+Math.random()*.2);
+        // FUEL RAILS, BRACKETS, SENSORS, SURFACE DETAIL
+        var bank=Math.random()>.5?1:-1;
+        x=(Math.random()-.5)*4.4;y=3+bank*.15;z=bank*1.3;
+        if(Math.random()>.5){x=(Math.random()-.5)*4.6;y=Math.random()*3.5;z=(Math.random()>.5?1:-1)*(1+Math.random()*.5)}
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 2: COMPLETE DRIVETRAIN - realistic car powertrain layout
+  // SHAPE 2: RWD DRIVETRAIN - proportions from real car research
+  // Trans is 46% of driveshaft length, diff is 4x shaft diameter, track width scaled
   function makeDrivetrain(){
     var pts=[];
+    // Layout: bell housing at x=-5, trans to x=-3, shaft to x=5, diff at x=5, axles to z=+-4.5
     for(var i=0;i<COUNT;i++){
       var r=Math.random();var x,y,z;
-
-      if(r<.10){
-        // TRANSMISSION BELL HOUSING - conical shape bolting to engine
-        var a=Math.random()*PI2;
-        var t=Math.random();
-        var bellR=.9-t*.2; // tapers from engine to gearbox
-        x=-4.5+t*.8;
-        y=Math.sin(a)*bellR;
-        z=Math.cos(a)*bellR;
-      }else if(r<.20){
-        // GEARBOX HOUSING - rectangular box with surface detail
+      if(r<.08){
+        // BELL HOUSING - circular flange tapering to transmission
+        var a=Math.random()*PI2;var t=Math.random();
+        var br=1.1-t*.3;
+        x=-5+t*.6;y=Math.sin(a)*br;z=Math.cos(a)*br;
+      }else if(r<.18){
+        // TRANSMISSION CASE - rectangular housing with bolt detail
         var face=Math.random();
-        if(face<.25){x=-3.7+Math.random()*2;y=(Math.random()>.5?.8:-.8);z=(Math.random()-.5)*1.4} // top/bottom
-        else if(face<.5){x=-3.7+Math.random()*2;y=(Math.random()-.5)*1.6;z=(Math.random()>.5?.7:-.7)} // sides
-        else if(face<.75){x=-3.7;y=(Math.random()-.5)*1.6;z=(Math.random()-.5)*1.4} // front
-        else{x=-1.7;y=(Math.random()-.5)*1.4;z=(Math.random()-.5)*1.2} // rear
-      }else if(r<.25){
-        // INTERNAL GEARS visible through cutaway (gear pairs)
-        var gear=Math.floor(Math.random()*5); // 5 gear pairs
-        var a=Math.random()*PI2;
-        var gr=[.5,.45,.4,.35,.55][gear]; // different gear radii
-        var gx=-3.5+gear*.35;
-        x=gx;y=Math.sin(a)*gr;z=Math.cos(a)*gr;
-        // Gear teeth pattern
-        var teeth=24-gear*2;
-        var toothA=Math.floor(a/(PI2/teeth))*PI2/teeth;
-        y+=Math.cos(toothA*teeth)*.03;z+=Math.sin(toothA*teeth)*.03;
+        if(face<.2){x=-4.4;y=(Math.random()-.5)*1.6;z=(Math.random()-.5)*1.4} // front
+        else if(face<.4){x=-2.5;y=(Math.random()-.5)*1.2;z=(Math.random()-.5)*1} // rear
+        else if(face<.6){x=-4.4+Math.random()*1.9;y=(Math.random()>.5?.8:-.8);z=(Math.random()-.5)*1.4} // top/bottom
+        else{var side=Math.random()>.5?1:-1;x=-4.4+Math.random()*1.9;y=(Math.random()-.5)*1.6;z=side*.7} // sides
+      }else if(r<.23){
+        // GEARS visible inside (5 gear pairs with teeth)
+        var g=Math.floor(Math.random()*5);var a=Math.random()*PI2;
+        var gr=[.55,.48,.42,.36,.6][g];var gx=-4.2+g*.38;
+        var teeth=22-g*2;var ta=Math.floor(a/(PI2/teeth))*PI2/teeth;
+        x=gx;y=Math.sin(a)*gr+Math.cos(ta*teeth)*.025;z=Math.cos(a)*gr+Math.sin(ta*teeth)*.025;
       }else if(r<.38){
-        // DRIVESHAFT - long propeller shaft running down the center
-        var t=Math.random();
-        var a=Math.random()*PI2;
-        var dsr=.12;
-        x=-1.5+t*8.5;
-        y=Math.sin(a)*dsr;
-        z=Math.cos(a)*dsr;
-        // U-JOINTS at each end and middle (cross-shaped)
-        if(t<.03||t>.97||(t>.48&&t<.52)){
-          var ja=Math.random()*PI2;var jr=.22;
-          y=Math.sin(ja)*jr;z=Math.cos(ja)*jr;
-        }
-        // CENTER SUPPORT BEARING
-        if(t>.49&&t<.51){var ba=Math.random()*PI2;y=Math.sin(ba)*.28;z=Math.cos(ba)*.28}
+        // DRIVESHAFT - very long thin tube with U-joints
+        var t=Math.random();var a=Math.random()*PI2;var dsr=.1;
+        x=-2.2+t*7.2;y=Math.sin(a)*dsr;z=Math.cos(a)*dsr;
+        // U-JOINTS (3 locations: front, center, rear)
+        if(t<.02||t>.98||(t>.49&&t<.51)){var ja=Math.random()*PI2;y=Math.sin(ja)*.2;z=Math.cos(ja)*.2}
+        // CENTER BEARING
+        if(t>.495&&t<.505){var ba=Math.random()*PI2;y=Math.sin(ba)*.25;z=Math.cos(ba)*.25}
       }else if(r<.48){
-        // REAR DIFFERENTIAL - pumpkin-shaped housing
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var dr=.9;
-        x=7+Math.sin(phi)*Math.cos(theta)*dr*.5;
+        // DIFFERENTIAL - pumpkin shaped, 4x driveshaft diameter
+        var phi=Math.acos(2*Math.random()-1);var theta=Math.random()*PI2;
+        var dr=.8;
+        x=5+Math.sin(phi)*Math.cos(theta)*dr*.5;
         y=Math.sin(phi)*Math.sin(theta)*dr;
         z=Math.cos(phi)*dr;
-        // Diff cover (round plate on back)
-        if(Math.random()>.7){var a=Math.random()*PI2;var cr2=.75;x=7.5;y=Math.sin(a)*cr2;z=Math.cos(a)*cr2}
-        // Ring gear inside
-        if(Math.random()>.8){var a=Math.random()*PI2;var rr=.7;x=7;y=Math.sin(a)*rr;z=Math.cos(a)*rr}
+        // Diff cover plate
+        if(Math.random()>.7){var a=Math.random()*PI2;x=5.5;y=Math.sin(a)*.7;z=Math.cos(a)*.7}
+        // Ring gear
+        if(Math.random()>.8){var a=Math.random()*PI2;var rr=.65;x=5;y=Math.sin(a)*rr;z=Math.cos(a)*rr}
       }else if(r<.56){
-        // HALF SHAFTS / CV AXLES - extend from diff to each wheel
+        // AXLE TUBES - thin tubes extending left and right from diff
         var side=Math.random()>.5?1:-1;
-        var t=Math.random();
-        var a=Math.random()*PI2;var sr=.08;
-        x=7+Math.random()*.2;
-        y=Math.sin(a)*sr;
-        z=side*(1+t*3.2)+Math.cos(a)*sr;
-        // CV JOINT BOOTS at each end (accordion shape)
-        if(t<.08){var ca=Math.random()*PI2;var cr3=.18+Math.sin(t*40)*.04;y=Math.sin(ca)*cr3;z=side*1.2+Math.cos(ca)*cr3;x=7}
-        if(t>.92){var ca=Math.random()*PI2;var cr3=.18+Math.sin(t*40)*.04;y=Math.sin(ca)*cr3;z=side*4.1+Math.cos(ca)*cr3;x=7}
-      }else if(r<.68){
-        // WHEELS + TIRES at the ends of axles
+        var t=Math.random();var a=Math.random()*PI2;var ar=.08;
+        x=5+Math.random()*.15;y=Math.sin(a)*ar;z=side*(1+t*3.5)+Math.cos(a)*ar;
+        // CV boots
+        if(t<.06||t>.94){var ca=Math.random()*PI2;var cr=.16;y=Math.sin(ca)*cr;z=side*(t<.06?1.1:4.3)+Math.cos(ca)*cr}
+      }else if(r<.70){
+        // WHEELS (dense circular at ends of axles)
+        var side=Math.random()>.5?1:-1;var a=Math.random()*PI2;var p2=Math.random();
+        var wr=1;
+        if(p2<.35){x=5+(Math.random()-.5)*.25;y=Math.sin(a)*wr;z=side*4.7+Math.cos(a)*wr*.18} // tire
+        else if(p2<.55){var rr=wr*.72;x=5;y=Math.sin(a)*rr;z=side*4.7+Math.cos(a)*rr*.12} // rim
+        else if(p2<.8){var sp=Math.floor(Math.random()*5)/5*PI2;var sd=Math.random()*wr*.6;x=5;y=Math.sin(sp)*sd;z=side*4.7+Math.cos(sp)*sd*.12} // spokes
+        else{x=5;y=Math.sin(a)*.1;z=side*4.72} // hub
+      }else if(r<.75){
+        // BRAKE ROTORS + CALIPERS
+        var side=Math.random()>.5?1:-1;var a=Math.random()*PI2;
+        var br2=.8;x=4.85;y=Math.sin(a)*br2;z=side*4.4;
+        if(Math.random()>.6){x=4.85+Math.random()*.2;y=.6+Math.random()*.3;z=side*4.35}
+      }else if(r<.82){
+        // EXHAUST SYSTEM (pipes running along underside)
+        var t=Math.random();var a=Math.random()*PI2;var er=.1;
+        x=-5+t*11;y=-.9+Math.sin(a)*er;z=1+Math.cos(a)*er;
+        // Cats
+        if(t>.2&&t<.28){var ca=Math.random()*PI2;y=-.9+Math.sin(ca)*.2;z=1+Math.cos(ca)*.2}
+        // Muffler
+        if(t>.75&&t<.88){var ma=Math.random()*PI2;y=-.75+Math.sin(ma)*.25;z=1+Math.cos(ma)*.25}
+      }else if(r<.90){
+        // FRAME RAILS + CROSS MEMBERS
         var side=Math.random()>.5?1:-1;
-        var a=Math.random()*PI2;
-        var part=Math.random();
-        if(part<.35){
-          // Tire (dense outer ring)
-          var wr=1.1;
-          x=7;y=Math.sin(a)*wr;z=side*4.5+Math.cos(a)*wr*.2;
-          // Tire width
-          x+=((Math.random()-.5)*.3);
-        }else if(part<.55){
-          // Rim circle
-          var rr=.8;x=7;y=Math.sin(a)*rr;z=side*4.5+Math.cos(a)*rr*.15;
-        }else if(part<.8){
-          // 5 spokes
-          var sp=Math.floor(Math.random()*5)/5*PI2;
-          var sd=Math.random()*.75;
-          x=7;y=Math.sin(sp)*sd;z=side*4.5+Math.cos(sp)*sd*.15;
-        }else{
-          // Brake rotor (disc behind wheel)
-          var rr=.85;x=7-.15;y=Math.sin(a)*rr;z=side*4.3;
-          // Drilled holes
-          if(Math.random()>.6){var ha=Math.random()*PI2;var hr=.3+Math.random()*.4;x=7-.15;y=Math.sin(ha)*hr;z=side*4.3}
-        }
-      }else if(r<.73){
-        // BRAKE CALIPERS (one per wheel)
-        var side=Math.random()>.5?1:-1;
-        x=7-.2+Math.random()*.3;
-        y=.7+Math.random()*.3;
-        z=side*4.25+(Math.random()-.5)*.15;
-      }else if(r<.80){
-        // EXHAUST SYSTEM running along one side
-        var t=Math.random();
-        var a=Math.random()*PI2;
-        var er=.12;
-        x=-4+t*12;
-        y=-1+Math.sin(a)*er;
-        z=1.2+Math.cos(a)*er;
-        // Catalytic converters (2 bulges)
-        if((t>.15&&t<.22)||(t>.3&&t<.37)){var ca=Math.random()*PI2;y=-1+Math.sin(ca)*.25;z=1.2+Math.cos(ca)*.25}
-        // Muffler (larger cylinder near rear)
-        if(t>.8&&t<.95){var ma=Math.random()*PI2;y=-.8+Math.sin(ma)*.3;z=1.2+Math.cos(ma)*.3}
-        // Exhaust tips
-        if(t>.97){var ta=Math.random()*PI2;y=-.8+Math.sin(ta)*.1;z=1.2+Math.cos(ta)*.1}
-      }else if(r<.88){
-        // CHASSIS FRAME RAILS (2 long beams running the length)
-        var side=Math.random()>.5?1:-1;
-        x=-5+Math.random()*12.5;
-        y=-1.3;
-        z=side*1.3;
-        // Cross members (every ~2 units)
-        if(Math.random()>.7){
-          var cm=Math.floor(Math.random()*5);
-          x=-4+cm*2.8;z=(Math.random()-.5)*2.6;y=-1.3;
-        }
-      }else if(r<.93){
-        // TRANSFER CASE / OUTPUT FLANGE (between trans and driveshaft)
-        var a=Math.random()*PI2;
-        var tcr=.5+Math.random()*.15;
-        x=-1.5+Math.random()*.3;y=Math.sin(a)*tcr;z=Math.cos(a)*tcr;
+        x=-5.5+Math.random()*11.5;y=-1.1;z=side*1.3;
+        if(Math.random()>.7){var cm=Math.floor(Math.random()*4);x=-4+cm*3;z=(Math.random()-.5)*2.6;y=-1.1}
+      }else if(r<.95){
+        // FUEL TANK (flat box, midship)
+        x=.5+Math.random()*2.5;y=-1.3;z=(Math.random()-.5)*2;
+        if(Math.random()>.6){y=-1.3+Math.random()*.15} // top surface
       }else{
-        // FUEL TANK (flat rectangle under the car, mid-section)
-        x=1+Math.random()*3;
-        y=-1.6+Math.random()*.15;
-        z=(Math.random()-.5)*2;
-        // Tank straps
-        if(Math.random()>.7){var strap=Math.floor(Math.random()*2);x=1.5+strap*2;y=-1.6+Math.random()*.3;z=(Math.random()-.5)*2.2}
+        // TRANSFER CASE output + misc brackets
+        var a=Math.random()*PI2;x=-2.2+Math.random()*.3;y=Math.sin(a)*.4;z=Math.cos(a)*.4;
       }
       pts.push(x,y,z);
     }
