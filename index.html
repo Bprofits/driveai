@@ -12,196 +12,186 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* CANVAS - fixed, always visible */
-#stage{position:fixed;inset:0;z-index:1;pointer-events:none}
+#stage{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
 .nav.scrolled{background:rgba(0,0,0,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.04)}
-.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#fff;text-decoration:none}
+.nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:#fff;text-decoration:none}
 .nav-mark span{color:#E87A00}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);text-decoration:none;transition:color .3s}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);text-decoration:none;transition:color .3s}
 .nav-links a:hover{color:#E87A00}
-.nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem}
+.nav-cta{background:#E87A00!important;color:#000!important;padding:.4rem 1rem}
 
-/* HERO - full height, video behind */
-.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;z-index:2}
-.hero-content{position:relative;z-index:2;max-width:600px;padding:0 4rem}
-.hero-ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;animation:fu .6s .3s forwards}
-.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5.5rem);line-height:.93;letter-spacing:2px;opacity:0;animation:fu .7s .5s forwards}
-.hero-h1 em{font-style:normal;color:#E87A00}
-.hero-bd{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.75);margin-top:1rem;opacity:0;animation:fu .6s .7s forwards}
-.hero-cta{display:flex;gap:.8rem;margin-top:1.5rem;opacity:0;animation:fu .6s .9s forwards}
-@keyframes fu{from{opacity:0;transform:translateY(1.5rem)}to{opacity:1;transform:translateY(0)}}
-.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;opacity:0;animation:fu .5s 1.5s forwards;display:flex;flex-direction:column;align-items:center;gap:.4rem}
-.scroll-cue-line{width:1px;height:30px;background:linear-gradient(to bottom,transparent,#E87A00);animation:sp 2s ease infinite}
-@keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
-.scroll-cue-text{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.12)}
+/* SECTIONS */
+.sec{min-height:100vh;display:flex;align-items:center;position:relative;z-index:1}
+.sec-inner{max-width:1100px;margin:0 auto;padding:5rem 3rem;width:100%;display:flex;align-items:center}
+.sec-left .sec-inner{justify-content:flex-start}
+.sec-right .sec-inner{justify-content:flex-end}
+.sec-center .sec-inner{justify-content:center}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s}
+.text-block{max-width:420px;opacity:0;transform:translateY(30px);transition:opacity .8s cubic-bezier(.215,.61,.355,1),transform .8s cubic-bezier(.215,.61,.355,1)}
+.text-block.visible{opacity:1;transform:translateY(0)}
+.sec-right .text-block{text-align:right}
+.sec-center .text-block{text-align:center;max-width:500px}
+
+.ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.5rem}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,7vw,5rem);line-height:.93;letter-spacing:2px;margin-bottom:.8rem}
+.h1 em,.h2 em{font-style:normal;color:#E87A00}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:1px;margin-bottom:.6rem}
+.bd{font-size:.9rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.65);margin-bottom:1rem}
+.bd strong{color:#fff;font-weight:500}
+.btn-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.sec-right .btn-row{justify-content:flex-end}
+.sec-center .btn-row{justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.2rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s}
 .btn-fill{background:#E87A00;color:#000}
-.btn-fill:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.3)}
+.btn-fill:hover{background:#FF8C00;box-shadow:0 0 25px rgba(232,122,0,.3)}
 .btn-ghost{background:transparent;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
 .btn-ghost:hover{border-color:#E87A00;color:#E87A00}
 
-/* PARTICLE SECTIONS - transparent, no bg images, text on left, particles visible on right */
-.psection{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center}
-.psection-text{max-width:420px;padding:4rem;position:relative;z-index:3}
-.psection-text::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.5) 70%,transparent 100%);z-index:-1;pointer-events:none}
-
-.ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.5rem}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1;letter-spacing:1px;margin-bottom:.8rem}
-.h2 em{font-style:normal;color:#E87A00}
-.bd{font-size:.95rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.7)}
-.bd strong{color:#fff;font-weight:500}
-
-/* SHAPE INDICATOR */
-.shape-tag{position:fixed;top:50%;right:3rem;transform:translateY(-50%);z-index:50;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:rgba(232,122,0,.1);writing-mode:vertical-rl;transition:opacity .4s,color .4s}
-.shape-tag.active{color:rgba(232,122,0,.25)}
-
-/* STATS */
-.stats-row{display:flex;gap:2rem;margin-top:1rem}
-.sv{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#E87A00;line-height:1}
-.sl{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
-
-/* PILLS */
-.pills{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.8rem}
-.pill{background:rgba(232,122,0,.05);border:1px solid rgba(232,122,0,.1);color:#E87A00;padding:.2rem .5rem;font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
-
-/* RESULTS */
-.rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.stats{display:flex;gap:2rem;margin-bottom:1rem}
+.sec-right .stats{justify-content:flex-end}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#E87A00;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.pills{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:1rem}
+.pill{background:rgba(232,122,0,.06);border:1px solid rgba(232,122,0,.1);color:#E87A00;padding:.2rem .5rem;font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .rr:last-child{border:none}
-.rr-l{font-size:.85rem;color:rgba(255,255,255,.5)}
-.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#E87A00}
+.rr-l{font-size:.78rem;color:rgba(255,255,255,.4)}
+.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#E87A00}
 
-/* CTA SECTION */
-.cta-section{position:relative;z-index:2;text-align:center;padding:6rem 4rem;border-top:1px solid rgba(255,255,255,.04)}
+.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:0;animation:fu .5s 1.5s forwards}
+.scroll-cue-line{width:1px;height:25px;background:linear-gradient(to bottom,transparent,#E87A00);animation:sp 2s ease infinite}
+@keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
+.scroll-cue-text{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.12)}
+@keyframes fu{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:translateY(0)}}
 
-/* FOOTER */
-.footer{border-top:1px solid rgba(255,255,255,.04);background:#000;position:relative;z-index:2}
-.footer-inner{max-width:1200px;margin:0 auto;padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center}
+.footer{border-top:1px solid rgba(255,255,255,.04);background:#000;position:relative;z-index:1}
+.footer-inner{max-width:1100px;margin:0 auto;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center}
 .footer-c{font-size:.5rem;color:rgba(255,255,255,.08)}
-.footer-l{display:flex;gap:1.2rem}
+.footer-l{display:flex;gap:1rem}
 .footer-l a{font-size:.5rem;color:rgba(255,255,255,.08);text-decoration:none}
 .footer-l a:hover{color:#E87A00}
 
-/* REVEAL */
-.rv{opacity:0;transform:translateY(1.5rem);transition:opacity .7s cubic-bezier(.215,.61,.355,1),transform .7s cubic-bezier(.215,.61,.355,1)}
-.rv.show{opacity:1;transform:translateY(0)}
-.rv-1{transition-delay:.1s}.rv-2{transition-delay:.2s}.rv-3{transition-delay:.35s}
-
 @media(max-width:768px){
-  .nav{padding:1rem 1.5rem}.nav-links .hm{display:none}
-  .hero-content,.psection-text{padding:3rem 2rem}
-  .psection-text{max-width:100%}
-  .psection-text::before{background:rgba(0,0,0,.8)}
-  .shape-tag{display:none}
-  .footer-inner{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem 2rem}
-  .stats-row{flex-wrap:wrap;gap:1rem}
+  .nav{padding:.8rem 1.2rem}.nav-links .hm{display:none}
+  .sec-inner{padding:4rem 1.5rem}
+  .text-block{max-width:100%}
+  .sec-right .text-block,.sec-right .stats,.sec-right .btn-row{text-align:left;justify-content:flex-start}
+  .stats{flex-wrap:wrap;gap:1rem}
+  .footer-inner{flex-direction:column;gap:.6rem;text-align:center}
 }
 </style>
 </head>
 <body>
 
 <canvas id="stage"></canvas>
-<div class="shape-tag" id="shapeTag"></div>
 
-<!-- NAV -->
 <nav class="nav" id="nav">
   <a href="/" class="nav-mark">DRIVE <span>AI</span> SALES INC.</a>
   <ul class="nav-links">
-    <li><a href="#s-engine" class="hm">How It Works</a></li>
-    <li><a href="#s-brain" class="hm">Results</a></li>
+    <li><a href="#s2" class="hm">How It Works</a></li>
+    <li><a href="#s4" class="hm">Results</a></li>
     <li><a href="pricing.html" class="hm">Pricing</a></li>
     <li><a href="diagnostic.html" class="nav-cta">Free Diagnostic</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
-<section class="hero" style="background:#000">
-  <div class="hero-content">
-    <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:100px;width:auto;margin-bottom:1.2rem;opacity:0;animation:fu .5s .1s forwards">
-    <div class="hero-ol">AI-Powered Sales Intelligence for Dealerships</div>
-    <h1 class="hero-h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
-    <p class="hero-bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds. Text, email, voice. 24/7.</p>
-    <div class="hero-cta">
-      <a href="diagnostic.html" class="btn btn-fill">Free Diagnostic</a>
-      <a href="#s-car" class="btn btn-ghost">See How It Works</a>
+<section class="sec sec-left" id="s0">
+  <div class="sec-inner">
+    <div class="text-block">
+      <img src="logo/logo-hires.png" alt="Drive AI Sales" style="height:80px;width:auto;margin-bottom:1rem">
+      <div class="ol">AI-Powered Sales Intelligence for Dealerships</div>
+      <h1 class="h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
+      <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds. Text, email, voice. 24/7.</div>
+      <div class="btn-row">
+        <a href="diagnostic.html" class="btn btn-fill">Free Diagnostic</a>
+        <a href="#s2" class="btn btn-ghost">See How It Works</a>
+      </div>
     </div>
   </div>
   <div class="scroll-cue"><div class="scroll-cue-line"></div><div class="scroll-cue-text">Scroll</div></div>
 </section>
 
-<!-- S1: CAR - The Problem -->
-<section class="psection" id="s-car">
-  <div class="psection-text">
-    <div class="ol rv">The Problem</div>
-    <div class="h2 rv rv-1">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
-    <div class="bd rv rv-2">The average dealership loses <strong>$15K-$45K/month</strong> to slow response, broken follow-up, and no-shows. Not because the team is bad. Because the system wasn't built for this volume.</div>
-    <div class="stats-row rv rv-3">
-      <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
-      <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
-      <div><div class="sv">2</div><div class="sl">Follow-ups</div></div>
+<!-- PROBLEM -->
+<section class="sec sec-right" id="s1">
+  <div class="sec-inner">
+    <div class="text-block">
+      <div class="ol">The Problem</div>
+      <div class="h2">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
+      <div class="bd">The average dealership loses <strong>$15K-$45K/month</strong> to slow response, broken follow-up, and no-shows.</div>
+      <div class="stats">
+        <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
+        <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
+        <div><div class="sv">2</div><div class="sl">Follow-ups</div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- S2: ENGINE - The Solution -->
-<section class="psection" id="s-engine">
-  <div class="psection-text">
-    <div class="ol rv">Under the Hood</div>
-    <div class="h2 rv rv-1">We <em>Plug In</em><br>to Your CRM</div>
-    <div class="bd rv rv-2">CDK, DealerTrack, VinSolutions. Under a day. No migration, no disruption. Your team doesn't even know it's there. Every lead gets a response in under 60 seconds. Text, email, voice.</div>
-    <div class="pills rv rv-3">
-      <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div><div class="pill">CRM Sync</div>
+<!-- SOLUTION -->
+<section class="sec sec-left" id="s2">
+  <div class="sec-inner">
+    <div class="text-block">
+      <div class="ol">Under the Hood</div>
+      <div class="h2">We <em>Plug In</em><br>to Your CRM</div>
+      <div class="bd">CDK, DealerTrack, VinSolutions. Under a day. No migration, no disruption. Every lead gets a response in under 60 seconds.</div>
+      <div class="pills">
+        <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div><div class="pill">CRM Sync</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- S3: DRIVETRAIN - The System -->
-<section class="psection" id="s-drive">
-  <div class="psection-text">
-    <div class="ol rv">The Drivetrain</div>
-    <div class="h2 rv rv-1"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
-    <div class="bd rv rv-2">7+ touchpoints over 30 days. Qualifies, follows up, books appointments, sends reminders, re-engages no-shows. Natural conversation, not robotic scripts.</div>
-    <div class="stats-row rv rv-3">
-      <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
-      <div><div class="sv">7+</div><div class="sl">Touches</div></div>
-      <div><div class="sv">30d</div><div class="sl">Cadence</div></div>
+<!-- DRIVETRAIN -->
+<section class="sec sec-right" id="s3">
+  <div class="sec-inner">
+    <div class="text-block">
+      <div class="ol">The Drivetrain</div>
+      <div class="h2"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
+      <div class="bd">7+ touchpoints over 30 days. Qualifies, follows up, books appointments, sends reminders, re-engages no-shows. Natural conversation.</div>
+      <div class="stats">
+        <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
+        <div><div class="sv">7+</div><div class="sl">Touches</div></div>
+        <div><div class="sv">30d</div><div class="sl">Cadence</div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- S4: BRAIN - Results -->
-<section class="psection" id="s-brain">
-  <div class="psection-text">
-    <div class="ol rv">The Intelligence</div>
-    <div class="h2 rv rv-1">The <em>Brain</em> Behind<br>Every Decision</div>
-    <div class="rv rv-2" style="margin-top:.8rem">
-      <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs to 47s</span></div>
-      <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% to 68%</span></div>
-      <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
-      <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
-      <div class="rr"><span class="rr-l">Staff Added</span><span class="rr-v">0</span></div>
+<!-- RESULTS -->
+<section class="sec sec-left" id="s4">
+  <div class="sec-inner">
+    <div class="text-block">
+      <div class="ol">Results</div>
+      <div class="h2">The Numbers<br>Speak <em>Dealer.</em></div>
+      <div style="margin-top:.5rem;max-width:18rem">
+        <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs to 47s</span></div>
+        <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% to 68%</span></div>
+        <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
+        <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
+      </div>
     </div>
-    <div class="bd rv rv-3" style="margin-top:1rem;font-style:italic;color:rgba(255,255,255,.4)">"I stopped checking the CRM every hour because I finally trusted something was handling it. We picked up 11 extra deals in the first month."</div>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="cta-section">
-  <div class="ol rv">Free Assessment</div>
-  <div class="h2 rv rv-1">How Much Are You<br><em>Leaving on the Table?</em></div>
-  <div class="bd rv rv-2" style="margin:0 auto;text-align:center;max-width:22rem">7 questions. 2 minutes. Your score and revenue leak estimate.</div>
-  <div class="rv rv-3" style="display:flex;gap:.8rem;justify-content:center;margin-top:1.5rem">
-    <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic</a>
-    <a href="discovery.html" class="btn btn-ghost">Book a Discovery Call</a>
+<section class="sec sec-center" id="s5">
+  <div class="sec-inner">
+    <div class="text-block">
+      <div class="ol">Free Assessment</div>
+      <div class="h2">How Much Are You<br><em>Leaving on the Table?</em></div>
+      <div class="bd">7 questions. 2 minutes. Your score and revenue leak estimate.</div>
+      <div class="btn-row">
+        <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic</a>
+        <a href="discovery.html" class="btn btn-ghost">Book a Discovery Call</a>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-c">2026 Drive AI Sales Inc. Edmonton, AB</div>
@@ -211,19 +201,24 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 <script>
 // NAV
-window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.pageYOffset>80)},{passive:true});
+window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',window.pageYOffset>60)},{passive:true});
 
-// REVEAL
-(function(){var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('show');obs.unobserve(e.target)}})},{threshold:.15});document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)})})();
+// FADE IN TEXT BLOCKS ON SCROLL
+(function(){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+  },{threshold:.2});
+  document.querySelectorAll('.text-block').forEach(function(el){obs.observe(el)});
+  // Show hero immediately
+  document.querySelector('#s0 .text-block').classList.add('visible');
+})();
 
-// ═══════════════════════════════════════════
-// THREE.JS PARTICLE MORPHING - THE MAIN EVENT
-// ═══════════════════════════════════════════
+// THREE.JS PARTICLE MORPHING
 (function(){
   var scene=new THREE.Scene();
   var camera=new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight,.1,500);
-  camera.position.set(4,2,20);
-  camera.lookAt(4,0,0);
+  camera.position.set(0,1,20);
+  camera.lookAt(0,0,0);
   var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('stage'),alpha:true,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   renderer.setSize(window.innerWidth,window.innerHeight);
@@ -231,392 +226,225 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
   var COUNT=15000;
   var PI2=Math.PI*2;
 
-  // ═══ SHAPE GENERATORS ═══
-  // Each returns Float32Array of COUNT*3 positions
+  // Round glowing particle sprite
+  var sc=document.createElement('canvas');sc.width=64;sc.height=64;
+  var sx=sc.getContext('2d');
+  var gr=sx.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.2,'rgba(255,200,120,.8)');
+  gr.addColorStop(.5,'rgba(232,122,0,.4)');gr.addColorStop(1,'rgba(232,122,0,0)');
+  sx.fillStyle=gr;sx.fillRect(0,0,64,64);
+  var sprite=new THREE.CanvasTexture(sc);
 
-  // SHAPE 0: McLaren P1 style supercar - highly detailed
-  function makeCar(){
+  // SHAPE 0: HUMAN BRAIN - organic, recognizable
+  function makeBrainOuter(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
       var r=Math.random();
       var x,y,z;
-      z=(Math.random()-.5)*2.6;
-      var zAbs=Math.abs(z);
-
-      if(r<0.08){
-        // Front splitter - very low, wide, aggressive
-        x=-7+Math.random()*1.5;
-        y=-0.3+Math.random()*0.2;
-        z=(Math.random()-.5)*3;
-      }else if(r<0.18){
-        // Front nose - sharp, low, tapered
-        x=-6.5+Math.random()*1.5;
-        var noseH=0.3+Math.pow(Math.max(0,(x+5.5)/1.5),0.7)*0.6;
-        y=Math.random()*noseH;
-      }else if(r<0.25){
-        // Front fenders - bulging over wheels
-        x=-5+Math.random()*1.5;
-        var fenderBulge=1.2+Math.sin((x+4.2)*2)*0.4;
-        y=Math.random()*fenderBulge;
-        z=(Math.random()>0.5?1:-1)*(1.1+Math.sin((x+4.2)*2)*0.3);
-      }else if(r<0.32){
-        // Hood - low, sculpted with air intakes
-        x=-4.5+Math.random()*3;
-        y=0.6+Math.random()*0.3+Math.sin(x*1.5)*0.1;
-        if(Math.random()>0.7){y+=0.2;z*=0.3} // hood scoop
-      }else if(r<0.42){
-        // Windshield - steep, fighter-jet style rake
-        x=-2+Math.random()*1.5;
-        var windH=0.9+(x+2)*1.1;
-        y=windH+Math.random()*0.1;
-        z*=0.8; // narrower at top
-      }else if(r<0.52){
-        // Roof/canopy - teardrop shape, very low
-        x=-0.8+Math.random()*2;
-        var roofH=2.3+Math.sin((x+0.3)*1.2)*0.3;
-        y=roofH-Math.random()*0.15;
-        z*=0.7;
-      }else if(r<0.58){
-        // Side air intakes (behind doors) - signature P1 scoops
-        x=0.5+Math.random()*1.5;
-        y=0.3+Math.random()*1;
-        z=(Math.random()>0.5?1:-1)*(1.3+Math.random()*0.2);
-      }else if(r<0.65){
-        // Rear window/engine cover - descending with louvers
-        x=1.5+Math.random()*2;
-        var rearH=2.1-Math.pow(Math.max(0,(x-1.5)/2),0.8)*0.8;
-        y=rearH-Math.random()*0.2;
-        z*=0.75;
-      }else if(r<0.72){
-        // Rear haunches - wide, muscular
-        x=2+Math.random()*2;
-        y=0.3+Math.random()*1.2;
-        z=(Math.random()>0.5?1:-1)*(1.2+Math.sin((x-2)*1.5)*0.3);
-      }else if(r<0.77){
-        // Active rear wing - high, wide
-        x=3.8+Math.random()*0.8;
-        y=2.5+Math.random()*0.15;
-        z=(Math.random()-.5)*3.2;
-      }else if(r<0.82){
-        // Wing supports
-        x=4;y=1.5+Math.random()*1;z=(Math.random()>0.5?1:-1)*0.8;
-      }else if(r<0.86){
-        // Rear diffuser + exhaust - aggressive, low
-        x=4+Math.random()*1;
-        y=-0.2+Math.random()*0.5;
-        z=(Math.random()-.5)*2.5;
-      }else if(r<0.9){
-        // Front wheels (large, detailed)
-        var a=Math.random()*PI2;var wr=0.55+Math.random()*0.1;
-        x=-4.3+Math.cos(a)*wr;
-        y=0.55+Math.sin(a)*wr;
-        z=(Math.random()>0.5?1:-1)*1.2;
-        // Spokes
-        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=-4.3+Math.cos(sa)*wr*Math.random();y=0.55+Math.sin(sa)*wr*Math.random()}
-      }else if(r<0.94){
-        // Rear wheels (even larger)
-        var a=Math.random()*PI2;var wr=0.6+Math.random()*0.1;
-        x=2.8+Math.cos(a)*wr;
-        y=0.6+Math.sin(a)*wr;
-        z=(Math.random()>0.5?1:-1)*1.25;
-        if(Math.random()>0.6){var sa=Math.floor(Math.random()*5)/5*PI2;x=2.8+Math.cos(sa)*wr*Math.random();y=0.6+Math.sin(sa)*wr*Math.random()}
-      }else if(r<0.97){
-        // Headlights - narrow, angular
-        x=-6.3;y=0.4+Math.random()*0.3;z=(Math.random()>0.5?1:-1)*(0.5+Math.random()*0.5);
+      if(r<.55){
+        // Brain surface with folds (gyri/sulci)
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var br=3.2;
+        // Hemispheric shape (wider than tall, split down middle)
+        var bx=Math.sin(phi)*Math.cos(theta)*br*1.15;
+        var by=Math.cos(phi)*br*.9+.5; // shift up
+        var bz=Math.sin(phi)*Math.sin(theta)*br;
+        // Brain fold ridges
+        br+=Math.sin(phi*12)*.15+Math.sin(theta*10)*.12+Math.sin(phi*6+theta*4)*.1;
+        x=Math.sin(phi)*Math.cos(theta)*br*1.15;
+        y=Math.cos(phi)*br*.9+.5;
+        z=Math.sin(phi)*Math.sin(theta)*br;
+      }else if(r<.7){
+        // Central fissure (gap between hemispheres)
+        var t=Math.random();
+        x=0+(Math.random()-.5)*.08;
+        y=-1.5+t*4.5;
+        z=(Math.random()-.5)*3*(1-Math.abs(t-.5)*1.5);
+      }else if(r<.82){
+        // Brain stem (cylinder descending from bottom)
+        var a=Math.random()*PI2;
+        var stemR=.4+Math.random()*.15;
+        var stemH=Math.random()*2;
+        x=Math.cos(a)*stemR;
+        y=-2-stemH;
+        z=Math.sin(a)*stemR-.5;
+      }else if(r<.92){
+        // Cerebellum (bumpy ball at lower back)
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var cr=1.3+Math.sin(phi*15)*.08+Math.sin(theta*12)*.06;
+        x=Math.sin(phi)*Math.cos(theta)*cr;
+        y=Math.cos(phi)*cr*.7-2;
+        z=Math.sin(phi)*Math.sin(theta)*cr-1;
       }else{
-        // Taillights - horizontal strip
-        x=4.5;y=1+Math.random()*0.2;z=(Math.random()-.5)*2.2;
+        // Neural tendrils / synaptic sparks
+        var phi=Math.acos(2*Math.random()-1);
+        var theta=Math.random()*PI2;
+        var dist=3.5+Math.random()*2.5;
+        x=Math.sin(phi)*Math.cos(theta)*dist;
+        y=Math.cos(phi)*dist*.8;
+        z=Math.sin(phi)*Math.sin(theta)*dist;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 1: ENGINE - V8 block with detail
+  // SHAPE 1: ENGINE (V8 block)
   function makeEngine(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
-      var r=Math.random();
-      var x,y,z;
-      if(r<0.3){
-        // Cylinder heads (2 banks, 4 per bank)
-        var bank=Math.random()>0.5?1:-1;
-        var cyl=Math.floor(Math.random()*4);
-        var a=Math.random()*PI2;
-        var cr=0.5+Math.random()*0.3;
-        x=cyl*1.5-2.25;
-        y=1.5*bank+Math.sin(a)*cr;
-        z=Math.cos(a)*cr;
-      }else if(r<0.5){
-        // Engine block (center mass)
-        x=(Math.random()-.5)*6;
-        y=(Math.random()-.5)*2;
-        z=(Math.random()-.5)*2;
-      }else if(r<0.65){
-        // Intake manifold (top)
-        x=(Math.random()-.5)*5;
-        y=2+Math.random()*1.5;
-        z=(Math.random()-.5)*1.5;
-      }else if(r<0.75){
-        // Exhaust headers (bottom sides)
-        var side=Math.random()>0.5?1:-1;
-        x=(Math.random()-.5)*5;
-        y=-1-Math.random()*1.5;
-        z=side*(1.5+Math.random()*1);
-      }else if(r<0.85){
-        // Belts/pulleys (front)
-        var a=Math.random()*PI2;
-        var pr=1+Math.random()*1.5;
-        x=-3.5;
-        y=Math.sin(a)*pr;
-        z=Math.cos(a)*pr;
+      var r=Math.random();var x,y,z;
+      if(r<.25){
+        var bank=Math.random()>.5?1:-1;var cyl=Math.floor(Math.random()*4);
+        var a=Math.random()*PI2;var cr=.5;
+        x=cyl*1.5-2.25;y=1.2+Math.sin(a)*cr+bank*.8;z=Math.cos(a)*cr+bank*1.2;
+      }else if(r<.4){
+        x=(Math.random()-.5)*6;y=(Math.random())*2;z=(Math.random()-.5)*2.5;
+      }else if(r<.5){
+        x=(Math.random()-.5)*5;y=2.2+Math.random()*1.2;z=(Math.random()-.5)*1.5;
+      }else if(r<.6){
+        var side=Math.random()>.5?1:-1;x=(Math.random()-.5)*5;y=-1-Math.random()*1.5;z=side*(1.5+Math.random());
+      }else if(r<.7){
+        var a=Math.random()*PI2;var pr=1+Math.random()*1.5;x=-3.5;y=Math.sin(a)*pr;z=Math.cos(a)*pr;
+      }else if(r<.8){
+        x=(Math.random()-.5)*4;y=-2-Math.random()*.8;z=(Math.random()-.5)*2.5;
+      }else if(r<.9){
+        var a=Math.random()*PI2;x=3.2;y=.8+Math.sin(a)*1.2;z=Math.cos(a)*1.2;
       }else{
-        // Oil pan/sump (bottom)
-        x=(Math.random()-.5)*4;
-        y=-2-Math.random()*0.8;
-        z=(Math.random()-.5)*2.5;
+        x=(Math.random()-.5)*6;y=2.3;z=(Math.random()>.5?1:-1)*1.2;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 2: DRIVETRAIN - transmission + driveshaft + diff + axles
+  // SHAPE 2: DRIVETRAIN
   function makeDrivetrain(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
-      var r=Math.random();
-      var x,y,z;
-      if(r<0.25){
-        // Transmission housing
-        x=(Math.random()-.5)*2.5-3;
-        y=(Math.random()-.5)*2;
-        z=(Math.random()-.5)*2;
-      }else if(r<0.45){
-        // Driveshaft (long tube)
-        var a=Math.random()*PI2;
-        x=-1+Math.random()*7;
-        y=Math.sin(a)*0.2;
-        z=Math.cos(a)*0.2;
-      }else if(r<0.6){
-        // Differential housing
-        var a=Math.random()*PI2;
-        var dr=0.8+Math.random()*0.5;
-        x=6+Math.cos(a)*dr*0.5;
-        y=Math.sin(a)*dr;
-        z=Math.cos(a)*dr;
-      }else if(r<0.8){
-        // Rear axles (left and right)
-        var side=Math.random()>0.5?1:-1;
-        x=6+Math.random()*0.5;
-        y=(Math.random()-.5)*0.3;
-        z=side*(1.5+Math.random()*2.5);
+      var r=Math.random();var x,y,z;
+      if(r<.2){
+        var a=Math.random()*PI2;x=-4.5+Math.random()*.3;y=Math.sin(a)*1;z=Math.cos(a)*1;
+      }else if(r<.35){
+        x=-4.2+Math.random()*2.5;y=(Math.random()-.5)*1.8;z=(Math.random()-.5)*1.8;
+      }else if(r<.5){
+        var a=Math.random()*PI2;x=-1.5+Math.random()*9;y=Math.sin(a)*.15;z=Math.cos(a)*.15;
+      }else if(r<.62){
+        var a=Math.random()*PI2;var dr=1;x=7.5+Math.cos(a)*dr*.5;y=Math.sin(a)*dr;z=Math.cos(a)*dr;
+      }else if(r<.75){
+        var side=Math.random()>.5?1:-1;x=7.5;y=(Math.random()-.5)*.3;z=side*(1+Math.random()*3);
+      }else if(r<.9){
+        var side=Math.random()>.5?1:-1;var a=Math.random()*PI2;var wr=1.2;
+        x=7.5;y=Math.sin(a)*wr;z=side*4.5+Math.cos(a)*wr*.2;
+        if(Math.random()>.5){var sa=Math.floor(Math.random()*5)/5*PI2;var sd=Math.random()*wr;y=Math.sin(sa)*sd;z=side*4.5+Math.cos(sa)*sd*.2}
       }else{
-        // Wheels at ends of axles
-        var side=Math.random()>0.5?1:-1;
-        var a=Math.random()*PI2;
-        var wr=1+Math.random()*0.3;
-        x=6;
-        y=Math.sin(a)*wr;
-        z=side*4+Math.cos(a)*wr*0.3;
+        x=-5+Math.random()*13;y=-1.5+Math.random()*.15;z=(Math.random()>.5?1:-1)*1.5;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // SHAPE 3: BRAIN/CPU - neural sphere with connections
-  function makeBrain(){
+  // SHAPE 3: NEURAL SPHERE (the original brain Bond liked)
+  function makeNeural(){
     var pts=[];
     for(var i=0;i<COUNT;i++){
-      var r=Math.random();
-      var x,y,z;
-      if(r<0.5){
-        // Brain sphere surface
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var br=3.5+Math.random()*0.3;
-        // Add brain-fold bumps
-        br+=Math.sin(phi*8)*0.2+Math.sin(theta*6)*0.15;
-        x=Math.sin(phi)*Math.cos(theta)*br;
-        y=Math.sin(phi)*Math.sin(theta)*br;
-        z=Math.cos(phi)*br;
-      }else if(r<0.7){
-        // Inner neural pathways (lines from center outward)
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var dist=Math.random()*3.5;
-        x=Math.sin(phi)*Math.cos(theta)*dist;
-        y=Math.sin(phi)*Math.sin(theta)*dist;
-        z=Math.cos(phi)*dist;
+      var r=Math.random();var x,y,z;
+      if(r<.5){
+        var phi=Math.acos(2*Math.random()-1);var theta=Math.random()*PI2;
+        var br=3.5+Math.random()*.3+Math.sin(phi*8)*.2+Math.sin(theta*6)*.15;
+        x=Math.sin(phi)*Math.cos(theta)*br;y=Math.sin(phi)*Math.sin(theta)*br;z=Math.cos(phi)*br;
+      }else if(r<.7){
+        var phi=Math.acos(2*Math.random()-1);var theta=Math.random()*PI2;var dist=Math.random()*3.5;
+        x=Math.sin(phi)*Math.cos(theta)*dist;y=Math.sin(phi)*Math.sin(theta)*dist;z=Math.cos(phi)*dist;
       }else{
-        // Synaptic tendrils extending beyond sphere
-        var phi=Math.acos(2*Math.random()-1);
-        var theta=Math.random()*PI2;
-        var dist=3.5+Math.random()*3;
-        x=Math.sin(phi)*Math.cos(theta)*dist;
-        y=Math.sin(phi)*Math.sin(theta)*dist;
-        z=Math.cos(phi)*dist;
+        var phi=Math.acos(2*Math.random()-1);var theta=Math.random()*PI2;var dist=3.5+Math.random()*3;
+        x=Math.sin(phi)*Math.cos(theta)*dist;y=Math.sin(phi)*Math.sin(theta)*dist;z=Math.cos(phi)*dist;
       }
       pts.push(x,y,z);
     }
     return new Float32Array(pts);
   }
 
-  // Shift all shapes center-right so text on left stays clean
-  function shiftX(a,dx){for(var i=0;i<a.length;i+=3)a[i]+=dx;return a}
-  var shapes=[shiftX(makeCar(),4),shiftX(makeEngine(),4),shiftX(makeDrivetrain(),4),shiftX(makeBrain(),4)];
-  var shapeNames=['VEHICLE','ENGINE','DRIVETRAIN','AI BRAIN'];
-  var shapeTag=document.getElementById('shapeTag');
+  // ALL SHAPES CENTERED AT ORIGIN - no offset needed
+  var shapes=[makeBrainOuter(),makeEngine(),makeDrivetrain(),makeNeural()];
+  var shapeNames=['BRAIN','ENGINE','DRIVETRAIN','NEURAL NETWORK'];
 
-  // Scatter positions
   var scatter=new Float32Array(COUNT*3);
-  for(var i=0;i<COUNT*3;i++)scatter[i]=(Math.random()-.5)*40;
+  for(var i=0;i<COUNT*3;i++)scatter[i]=(Math.random()-.5)*30;
 
-  // ═══ CREATE PARTICLE SYSTEM ═══
+  // PARTICLES
   var geo=new THREE.BufferGeometry();
   var pos=new Float32Array(COUNT*3);
   var col=new Float32Array(COUNT*3);
-  var sizes=new Float32Array(COUNT);
   for(var i=0;i<COUNT;i++){
     pos[i*3]=shapes[0][i*3];pos[i*3+1]=shapes[0][i*3+1];pos[i*3+2]=shapes[0][i*3+2];
-    // Mixed orange palette: deep orange, bright orange, cream/white
-    var colorR=Math.random();
-    if(colorR<0.5){col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0}         // #E87A00
-    else if(colorR<0.75){col[i*3]=1;col[i*3+1]=.55;col[i*3+2]=0}      // bright orange
-    else if(colorR<0.9){col[i*3]=.72;col[i*3+1]=.37;col[i*3+2]=0}     // #B85E00 deep
-    else{col[i*3]=.96;col[i*3+1]=.87;col[i*3+2]=.78}                   // #F4DEC9 cream
-    sizes[i]=Math.random()*2+1;
+    var cr=Math.random();
+    if(cr<.5){col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0}
+    else if(cr<.75){col[i*3]=1;col[i*3+1]=.55;col[i*3+2]=0}
+    else if(cr<.9){col[i*3]=.72;col[i*3+1]=.37;col[i*3+2]=0}
+    else{col[i*3]=.96;col[i*3+1]=.87;col[i*3+2]=.78}
   }
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   geo.setAttribute('color',new THREE.BufferAttribute(col,3));
 
-  // Create round particle sprite
-  var spriteCanvas=document.createElement('canvas');
-  spriteCanvas.width=64;spriteCanvas.height=64;
-  var sctx=spriteCanvas.getContext('2d');
-  var grad=sctx.createRadialGradient(32,32,0,32,32,32);
-  grad.addColorStop(0,'rgba(255,255,255,1)');
-  grad.addColorStop(0.2,'rgba(255,200,120,0.8)');
-  grad.addColorStop(0.5,'rgba(232,122,0,0.4)');
-  grad.addColorStop(1,'rgba(232,122,0,0)');
-  sctx.fillStyle=grad;sctx.fillRect(0,0,64,64);
-  var spriteTexture=new THREE.CanvasTexture(spriteCanvas);
+  var mat=new THREE.PointsMaterial({size:.12,map:sprite,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
+  var pts3d=new THREE.Points(geo,mat);
+  scene.add(pts3d);
 
-  var mat=new THREE.PointsMaterial({size:.18,map:spriteTexture,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false});
-  var points=new THREE.Points(geo,mat);
-  scene.add(points);
+  // Ambient dots
+  var ageo=new THREE.BufferGeometry();var apos=new Float32Array(400*3);
+  for(var i=0;i<400*3;i++)apos[i]=(Math.random()-.5)*60;
+  ageo.setAttribute('position',new THREE.BufferAttribute(apos,3));
+  scene.add(new THREE.Points(ageo,new THREE.PointsMaterial({size:.03,color:0xE87A00,transparent:true,opacity:.12,sizeAttenuation:true,blending:THREE.AdditiveBlending})));
 
-  // Ambient particles (small dots in the background)
-  var ambGeo=new THREE.BufferGeometry();
-  var ambCount=500;
-  var ambPos=new Float32Array(ambCount*3);
-  for(var i=0;i<ambCount*3;i++)ambPos[i]=(Math.random()-.5)*80;
-  ambGeo.setAttribute('position',new THREE.BufferAttribute(ambPos,3));
-  var ambMat=new THREE.PointsMaterial({size:.04,color:0xE87A00,transparent:true,opacity:.15,sizeAttenuation:true,blending:THREE.AdditiveBlending});
-  scene.add(new THREE.Points(ambGeo,ambMat));
-
-  // ═══ SCROLL ═══
+  // SCROLL
   var scrollPct=0;
   window.addEventListener('scroll',function(){var t=window.pageYOffset;var h=document.documentElement.scrollHeight-window.innerHeight;scrollPct=h>0?t/h:0},{passive:true});
 
   window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)});
 
-  // ═══ ANIMATE ═══
   var clock=new THREE.Clock();
-  var prevShape=-1;
 
   function animate(){
     requestAnimationFrame(animate);
     var t=clock.getElapsedTime();
     var p=geo.attributes.position.array;
     var c=geo.attributes.color.array;
-
-    // Scroll mapping:
-    // 0-12%: hero (particles as car, faint behind video)
-    // 12-25%: CAR shape, fully visible
-    // 25-35%: car SCATTERS then reforms as ENGINE
-    // 35-50%: ENGINE shape
-    // 50-60%: engine SCATTERS then reforms as DRIVETRAIN
-    // 60-75%: DRIVETRAIN shape
-    // 75-85%: drivetrain SCATTERS then reforms as BRAIN
-    // 85-100%: BRAIN shape
-
-    var targetIdx,scatterAmt=0;
     var sp=scrollPct;
 
-    if(sp<0.12){targetIdx=0;scatterAmt=0}
-    else if(sp<0.25){targetIdx=0;scatterAmt=0}
-    else if(sp<0.35){
-      var local=(sp-0.25)/0.1;
-      if(local<0.5){targetIdx=0;scatterAmt=local*2}
-      else{targetIdx=1;scatterAmt=(1-local)*2}
-    }
-    else if(sp<0.50){targetIdx=1;scatterAmt=0}
-    else if(sp<0.60){
-      var local=(sp-0.50)/0.1;
-      if(local<0.5){targetIdx=1;scatterAmt=local*2}
-      else{targetIdx=2;scatterAmt=(1-local)*2}
-    }
-    else if(sp<0.75){targetIdx=2;scatterAmt=0}
-    else if(sp<0.85){
-      var local=(sp-0.75)/0.1;
-      if(local<0.5){targetIdx=2;scatterAmt=local*2}
-      else{targetIdx=3;scatterAmt=(1-local)*2}
-    }
-    else{targetIdx=3;scatterAmt=0}
-
-    // Update shape label
-    if(targetIdx!==prevShape){prevShape=targetIdx;shapeTag.textContent=shapeNames[targetIdx];shapeTag.classList.add('active')}
-    if(sp<0.12)shapeTag.classList.remove('active');
+    // Scroll zones
+    var targetIdx,scatterAmt=0;
+    if(sp<.15){targetIdx=0}
+    else if(sp<.25){var l=(sp-.15)/.1;if(l<.5){targetIdx=0;scatterAmt=l*2}else{targetIdx=1;scatterAmt=(1-l)*2}}
+    else if(sp<.45){targetIdx=1}
+    else if(sp<.55){var l=(sp-.45)/.1;if(l<.5){targetIdx=1;scatterAmt=l*2}else{targetIdx=2;scatterAmt=(1-l)*2}}
+    else if(sp<.70){targetIdx=2}
+    else if(sp<.80){var l=(sp-.70)/.1;if(l<.5){targetIdx=2;scatterAmt=l*2}else{targetIdx=3;scatterAmt=(1-l)*2}}
+    else{targetIdx=3}
 
     var target=shapes[targetIdx];
-    var lerpSpeed=scatterAmt>0.1?0.04:0.06;
+    var lerpSpeed=scatterAmt>.1?.035:.05;
 
     for(var i=0;i<COUNT;i++){
       var idx=i*3;
-      // Target position (lerp between shape and scatter)
       var tx=target[idx]+(scatter[idx]-target[idx])*scatterAmt;
       var ty=target[idx+1]+(scatter[idx+1]-target[idx+1])*scatterAmt;
       var tz=target[idx+2]+(scatter[idx+2]-target[idx+2])*scatterAmt;
-
-      // Subtle turbulence
-      tx+=Math.sin(t*0.4+i*0.007)*0.03;
-      ty+=Math.cos(t*0.35+i*0.009)*0.03;
-
-      // Lerp
-      p[idx]+=(tx-p[idx])*lerpSpeed;
-      p[idx+1]+=(ty-p[idx+1])*lerpSpeed;
-      p[idx+2]+=(tz-p[idx+2])*lerpSpeed;
-
-      // Colors: flash white/cream during scatter, mixed oranges at rest
-      if(scatterAmt>0.1){
-        var flash=scatterAmt;
-        c[idx]=.96+flash*.04;c[idx+1]=.7+flash*.17;c[idx+2]=flash*.5;
-      }else{
-        var cr=((i*7)%100)/100;
-        if(cr<0.5){c[idx]=.91;c[idx+1]=.48;c[idx+2]=0}
-        else if(cr<0.75){c[idx]=1;c[idx+1]=.55;c[idx+2]=0}
-        else if(cr<0.9){c[idx]=.72;c[idx+1]=.37;c[idx+2]=0}
-        else{c[idx]=.96;c[idx+1]=.87;c[idx+2]=.78}
-      }
+      tx+=Math.sin(t*.4+i*.007)*.03;ty+=Math.cos(t*.35+i*.009)*.03;
+      p[idx]+=(tx-p[idx])*lerpSpeed;p[idx+1]+=(ty-p[idx+1])*lerpSpeed;p[idx+2]+=(tz-p[idx+2])*lerpSpeed;
+      if(scatterAmt>.1){var f=scatterAmt;c[idx]=.96;c[idx+1]=.7+f*.15;c[idx+2]=f*.3}
+      else{var cr=((i*7)%100)/100;if(cr<.5){c[idx]=.91;c[idx+1]=.48;c[idx+2]=0}else if(cr<.75){c[idx]=1;c[idx+1]=.55;c[idx+2]=0}else if(cr<.9){c[idx]=.72;c[idx+1]=.37;c[idx+2]=0}else{c[idx]=.96;c[idx+1]=.87;c[idx+2]=.78}}
     }
-
     geo.attributes.position.needsUpdate=true;
     geo.attributes.color.needsUpdate=true;
 
-    // Particle system rotation follows scroll
-    points.rotation.y=scrollPct*Math.PI*0.8+t*0.03;
-
-    // Camera position shifts per section
-    var camX=4+Math.sin(scrollPct*Math.PI*1.5)*4;
-    var camY=2+Math.sin(scrollPct*Math.PI)*.8;
-    var camZ=20-scrollPct*4;
-    camera.position.set(camX,camY,camZ);
-    camera.lookAt(4,0,0);
-
-    // Always visible
-    mat.opacity=0.85;
+    pts3d.rotation.y=scrollPct*Math.PI*.6+t*.02;
+    pts3d.rotation.x=Math.sin(t*.08)*.03;
+    camera.position.x=Math.sin(t*.06)*.3;
+    camera.position.y=1+Math.cos(t*.05)*.2;
 
     renderer.render(scene,camera);
   }
