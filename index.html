@@ -7,13 +7,20 @@
 <meta name="description" content="Drive AI responds to every dealership lead in under 60 seconds. Text, email, voice. 24/7.">
 <link rel="icon" type="image/png" href="logo/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
-.nav.scrolled{background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.04)}
+/* THREE.JS CANVAS — fixed, fullscreen, always visible */
+#c{position:fixed;inset:0;z-index:0}
+
+/* SCROLL SPACER — this is what creates the scrollable area */
+.spacer{height:600vh;pointer-events:none}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between}
 .nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;color:#fff;text-decoration:none}
 .nav-mark span{color:#E87A00}
 .nav-links{display:flex;gap:2rem;list-style:none}
@@ -22,296 +29,322 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .nav-cta{background:#E87A00!important;color:#000!important;padding:.45rem 1.1rem;transition:background .3s!important}
 .nav-cta:hover{background:#FF8C00!important}
 
-/* ── HERO ── */
-.hero{position:relative;height:100vh;display:flex;align-items:center;overflow:hidden;background:#000 url(hero-poster.jpg) center/cover no-repeat}
-.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.1) 55%,rgba(0,0,0,.4) 100%)}
-.hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 4rem;width:100%}
-.hero-ol{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.8rem;opacity:0;animation:fadeUp .6s .3s forwards}
-.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6.5rem);line-height:.93;letter-spacing:2px;opacity:0;animation:fadeUp .7s .5s forwards}
-.hero-h1 em{font-style:normal;color:#E87A00}
-.hero-body{font-size:.9rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.45);max-width:28rem;margin-top:1rem;opacity:0;animation:fadeUp .6s .7s forwards}
-.hero-cta{display:flex;gap:.8rem;margin-top:2rem;opacity:0;animation:fadeUp .6s .9s forwards}
-@keyframes fadeUp{from{opacity:0;transform:translateY(1.5rem)}to{opacity:1;transform:translateY(0)}}
+/* TEXT PANELS — fixed, fade in/out based on scroll */
+.panel{position:fixed;z-index:10;opacity:0;transition:opacity .5s,transform .5s;transform:translateY(20px);pointer-events:none}
+.panel.show{opacity:1;transform:translateY(0);pointer-events:auto}
 
-.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fadeUp .5s 1.5s forwards}
-.scroll-arrow{width:1px;height:40px;background:linear-gradient(to bottom,transparent,#E87A00);animation:pulse-arrow 2s ease infinite}
-@keyframes pulse-arrow{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.2)}}
-.scroll-text{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.15)}
+/* Panel positions */
+.p-hero{top:50%;left:4rem;transform:translateY(-50%);max-width:550px}
+.p-hero.show{transform:translateY(-50%)}
+.p-center{top:50%;left:50%;transform:translate(-50%,-50%);max-width:500px;text-align:center}
+.p-center.show{transform:translate(-50%,-50%)}
+.p-left{top:50%;left:4rem;transform:translateY(-50%);max-width:450px}
+.p-left.show{transform:translateY(-50%)}
+.p-right{top:50%;right:4rem;transform:translateY(-50%);max-width:450px;text-align:right}
+.p-right.show{transform:translateY(-50%)}
+.p-bottom{bottom:6rem;left:50%;transform:translateX(-50%);max-width:600px;text-align:center}
+.p-bottom.show{transform:translateX(-50%)}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s}
+/* TEXT STYLES */
+.ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.6rem}
+.h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);line-height:.93;letter-spacing:2px}
+.h1 em{font-style:normal;color:#E87A00}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3rem);line-height:1;letter-spacing:1px}
+.h2 em{font-style:normal;color:#E87A00}
+.bd{font-size:.85rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.4);margin-top:.8rem}
+.bd strong{color:rgba(255,255,255,.65);font-weight:500}
+.p-right .bd{margin-left:auto;max-width:22rem}
+.p-center .bd{margin:0 auto}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s;margin-top:1.2rem}
 .btn-fill{background:#E87A00;color:#000}
 .btn-fill:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.3)}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08);margin-left:.5rem}
 .btn-ghost:hover{border-color:#E87A00;color:#E87A00}
 
-/* ── SECTIONS ── */
-.section{position:relative;overflow:hidden}
-.section-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;transition:transform 8s linear}
-.section:hover .section-bg{transform:scale(1.03)}
-.section-grad{position:absolute;inset:0}
-.section-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:7rem 4rem}
+/* STATS */
+.stats{display:flex;gap:2rem;margin-top:1.2rem}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#E87A00;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.45rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18)}
 
-.ol{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E87A00;margin-bottom:.6rem}
-.h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4.5vw,3.2rem);line-height:1;letter-spacing:1px;margin-bottom:.8rem}
-.h2 em{font-style:normal;color:#E87A00}
-.body{font-size:.85rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.4);max-width:26rem}
-.body strong{color:rgba(255,255,255,.65);font-weight:500}
+/* RESULTS */
+.rr{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rr:last-child{border:none}
+.rr-l{font-size:.7rem;color:rgba(255,255,255,.25)}
+.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#E87A00}
 
-/* ── STATS ── */
-.stats-band{background:#000;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
-.stats-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-.stat{padding:3rem 2rem;text-align:center;border-right:1px solid rgba(255,255,255,.04)}
-.stat:last-child{border-right:none}
-.stat-v{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#E87A00;line-height:1}
-.stat-l{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18);margin-top:.3rem}
+/* SCROLL PROGRESS */
+.prog{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:.4rem}
+.prog-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.1);transition:all .3s;cursor:pointer}
+.prog-dot.on{background:#E87A00;box-shadow:0 0 6px rgba(232,122,0,.4)}
 
-/* ── SPLIT LAYOUT ── */
-.split{display:grid;grid-template-columns:1fr 1fr;min-height:0}
-.split-col{padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center}
-.split-col--right{border-left:1px solid rgba(255,255,255,.04)}
+/* LOADING */
+.loader{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;transition:opacity .6s}
+.loader.done{opacity:0;pointer-events:none}
+.loader-text{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:4px;color:#fff}
+.loader-text span{color:#E87A00}
+.loader-bar{width:160px;height:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.loader-fill{height:100%;background:#E87A00;width:0%;transition:width .3s}
 
-/* ── CARDS ── */
-.card{padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,.04);transition:padding-left .3s}
-.card:hover{padding-left:.8rem}
-.card-t{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;color:rgba(255,255,255,.7);margin-bottom:.2rem}
-.card-d{font-size:.75rem;color:rgba(255,255,255,.25);line-height:1.6;font-weight:300}
-
-/* ── STEPS ── */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(255,255,255,.04)}
-.step{padding:3rem 2.5rem;border-right:1px solid rgba(255,255,255,.04);position:relative}
-.step:last-child{border-right:none}
-.step::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.04);transition:background .4s}
-.step:hover::before{background:#E87A00}
-.step-n{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:4px;color:rgba(255,255,255,.15);text-transform:uppercase;margin-bottom:.8rem}
-.step-t{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff;letter-spacing:1px;margin-bottom:.4rem}
-.step-d{font-size:.75rem;color:rgba(255,255,255,.25);line-height:1.6;font-weight:300}
-
-/* ── RESULTS ── */
-.rr{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.rr:last-child{border-bottom:none}
-.rr-l{font-size:.78rem;color:rgba(255,255,255,.25)}
-.rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#E87A00}
-
-/* ── PILLS ── */
-.pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
-.pill{background:rgba(232,122,0,.06);border:1px solid rgba(232,122,0,.12);color:#E87A00;padding:.3rem .7rem;font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
-
-/* ── CTA SECTION ── */
-.cta-section{text-align:center;padding:7rem 4rem;border-top:1px solid rgba(255,255,255,.04)}
-.cta-section .h2{margin-bottom:.5rem}
-.cta-section .body{margin:0 auto 2rem;text-align:center;max-width:22rem}
-
-/* ── FOOTER ── */
-.footer{border-top:1px solid rgba(255,255,255,.04);background:#000}
+/* FOOTER */
+.footer{position:relative;z-index:10;border-top:1px solid rgba(255,255,255,.04);background:#000}
 .footer-inner{max-width:1200px;margin:0 auto;padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center}
-.footer-c{font-size:.5rem;color:rgba(255,255,255,.1);letter-spacing:.5px}
-.footer-l{display:flex;gap:1.5rem}
-.footer-l a{font-size:.5rem;color:rgba(255,255,255,.1);text-decoration:none;letter-spacing:.5px}
+.footer-c{font-size:.5rem;color:rgba(255,255,255,.1)}
+.footer-l{display:flex;gap:1.2rem}
+.footer-l a{font-size:.5rem;color:rgba(255,255,255,.1);text-decoration:none}
 .footer-l a:hover{color:#E87A00}
 
-/* ── REVEAL ── */
-.rv{opacity:0;transform:translateY(1.5rem);transition:opacity .7s cubic-bezier(.215,.61,.355,1),transform .7s cubic-bezier(.215,.61,.355,1)}
-.rv.show{opacity:1;transform:translateY(0)}
-.rv-1{transition-delay:.1s}.rv-2{transition-delay:.2s}.rv-3{transition-delay:.35s}.rv-4{transition-delay:.5s}
-
-/* ── RESPONSIVE ── */
-@media(max-width:960px){
-  .split{grid-template-columns:1fr}
-  .split-col--right{border-left:none;border-top:1px solid rgba(255,255,255,.04)}
-  .steps{grid-template-columns:1fr}
-  .step{border-right:none;border-bottom:1px solid rgba(255,255,255,.04)}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .stat:nth-child(2){border-right:none}
-}
-@media(max-width:600px){
-  .nav{padding:1rem 1.5rem}
-  .nav-links .hm{display:none}
-  .hero-content,.section-content,.split-col,.cta-section{padding-left:2rem;padding-right:2rem}
-  .footer-inner{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem 2rem}
-  .scroll-hint{display:none}
+@media(max-width:768px){
+  .nav{padding:1rem 1.5rem}.nav-links .hm{display:none}
+  .p-hero,.p-left,.p-right{left:2rem;right:2rem;max-width:none;text-align:left}
+  .p-right .bd{margin-left:0}
+  .p-center,.p-bottom{left:2rem;right:2rem;max-width:none;transform:none!important}
+  .stats{flex-wrap:wrap;gap:1rem}
+  .prog{display:none}
 }
 </style>
 </head>
 <body>
 
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-text">DRIVE <span>AI</span> SALES</div>
+  <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+</div>
+
+<!-- THREE.JS CANVAS -->
+<canvas id="c"></canvas>
+
+<!-- SCROLL SPACER -->
+<div class="spacer"></div>
+
 <!-- NAV -->
-<nav class="nav" id="nav">
+<nav class="nav">
   <a href="/" class="nav-mark">DRIVE <span>AI</span> SALES INC.</a>
   <ul class="nav-links">
-    <li><a href="#problem" class="hm">Problem</a></li>
-    <li><a href="#solution" class="hm">Solution</a></li>
-    <li><a href="#results" class="hm">Results</a></li>
     <li><a href="pricing.html" class="hm">Pricing</a></li>
     <li><a href="diagnostic.html" class="nav-cta">Free Diagnostic</a></li>
   </ul>
 </nav>
 
-<!-- HERO — VIDEO -->
-<section class="hero">
-  <video class="hero-video" id="heroVid" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg">
-    <source src="hero-desktop.mp4" type="video/mp4">
-  </video>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <img src="logo/logo-transparent.png" alt="Drive AI Sales" style="height:720px;max-width:90vw;width:auto;margin-bottom:2rem;opacity:0;animation:fadeUp .5s .1s forwards">
-    <div class="hero-ol">AI-Powered Sales Intelligence for Dealerships</div>
-    <h1 class="hero-h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
-    <p class="hero-body">78% of buyers purchase from the first dealership to respond. The average dealer takes 47 minutes. We respond in under 60 seconds &mdash; text, email, voice &mdash; 24/7.</p>
-    <div class="hero-cta">
-      <a href="diagnostic.html" class="btn btn-fill">Free Diagnostic &rarr;</a>
-      <a href="#solution" class="btn btn-ghost">How It Works</a>
-    </div>
-  </div>
-  <div class="scroll-hint">
-    <div class="scroll-arrow"></div>
-    <div class="scroll-text">Scroll</div>
-  </div>
-</section>
+<!-- PROGRESS -->
+<div class="prog" id="prog"></div>
 
-<!-- STATS -->
-<div class="stats-band">
-  <div class="stats-grid">
-    <div class="stat rv"><div class="stat-v">&lt;60s</div><div class="stat-l">Lead Response</div></div>
-    <div class="stat rv rv-1"><div class="stat-v">24/7</div><div class="stat-l">No Off Hours</div></div>
-    <div class="stat rv rv-2"><div class="stat-v">68%</div><div class="stat-l">Show Rate</div></div>
-    <div class="stat rv rv-3"><div class="stat-v">0</div><div class="stat-l">New Tools to Learn</div></div>
+<!-- PANELS -->
+<div class="panel p-hero" id="p0">
+  <img src="logo/logo-transparent.png" alt="Drive AI Sales" style="height:140px;width:auto;margin-bottom:1.5rem">
+  <div class="h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></div>
+  <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds.</div>
+  <div><a href="diagnostic.html" class="btn btn-fill">Free Diagnostic &rarr;</a><a href="#" class="btn btn-ghost" onclick="scrollTo(0,document.documentElement.scrollHeight*.18);return false">How It Works</a></div>
+</div>
+
+<div class="panel p-right" id="p1">
+  <div class="ol">The Problem</div>
+  <div class="h2">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
+  <div class="bd"><strong>$15K–$45K/month</strong> lost to slow response, broken follow-up, and no-shows.</div>
+  <div class="stats">
+    <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
+    <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
+    <div><div class="sv">2</div><div class="sl">Follow-ups</div></div>
   </div>
 </div>
 
-<!-- PROBLEM -->
-<section class="section" id="problem">
-  <div class="section-bg" style="background-image:url(scenes/02-exterior.jpg)"></div>
-  <div class="section-grad" style="background:linear-gradient(100deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.7) 50%,rgba(0,0,0,.85) 100%)"></div>
-  <div class="split">
-    <div class="split-col">
-      <div class="ol rv">The Problem</div>
-      <div class="h2 rv rv-1">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
-      <div class="body rv rv-2">The average dealership loses <strong>$15K&ndash;$45K/month</strong> to slow response, broken follow-up, and no-shows. Not because the team is bad. Because the system wasn't built for this volume.</div>
-    </div>
-    <div class="split-col split-col--right">
-      <div class="rv rv-2">
-        <div class="card"><div class="card-t">Leads Die After Hours</div><div class="card-d">62% of leads come in after your team goes home. By morning, they're someone else's customer.</div></div>
-        <div class="card"><div class="card-t">Follow-Up Falls Apart</div><div class="card-d">80% of sales require 5+ follow-ups. Most salespeople give up after 2.</div></div>
-        <div class="card"><div class="card-t">Appointments Don't Show</div><div class="card-d">Industry average show rate: 40-50%. Every no-show is wasted gross and wasted floor time.</div></div>
-        <div class="card"><div class="card-t">Scaling Means Hiring</div><div class="card-d">If growth requires headcount, you don't have a system. You have a headcount problem.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="panel p-left" id="p2">
+  <div class="ol">The Solution</div>
+  <div class="h2">An Engine That Works<br>While Your Team <em>Sleeps</em></div>
+  <div class="bd">Drive AI plugs into your CRM — CDK, DealerTrack, VinSolutions. Under a day. No migration. Your team doesn't even know it's there.</div>
+</div>
 
-<!-- SOLUTION -->
-<section class="section" id="solution">
-  <div class="section-bg" style="background-image:url(scenes/04-engine.jpg)"></div>
-  <div class="section-grad" style="background:linear-gradient(90deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.75) 100%)"></div>
-  <div class="section-content">
-    <div class="ol rv">How It Works</div>
-    <div class="h2 rv rv-1" style="margin-bottom:2.5rem">An Engine That Works<br>While Your Team <em>Sleeps</em></div>
-    <div class="steps rv rv-2">
-      <div class="step"><div class="step-n">Step 01</div><div class="step-t">We Plug In</div><div class="step-d">CDK, DealerTrack, VinSolutions. Under a day. No migration, no disruption. Your team doesn't even know it's there.</div></div>
-      <div class="step"><div class="step-n">Step 02</div><div class="step-t">AI Takes Point</div><div class="step-d">Every lead gets a response in under 60 seconds. Text, email, voice. Qualifies, follows up, books appointments, re-engages no-shows.</div></div>
-      <div class="step"><div class="step-n">Step 03</div><div class="step-t">Your Team Closes</div><div class="step-d">Warm, qualified appointments on their calendar with full context. They sell cars. The AI handles everything else.</div></div>
-    </div>
+<div class="panel p-right" id="p3">
+  <div class="ol">The Drivetrain</div>
+  <div class="h2"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
+  <div class="bd">Under 60 seconds. Text, email, voice. 7+ touchpoints over 30 days. Books appointments. Re-engages no-shows.</div>
+  <div class="stats">
+    <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
+    <div><div class="sv">7+</div><div class="sl">Touches</div></div>
+    <div><div class="sv">30d</div><div class="sl">Cadence</div></div>
   </div>
-</section>
+</div>
 
-<!-- CAPABILITIES -->
-<section class="section">
-  <div class="section-bg" style="background-image:url(scenes/05-drivetrain.jpg)"></div>
-  <div class="section-grad" style="background:linear-gradient(260deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.75) 100%)"></div>
-  <div class="split">
-    <div class="split-col">
-      <div class="ol rv">The Drivetrain</div>
-      <div class="h2 rv rv-1"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
-      <div class="body rv rv-2">Under 60 seconds. Text, email, voice. The AI qualifies, follows up across 7+ touchpoints over 30 days, books appointments, and re-engages no-shows &mdash; with natural, human conversation.</div>
-      <div class="pills rv rv-3">
-        <div class="pill">Instant Response</div><div class="pill">7-Touch Cadence</div><div class="pill">Show Rate Engine</div><div class="pill">CRM Sync</div><div class="pill">No-Show Recovery</div><div class="pill">Zero Adoption</div>
-      </div>
-    </div>
-    <div class="split-col split-col--right">
-      <div class="ol rv rv-1">The Intelligence</div>
-      <div class="h2 rv rv-2">The <em>Brain</em> Behind<br>Every Decision</div>
-      <div class="body rv rv-3">Real-time lead scoring. Appointment optimization. No-show prediction. Gets smarter every week.</div>
-    </div>
+<div class="panel p-left" id="p4">
+  <div class="ol">Results</div>
+  <div class="h2">The Numbers<br>Speak <em>Dealer.</em></div>
+  <div style="margin-top:1rem;max-width:18rem">
+    <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs → 47s</span></div>
+    <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% → 68%</span></div>
+    <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
+    <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
   </div>
-</section>
+</div>
 
-<!-- RESULTS -->
-<section class="section" id="results">
-  <div class="section-bg" style="background-image:url(scenes/06-cpu.jpg)"></div>
-  <div class="section-grad" style="background:linear-gradient(100deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.7) 50%,rgba(0,0,0,.88) 100%)"></div>
-  <div class="split">
-    <div class="split-col">
-      <div class="ol rv">Results</div>
-      <div class="h2 rv rv-1">The Numbers<br>Speak <em>Dealer.</em></div>
-      <div class="rv rv-2" style="margin-top:1.5rem">
-        <div class="rr"><span class="rr-l">Lead Response Time</span><span class="rr-v">4hrs &rarr; 47s</span></div>
-        <div class="rr"><span class="rr-l">Appointment Show Rate</span><span class="rr-v">41% &rarr; 68%</span></div>
-        <div class="rr"><span class="rr-l">Additional Deals / Month</span><span class="rr-v">+11</span></div>
-        <div class="rr"><span class="rr-l">Incremental Gross Profit</span><span class="rr-v">+$33K</span></div>
-        <div class="rr"><span class="rr-l">Staff Added</span><span class="rr-v">0</span></div>
-      </div>
-    </div>
-    <div class="split-col split-col--right">
-      <div class="rv rv-2" style="border-left:2px solid rgba(232,122,0,.15);padding-left:1.5rem;margin-bottom:2rem">
-        <div class="body" style="font-size:.95rem;font-style:italic;color:rgba(255,255,255,.5);max-width:100%">"I stopped checking the CRM every hour because I finally trusted something was handling it. We picked up 11 extra deals in the first month."</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-top:.8rem">General Manager &mdash; Mid-Size Franchise Dealer</div>
-      </div>
-      <div class="rv rv-3" style="border-left:2px solid rgba(232,122,0,.1);padding-left:1.5rem">
-        <div class="body" style="font-size:.95rem;font-style:italic;color:rgba(255,255,255,.45);max-width:100%">"My salespeople didn't even know we installed it for the first two weeks. They just noticed their calendars were fuller."</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-top:.8rem">Dealer Principal &mdash; Multi-Rooftop Group</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="ol rv">Free Assessment</div>
-  <div class="h2 rv rv-1">How Much Are You<br><em>Leaving on the Table?</em></div>
-  <div class="body rv rv-2">7 questions. 2 minutes. Your score and revenue leak estimate. No pitch.</div>
-  <div class="rv rv-3" style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
-    <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a>
-    <a href="discovery.html" class="btn btn-ghost">Book a Discovery Call</a>
-  </div>
-</section>
+<div class="panel p-center" id="p5">
+  <div class="ol">Free Assessment</div>
+  <div class="h2">How Much Are You<br><em>Leaving on the Table?</em></div>
+  <div class="bd">7 questions. 2 minutes. Your score and revenue leak estimate.</div>
+  <div style="margin-top:1.5rem"><a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic &rarr;</a><a href="discovery.html" class="btn btn-ghost">Book a Call</a></div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-c">&copy; 2026 Drive AI Sales Inc. &middot; Edmonton, AB</div>
-    <div class="footer-l">
-      <a href="diagnostic.html">Diagnostic</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="discovery.html">Book a Call</a>
-    </div>
+    <div class="footer-l"><a href="diagnostic.html">Diagnostic</a><a href="pricing.html">Pricing</a><a href="discovery.html">Book a Call</a></div>
   </div>
 </footer>
 
 <script>
-// Force video play
-(function(){
-  var v=document.getElementById('heroVid');
-  v.muted=true;
-  var playAttempt=function(){v.play().catch(function(){setTimeout(playAttempt,500)})};
-  if(document.readyState==='complete')playAttempt();
-  else window.addEventListener('load',playAttempt);
-  document.addEventListener('click',function(){v.play().catch(function(){})},{once:true});
-  document.addEventListener('touchstart',function(){v.play().catch(function(){})},{once:true});
-})();
+var PANELS=6;
+var currentPanel=-1;
+var scrollPct=0;
 
-// Nav scroll
+// Progress dots
+(function(){var d=document.getElementById('prog');for(var i=0;i<PANELS;i++){var dot=document.createElement('div');dot.className='prog-dot';dot.dataset.i=i;dot.onclick=function(){var t=(parseInt(this.dataset.i)/PANELS)*(document.documentElement.scrollHeight-window.innerHeight);window.scrollTo({top:t,behavior:'smooth'})};d.appendChild(dot)}})();
+
+// Scroll handler
 window.addEventListener('scroll',function(){
-  document.getElementById('nav').classList.toggle('scrolled',window.pageYOffset>80);
+  var t=window.pageYOffset||document.documentElement.scrollTop;
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  scrollPct=h>0?t/h:0;
+
+  // Which panel is active?
+  var p=Math.floor(scrollPct*PANELS);
+  if(p>=PANELS)p=PANELS-1;
+  if(p!==currentPanel){
+    currentPanel=p;
+    for(var i=0;i<PANELS;i++){
+      var el=document.getElementById('p'+i);
+      if(el)el.classList.toggle('show',i===p);
+    }
+    document.querySelectorAll('.prog-dot').forEach(function(d,i){d.classList.toggle('on',i===p)});
+  }
 },{passive:true});
 
-// Reveal on scroll
+// Show first panel
+document.getElementById('p0').classList.add('show');
+
+// ─── THREE.JS ───
 (function(){
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('show');obs.unobserve(e.target)}});
-  },{threshold:.15,rootMargin:'0px 0px -40px 0px'});
-  document.querySelectorAll('.rv').forEach(function(el){obs.observe(el)});
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(40,window.innerWidth/window.innerHeight,.1,200);
+  var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.8;
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.setClearColor(0x000000);
+
+  // Lighting
+  var spot=new THREE.SpotLight(0xE87A00,4,50,Math.PI/4,.5,1);
+  spot.position.set(10,10,10);scene.add(spot);
+  var spot2=new THREE.SpotLight(0xFF8C00,2,40,Math.PI/4,.6,1);
+  spot2.position.set(-8,5,-5);scene.add(spot2);
+  var rim=new THREE.PointLight(0xE87A00,1.5,30);
+  rim.position.set(0,3,-10);scene.add(rim);
+  scene.add(new THREE.AmbientLight(0x080808));
+
+  // Load car
+  var carGroup=new THREE.Group();
+  var loaded=false;
+  var loader=new THREE.GLTFLoader();
+  var loaderFill=document.getElementById('loaderFill');
+  var loaderEl=document.getElementById('loader');
+
+  loader.load('car.glb',
+    function(gltf){
+      var model=gltf.scene;
+      // Glass/holographic material for all meshes
+      model.traverse(function(child){
+        if(child.isMesh){
+          child.material=new THREE.MeshPhysicalMaterial({
+            color:0x112240,
+            metalness:.95,
+            roughness:.12,
+            clearcoat:1,
+            clearcoatRoughness:.05,
+            envMapIntensity:2,
+            transparent:true,
+            opacity:.85
+          });
+        }
+      });
+      carGroup.add(model);
+      scene.add(carGroup);
+      loaded=true;
+      // Hide loader
+      loaderFill.style.width='100%';
+      setTimeout(function(){loaderEl.classList.add('done')},500);
+    },
+    function(xhr){
+      if(xhr.total>0){
+        var pct=Math.round(xhr.loaded/xhr.total*100);
+        loaderFill.style.width=pct+'%';
+      }
+    },
+    function(){
+      // Error fallback — hide loader anyway
+      loaderEl.classList.add('done');
+    }
+  );
+
+  // Camera keyframes: [x, y, z] positions at each scroll section
+  // The camera orbits around the car at origin
+  var camKeys=[
+    {x:6, y:2, z:10},    // 0: hero — 3/4 front view
+    {x:10, y:1.5, z:2},  // 1: side view
+    {x:5, y:4, z:-6},    // 2: high rear 3/4
+    {x:-8, y:1.5, z:-3}, // 3: opposite side
+    {x:-4, y:3, z:8},    // 4: front left
+    {x:0, y:6, z:12},    // 5: high front center — pull back
+  ];
+
+  function lerp(a,b,t){return a+(b-a)*t}
+
+  // Resize
+  window.addEventListener('resize',function(){
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+
+  // Animate
+  var clock=new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    var t=clock.getElapsedTime();
+
+    // Scroll-driven camera
+    var totalKeys=camKeys.length-1;
+    var raw=scrollPct*totalKeys;
+    var idx=Math.floor(raw);
+    var frac=raw-idx;
+    if(idx>=totalKeys){idx=totalKeys-1;frac=1}
+    var a=camKeys[idx],b=camKeys[idx+1]||camKeys[idx];
+
+    // Smooth interpolation
+    var cx=lerp(a.x,b.x,frac);
+    var cy=lerp(a.y,b.y,frac);
+    var cz=lerp(a.z,b.z,frac);
+    camera.position.set(cx,cy,cz);
+    camera.lookAt(0,.5,0);
+
+    // Subtle car float
+    if(loaded){
+      carGroup.position.y=Math.sin(t*.5)*.03;
+      carGroup.rotation.y=Math.sin(t*.15)*.02;
+    }
+
+    // Light orbits
+    spot.position.x=Math.cos(t*.3)*12;
+    spot.position.z=Math.sin(t*.3)*12;
+
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  // Fallback loader timeout
+  setTimeout(function(){loaderEl.classList.add('done')},8000);
 })();
 </script>
 </body>
