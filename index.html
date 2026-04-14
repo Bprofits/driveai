@@ -19,9 +19,10 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .nav-mark{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:#fff;text-decoration:none}
 .nav-mark span{color:#E87A00}
 .nav-links{display:flex;gap:1.5rem;list-style:none}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s}
-.nav-links a:hover{color:#E87A00}
-.nav-cta{background:#E87A00!important;color:#000!important;padding:.4rem 1rem}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s,text-shadow .3s}
+.nav-links a:hover{color:#fff;text-shadow:0 0 12px rgba(255,255,255,.3)}
+.nav-cta{background:#E87A00!important;color:#000!important;padding:.5rem 1.2rem;border-radius:4px;transition:all .3s!important;position:relative;overflow:hidden}
+.nav-cta:hover{background:#FF8C00!important;box-shadow:0 0 20px rgba(232,122,0,.5),0 0 40px rgba(232,122,0,.2)!important;transform:scale(1.05)}
 
 /* SECTIONS */
 .sec{min-height:100vh;display:flex;align-items:center;position:relative;z-index:1}
@@ -47,18 +48,19 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .3s}
 .btn-fill{background:#E87A00;color:#000}
 .btn-fill:hover{background:#FF8C00;box-shadow:0 0 25px rgba(232,122,0,.3)}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
-.btn-ghost:hover{border-color:#E87A00;color:#E87A00}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);border-radius:4px;transition:all .3s}
+.btn-ghost:hover{border-color:#E87A00;color:#E87A00;box-shadow:0 0 15px rgba(232,122,0,.15);transform:translateY(-2px)}
 
 .stats{display:flex;gap:2rem;margin-bottom:1rem}
 .sec-right .stats{justify-content:flex-end}
 .sv{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#E87A00;line-height:1}
-.sl{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55)}
 .pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem}
-.pill{background:rgba(232,122,0,.06);border:1px solid rgba(232,122,0,.1);color:#E87A00;padding:.3rem .7rem;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.pill{background:rgba(232,122,0,.08);border:1px solid rgba(232,122,0,.15);color:#E87A00;padding:.35rem .8rem;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .3s}
+.pill:hover{background:rgba(232,122,0,.15);border-color:rgba(232,122,0,.3)}
 .rr{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .rr:last-child{border:none}
-.rr-l{font-size:.95rem;color:rgba(255,255,255,.5)}
+.rr-l{font-size:.95rem;color:rgba(255,255,255,.65)}
 .rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#E87A00}
 
 /* LIQUID BUTTONS */
@@ -78,14 +80,14 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:0;animation:fu .5s 1.5s forwards}
 .scroll-cue-line{width:1px;height:25px;background:linear-gradient(to bottom,transparent,#E87A00);animation:sp 2s ease infinite}
 @keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
-.scroll-cue-text{font-family:'Barlow Condensed',sans-serif;font-size:.4rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.12)}
+.scroll-cue-text{font-family:'Barlow Condensed',sans-serif;font-size:.5rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3)}
 @keyframes fu{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:translateY(0)}}
 
 .footer{border-top:1px solid rgba(255,255,255,.04);background:#000;position:relative;z-index:1}
 .footer-inner{max-width:1400px;margin:0 auto;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center}
-.footer-c{font-size:.5rem;color:rgba(255,255,255,.08)}
+.footer-c{font-size:.55rem;color:rgba(255,255,255,.2)}
 .footer-l{display:flex;gap:1rem}
-.footer-l a{font-size:.5rem;color:rgba(255,255,255,.08);text-decoration:none}
+.footer-l a{font-size:.55rem;color:rgba(255,255,255,.2);text-decoration:none;transition:color .3s}
 .footer-l a:hover{color:#E87A00}
 
 @media(max-width:768px){
@@ -166,11 +168,11 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     <div class="text-block">
       <div class="ol">Under the Hood</div>
       <div class="h2">We <em>Plug In</em><br>to Your CRM</div>
-      <div class="bd">CDK, DealerTrack, VinSolutions. Under a day. No migration, no disruption. Every lead gets a response in under 60 seconds.</div>
+      <div class="bd">We swap into any CRM your store runs. CDK, DealerTrack, VinSolutions, DealerSocket, Elead, you name it. Under a day. No migration, no disruption. Every lead gets a response in under 60 seconds.</div>
       <div class="pills">
-        <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div><div class="pill">CRM Sync</div>
+        <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div><div class="pill">CRM Sync</div><div class="pill">DealerSocket</div><div class="pill">VinSolutions</div>
       </div>
-      <div class="bd" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.5rem">SOC 2 compliant. Your data stays in your CRM. We integrate, we don't replace.</div>
+      <div class="bd" style="font-size:.85rem;color:rgba(255,255,255,.55)">SOC 2 compliant. Your data stays in your CRM. We integrate, we don't replace.</div>
     </div>
   </div>
 </section>
@@ -225,17 +227,21 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 </section>
 
 <!-- CONTACT -->
-<section class="sec sec-center" id="s6" style="min-height:50vh">
+<section class="sec sec-center" id="s6" style="min-height:60vh;border-top:1px solid rgba(232,122,0,.08)">
   <div class="sec-inner">
-    <div class="text-block" style="max-width:500px">
+    <div class="text-block" style="max-width:520px">
       <div class="ol">Get in Touch</div>
-      <div class="h2">Have a Question?</div>
-      <div class="bd">Not ready for the diagnostic? No problem. Reach out directly and we'll have a real conversation about your store.</div>
-      <div class="btn-row">
-        <a href="mailto:brandon@driveaisales.com" class="btn btn-ghost">Email Us</a>
-        <a href="discovery.html" class="btn btn-ghost">Book a Call</a>
+      <div class="h2">Have a <em>Question?</em></div>
+      <div class="bd" style="font-size:1.1rem;color:rgba(255,255,255,.8)">Not ready for the diagnostic? No problem. Reach out directly and we'll have a real conversation about your store.</div>
+      <div class="btn-row" style="gap:1rem">
+        <a href="mailto:brandon@driveaisales.com" class="btn btn-liquid">Email Us</a>
+        <a href="discovery.html" class="btn btn-liquid">Book a Call</a>
       </div>
-      <div class="bd" style="font-size:.75rem;color:rgba(255,255,255,.25);margin-top:1.5rem">Brandon Rose, CEO<br>Drive AI Sales Inc. | Edmonton, AB<br>brandon@driveaisales.com</div>
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:.95rem;color:rgba(255,255,255,.7);font-weight:500">Brandon Rose</div>
+        <div style="font-size:.8rem;color:#E87A00;margin-top:.2rem">CEO, Drive AI Sales Inc.</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.45);margin-top:.3rem">Edmonton, AB | brandon@driveaisales.com</div>
+      </div>
     </div>
   </div>
 </section>
