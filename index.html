@@ -61,6 +61,20 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 .rr-l{font-size:.95rem;color:rgba(255,255,255,.5)}
 .rr-v{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#E87A00}
 
+/* LIQUID BUTTONS */
+.btn-liquid{background:#E87A00;color:#000;position:relative;overflow:hidden;border-radius:50px;padding:.75rem 2rem}
+.btn-liquid:hover{background:#FF8C00;box-shadow:0 0 30px rgba(232,122,0,.4);transform:scale(1.03)}
+.btn-liquid .liquid-blob{position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.2);border-radius:50%;transform:translate(-50%,-50%);transition:width .5s ease,height .5s ease;pointer-events:none}
+.btn-liquid:hover .liquid-blob{width:300px;height:300px}
+
+/* COUNTERS */
+.counter-row{display:flex;gap:2.5rem;flex-wrap:wrap}
+.counter-item{text-align:center}
+.counter{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#E87A00;line-height:1}
+
+/* TYPEWRITER */
+@keyframes blink{50%{border-color:transparent}}
+
 .scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.3rem;opacity:0;animation:fu .5s 1.5s forwards}
 .scroll-cue-line{width:1px;height:25px;background:linear-gradient(to bottom,transparent,#E87A00);animation:sp 2s ease infinite}
 @keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
@@ -108,13 +122,26 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
       <div class="ol">AI-Powered Sales Intelligence for Dealerships</div>
       <h1 class="h1">Your Leads Are<br>Calling Back.<br><em>Just Not You.</em></h1>
       <div class="bd">78% of buyers purchase from the first dealership to respond. We respond in under 60 seconds. Text, email, voice. 24/7.</div>
+      <div style="font-family:monospace;font-size:14px;color:#E87A00;margin-bottom:1.2rem;min-height:1.5em;"><span id="typewriter"></span><span style="border-right:2px solid #E87A00;animation:blink .8s step-end infinite;">&nbsp;</span></div>
       <div class="btn-row">
-        <a href="diagnostic.html" class="btn btn-fill">Free Diagnostic</a>
+        <a href="diagnostic.html" class="btn btn-liquid">Free Diagnostic</a>
         <a href="#s2" class="btn btn-ghost">See How It Works</a>
       </div>
     </div>
   </div>
   <div class="scroll-cue"><div class="scroll-cue-line"></div><div class="scroll-cue-text">Scroll</div></div>
+</section>
+
+<!-- STATS BAND -->
+<section class="sec sec-center" style="min-height:auto">
+  <div class="sec-inner" style="justify-content:center">
+    <div class="counter-row">
+      <div class="counter-item"><div class="counter" data-target="60" data-suffix="s">&lt;60s</div><div class="sl">Response Time</div></div>
+      <div class="counter-item"><div class="counter" data-target="24" data-suffix="/7">24/7</div><div class="sl">Coverage</div></div>
+      <div class="counter-item"><div class="counter" data-target="68" data-suffix="%">68%</div><div class="sl">Show Rate</div></div>
+      <div class="counter-item"><div class="counter" data-target="0">0</div><div class="sl">New Tools to Learn</div></div>
+    </div>
+  </div>
 </section>
 
 <!-- PROBLEM -->
@@ -124,10 +151,10 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
       <div class="ol">The Problem</div>
       <div class="h2">Your CRM Captures Leads.<br>It Can't <em>Work</em> Them.</div>
       <div class="bd">The average dealership loses <strong>$15K-$45K/month</strong> to slow response, broken follow-up, and no-shows.</div>
-      <div class="stats">
-        <div><div class="sv">47min</div><div class="sl">Avg Response</div></div>
-        <div><div class="sv">40%</div><div class="sl">Show Rate</div></div>
-        <div><div class="sv">2</div><div class="sl">Follow-ups</div></div>
+      <div class="counter-row" style="margin-top:1rem">
+        <div class="counter-item"><div class="counter" data-target="47" data-suffix="min">0</div><div class="sl">Avg Response</div></div>
+        <div class="counter-item"><div class="counter" data-target="40" data-suffix="%">0</div><div class="sl">Show Rate</div></div>
+        <div class="counter-item"><div class="counter" data-target="2">0</div><div class="sl">Follow-ups</div></div>
       </div>
     </div>
   </div>
@@ -143,6 +170,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
       <div class="pills">
         <div class="pill">Instant Response</div><div class="pill">24/7 Coverage</div><div class="pill">Zero Adoption</div><div class="pill">CRM Sync</div>
       </div>
+      <div class="bd" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.5rem">SOC 2 compliant. Your data stays in your CRM. We integrate, we don't replace.</div>
     </div>
   </div>
 </section>
@@ -153,11 +181,11 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     <div class="text-block">
       <div class="ol">The Drivetrain</div>
       <div class="h2"><em>AI Takes Point.</em><br>Every Lead. Every Time.</div>
-      <div class="bd">7+ touchpoints over 30 days. Qualifies, follows up, books appointments, sends reminders, re-engages no-shows. Natural conversation.</div>
-      <div class="stats">
-        <div><div class="sv">&lt;60s</div><div class="sl">Response</div></div>
-        <div><div class="sv">7+</div><div class="sl">Touches</div></div>
-        <div><div class="sv">30d</div><div class="sl">Cadence</div></div>
+      <div class="bd">7+ touchpoints over 30 days. Qualifies, follows up, books appointments, sends reminders, re-engages no-shows. Natural conversation, not robotic scripts.</div>
+      <div class="counter-row" style="margin-top:1rem">
+        <div class="counter-item"><div class="counter" data-target="60" data-prefix="<" data-suffix="s">0</div><div class="sl">Response</div></div>
+        <div class="counter-item"><div class="counter" data-target="7" data-suffix="+">0</div><div class="sl">Touches</div></div>
+        <div class="counter-item"><div class="counter" data-target="30" data-suffix="d">0</div><div class="sl">Cadence</div></div>
       </div>
     </div>
   </div>
@@ -169,12 +197,14 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
     <div class="text-block">
       <div class="ol">Results</div>
       <div class="h2">The Numbers<br>Speak <em>Dealer.</em></div>
-      <div style="margin-top:.5rem;max-width:18rem">
+      <div style="margin-top:.5rem;max-width:20rem">
         <div class="rr"><span class="rr-l">Response Time</span><span class="rr-v">4hrs to 47s</span></div>
         <div class="rr"><span class="rr-l">Show Rate</span><span class="rr-v">41% to 68%</span></div>
         <div class="rr"><span class="rr-l">Deals / Month</span><span class="rr-v">+11</span></div>
         <div class="rr"><span class="rr-l">Gross Profit</span><span class="rr-v">+$33K</span></div>
+        <div class="rr"><span class="rr-l">Staff Added</span><span class="rr-v">0</span></div>
       </div>
+      <div class="bd" style="margin-top:1rem;font-style:italic;color:rgba(255,255,255,.45)">"I stopped checking the CRM every hour because I finally trusted something was handling it."<br><span style="font-style:normal;font-size:.7rem;color:rgba(255,255,255,.25);">- GM, Mid-Size Franchise Dealer</span></div>
     </div>
   </div>
 </section>
@@ -187,9 +217,25 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
       <div class="h2">How Much Are You<br><em>Leaving on the Table?</em></div>
       <div class="bd">7 questions. 2 minutes. Your score and revenue leak estimate.</div>
       <div class="btn-row">
-        <a href="diagnostic.html" class="btn btn-fill">Take the Diagnostic</a>
-        <a href="discovery.html" class="btn btn-fill">Book a Discovery Call</a>
+        <a href="diagnostic.html" class="btn btn-liquid">Take the Diagnostic</a>
+        <a href="discovery.html" class="btn btn-liquid">Book a Discovery Call</a>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec sec-center" id="s6" style="min-height:50vh">
+  <div class="sec-inner">
+    <div class="text-block" style="max-width:500px">
+      <div class="ol">Get in Touch</div>
+      <div class="h2">Have a Question?</div>
+      <div class="bd">Not ready for the diagnostic? No problem. Reach out directly and we'll have a real conversation about your store.</div>
+      <div class="btn-row">
+        <a href="mailto:brandon@driveaisales.com" class="btn btn-ghost">Email Us</a>
+        <a href="discovery.html" class="btn btn-ghost">Book a Call</a>
+      </div>
+      <div class="bd" style="font-size:.75rem;color:rgba(255,255,255,.25);margin-top:1.5rem">Brandon Rose, CEO<br>Drive AI Sales Inc. | Edmonton, AB<br>brandon@driveaisales.com</div>
     </div>
   </div>
 </section>
@@ -197,7 +243,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-c">2026 Drive AI Sales Inc. Edmonton, AB</div>
-    <div class="footer-l"><a href="diagnostic.html">Diagnostic</a><a href="pricing.html">Pricing</a><a href="discovery.html">Book a Call</a></div>
+    <div class="footer-l"><a href="diagnostic.html">Diagnostic</a><a href="pricing.html">Pricing</a><a href="discovery.html">Book a Call</a><a href="mailto:brandon@driveaisales.com">Contact</a></div>
   </div>
 </footer>
 
@@ -211,9 +257,43 @@ window.addEventListener('scroll',function(){document.getElementById('nav').class
     entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
   },{threshold:.2});
   document.querySelectorAll('.text-block').forEach(function(el){obs.observe(el)});
-  // Show hero immediately
   document.querySelector('#s0 .text-block').classList.add('visible');
 })();
+
+// ANIMATED COUNTERS ON SCROLL
+(function(){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var el=e.target;var target=parseInt(el.dataset.target);
+        var prefix=el.dataset.prefix||'';var suffix=el.dataset.suffix||'';
+        if(target===0){el.textContent=prefix+'0'+suffix;obs.unobserve(el);return}
+        var current=0;var step=Math.max(1,Math.ceil(target/50));
+        var timer=setInterval(function(){current+=step;if(current>=target){current=target;clearInterval(timer)}el.textContent=prefix+current+suffix},30);
+        obs.unobserve(el);
+      }
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.counter').forEach(function(c){obs.observe(c)});
+})();
+
+// TYPEWRITER
+(function(){
+  var el=document.getElementById('typewriter');if(!el)return;
+  var phrases=['Responding to leads in under 60 seconds...','Booking appointments automatically...','Re-engaging no-shows...','Syncing with your CRM...','Working while your team sleeps...'];
+  var pi=0,ci=0,del=false;
+  function type(){
+    var phrase=phrases[pi];
+    if(!del){el.textContent=phrase.substring(0,ci+1);ci++;if(ci===phrase.length){del=true;setTimeout(type,2000);return}setTimeout(type,50)}
+    else{el.textContent=phrase.substring(0,ci-1);ci--;if(ci===0){del=false;pi=(pi+1)%phrases.length;setTimeout(type,500);return}setTimeout(type,30)}
+  }
+  type();
+})();
+
+// LIQUID BUTTON BLOB
+document.querySelectorAll('.btn-liquid').forEach(function(btn){
+  var blob=document.createElement('span');blob.className='liquid-blob';btn.appendChild(blob);
+});
 
 // THREE.JS PARTICLE MORPHING
 (function(){
