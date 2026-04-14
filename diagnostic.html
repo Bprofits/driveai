@@ -256,7 +256,7 @@
     </div>
     <div class="leak-list" id="leakList"></div>
     <p style="color:#5A5550; font-size:13px; margin-bottom:24px;">We've emailed your full breakdown. In the meantime, if you want to see exactly how we'd plug these leaks for your store:</p>
-    <a href="discovery.html" class="btn-cta">Book Your Discovery Call</a>
+    <a href="discovery.html" class="btn-cta" id="bookCTA">Book Your Discovery Call</a>
     <p style="color:#5A5550; font-size:12px; margin-top:16px; letter-spacing:0.5px;">20 minutes. Not a demo. A real conversation about your store.</p>
   </div>
 
@@ -428,6 +428,13 @@
     document.getElementById('tierDesc').textContent = tier.desc;
     document.getElementById('revAmount').textContent = '$' + revLow.toLocaleString() + ' - $' + revHigh.toLocaleString() + '/mo';
     renderLeaks(leaks);
+
+    // Build discovery URL with contact info so calendar pre-fills
+    var discoveryURL = 'discovery.html?first_name=' + encodeURIComponent(firstName)
+      + '&last_name=' + encodeURIComponent(document.getElementById('lastName').value.trim())
+      + '&email=' + encodeURIComponent(email)
+      + '&phone=' + encodeURIComponent(document.getElementById('phone').value.trim());
+    document.getElementById('bookCTA').href = discoveryURL;
 
     currentQ = 9;
     show('resultsSection');

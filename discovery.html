@@ -78,5 +78,27 @@
   <p class="footer">&copy; 2026 Drive AI Sales Inc. &nbsp;|&nbsp; <a href="https://www.driveaisales.com" style="color:#5A5550; text-decoration:none;">www.driveaisales.com</a></p>
 </div>
 </div>
+<script>
+// Pass URL parameters to the GHL calendar iframe so fields pre-fill
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var fn = params.get('first_name') || '';
+  var ln = params.get('last_name') || '';
+  var em = params.get('email') || '';
+  var ph = params.get('phone') || '';
+  if (fn || em) {
+    var iframe = document.querySelector('iframe');
+    if (iframe) {
+      var src = iframe.src;
+      var sep = src.indexOf('?') > -1 ? '&' : '?';
+      if (fn) src += sep + 'first_name=' + encodeURIComponent(fn); sep = '&';
+      if (ln) src += sep + 'last_name=' + encodeURIComponent(ln);
+      if (em) src += sep + 'email=' + encodeURIComponent(em);
+      if (ph) src += sep + 'phone=' + encodeURIComponent(ph);
+      iframe.src = src;
+    }
+  }
+})();
+</script>
 </body>
 </html>
