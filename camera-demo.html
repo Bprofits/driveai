@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camera Path Demo - Drive AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui,sans-serif}
+canvas#bg{position:fixed;inset:0;z-index:0}
+.scroll-spacer{height:2400vh;pointer-events:none}
+.progress{position:fixed;top:0;left:0;height:3px;background:#E87A00;z-index:10;transition:width .1s}
+.info{position:fixed;top:16px;left:16px;z-index:10;font-size:11px;color:rgba(255,255,255,.4)}
+.info span{color:#E87A00;font-weight:600}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="scroll-spacer"></div>
+<div class="progress" id="prog"></div>
+<div class="info">Scroll to fly through the camera path <span id="pct">0%</span></div>
+
+<script>
+var scene = new THREE.Scene();
+scene.background = new THREE.Color("#000000");
+var camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 500);
+var renderer = new THREE.WebGLRenderer({ canvas: document.querySelector("#bg"), antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.5;
+
+// 15000 orange particles as scene content
+var COUNT = 15000;
+var PI2 = Math.PI * 2;
+var geo = new THREE.BufferGeometry();
+var pos = new Float32Array(COUNT * 3);
+var col = new Float32Array(COUNT * 3);
+for (var i = 0; i < COUNT; i++) {
+  var phi = Math.acos(2 * Math.random() - 1);
+  var theta = Math.random() * PI2;
+  var r = 2 + Math.random() * 6;
+  pos[i*3] = Math.sin(phi) * Math.cos(theta) * r;
+  pos[i*3+1] = Math.cos(phi) * r;
+  pos[i*3+2] = Math.sin(phi) * Math.sin(theta) * r;
+  var cr = Math.random();
+  if (cr < .5) { col[i*3]=.91;col[i*3+1]=.48;col[i*3+2]=0; }
+  else if (cr < .75) { col[i*3]=1;col[i*3+1]=.55;col[i*3+2]=0; }
+  else if (cr < .9) { col[i*3]=.72;col[i*3+1]=.37;col[i*3+2]=0; }
+  else { col[i*3]=.96;col[i*3+1]=.87;col[i*3+2]=.78; }
+}
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+
+// Round sprite
+var sc = document.createElement('canvas'); sc.width=64; sc.height=64;
+var sx = sc.getContext('2d');
+var gr = sx.createRadialGradient(32,32,0,32,32,32);
+gr.addColorStop(0,'rgba(255,255,255,1)');
+gr.addColorStop(.2,'rgba(255,200,120,.8)');
+gr.addColorStop(.5,'rgba(232,122,0,.4)');
+gr.addColorStop(1,'rgba(232,122,0,0)');
+sx.fillStyle = gr; sx.fillRect(0,0,64,64);
+var sprite = new THREE.CanvasTexture(sc);
+
+var mat = new THREE.PointsMaterial({
+  size: .12, map: sprite, vertexColors: true, transparent: true,
+  opacity: .85, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+});
+var particles = new THREE.Points(geo, mat);
+scene.add(particles);
+
+// Ambient particles
+var ageo = new THREE.BufferGeometry();
+var apos = new Float32Array(500 * 3);
+for (var i = 0; i < 500 * 3; i++) apos[i] = (Math.random() - .5) * 60;
+ageo.setAttribute('position', new THREE.BufferAttribute(apos, 3));
+scene.add(new THREE.Points(ageo, new THREE.PointsMaterial({
+  size: .03, color: 0xE87A00, transparent: true, opacity: .15,
+  sizeAttenuation: true, blending: THREE.AdditiveBlending
+})));
+
+// Camera path keyframes from Claude analysis
+var keyframes = [
+  {"time":0,"position":[-15,3,8],"lookAt":[-8,0,0],"fov":60},
+  {"time":0.96,"position":[-15,3,8],"lookAt":[-8,0,0],"fov":60},
+  {"time":1.92,"position":[-14,2.5,7],"lookAt":[-7,0,0],"fov":55},
+  {"time":2.88,"position":[-12,2,6],"lookAt":[-6,0,0],"fov":50},
+  {"time":3.84,"position":[-10,2.5,5],"lookAt":[-4,0,0],"fov":55},
+  {"time":4.8,"position":[-8,3,4],"lookAt":[-2,0,0],"fov":60},
+  {"time":5.76,"position":[-6,3.2,3.5],"lookAt":[-1,0,0],"fov":58},
+  {"time":6.72,"position":[-4,3.5,3],"lookAt":[0,0,0],"fov":55},
+  {"time":7.68,"position":[-2,3.8,2.5],"lookAt":[1,0,0],"fov":52},
+  {"time":8.64,"position":[0,4,2],"lookAt":[2,-0.5,0],"fov":50},
+  {"time":9.6,"position":[1,4.1,1.8],"lookAt":[2.5,-0.8,0],"fov":48},
+  {"time":10.56,"position":[2,4.2,1.6],"lookAt":[3,-1,0],"fov":45},
+  {"time":11.52,"position":[3,4.5,1.4],"lookAt":[3.5,-0.5,0],"fov":42},
+  {"time":12.48,"position":[4,5,1.2],"lookAt":[4,0,0],"fov":40},
+  {"time":13.44,"position":[5,5.5,1],"lookAt":[5,0.5,0],"fov":38},
+  {"time":14.4,"position":[6,6,0.8],"lookAt":[6,1,0],"fov":35},
+  {"time":15.36,"position":[7,7,0.6],"lookAt":[7,0,0],"fov":32},
+  {"time":16.32,"position":[8,6,2],"lookAt":[8,0,0],"fov":45},
+  {"time":17.28,"position":[7.5,5.5,3],"lookAt":[8,0,0],"fov":50},
+  {"time":18.24,"position":[8,4,4],"lookAt":[8,0,0],"fov":55},
+  {"time":19.2,"position":[8,3.5,4.2],"lookAt":[8,0,0],"fov":50},
+  {"time":20.16,"position":[8,3.3,4.5],"lookAt":[8,0,0],"fov":48},
+  {"time":21.12,"position":[8,4,4.8],"lookAt":[8,0,0],"fov":45},
+  {"time":22.08,"position":[7.5,4.5,5],"lookAt":[8,0,0],"fov":42},
+  {"time":23.04,"position":[7.2,5,5.2],"lookAt":[8,0,0],"fov":40},
+  {"time":24,"position":[7,5.5,5.5],"lookAt":[8,0,0],"fov":38}
+];
+
+var posPoints = keyframes.map(function(k) { return new THREE.Vector3(k.position[0], k.position[1], k.position[2]); });
+var lookPoints = keyframes.map(function(k) { return new THREE.Vector3(k.lookAt[0], k.lookAt[1], k.lookAt[2]); });
+var positionCurve = new THREE.CatmullRomCurve3(posPoints, false, "catmullrom", 0.3);
+var lookAtCurve = new THREE.CatmullRomCurve3(lookPoints, false, "catmullrom", 0.3);
+
+// Scroll-driven camera
+var progEl = document.getElementById('prog');
+var pctEl = document.getElementById('pct');
+
+window.addEventListener("scroll", function() {
+  var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  var t = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+  t = Math.max(0, Math.min(1, t));
+
+  camera.position.copy(positionCurve.getPoint(t));
+  camera.lookAt(lookAtCurve.getPoint(t));
+
+  var rawIdx = t * (keyframes.length - 1);
+  var idx = Math.floor(rawIdx);
+  var frac = rawIdx - idx;
+  if (idx < keyframes.length - 1) {
+    camera.fov = keyframes[idx].fov * (1 - frac) + keyframes[idx + 1].fov * frac;
+    camera.updateProjectionMatrix();
+  }
+
+  progEl.style.width = (t * 100) + '%';
+  pctEl.textContent = Math.round(t * 100) + '%';
+}, { passive: true });
+
+window.addEventListener("resize", function() {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// Animate particles
+var clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  var t = clock.getElapsedTime();
+  particles.rotation.y = t * 0.02;
+  var p = geo.attributes.position.array;
+  for (var i = 0; i < COUNT; i++) {
+    p[i*3] += Math.sin(t * 0.3 + i * 0.005) * 0.003;
+    p[i*3+1] += Math.cos(t * 0.25 + i * 0.007) * 0.003;
+  }
+  geo.attributes.position.needsUpdate = true;
+  renderer.render(scene, camera);
+}
+
+camera.position.copy(positionCurve.getPoint(0));
+camera.lookAt(lookAtCurve.getPoint(0));
+animate();
+</script>
+</body>
+</html>

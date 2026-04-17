@@ -101,6 +101,38 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
   .footer-inner{flex-direction:column;gap:.6rem;text-align:center}
 }
 </style>
+
+<style id="mobile-tab-menu">
+/* Mobile tab menu — activates below 900px only, coexists with existing nav */
+.mt-toggle{display:none;background:none;border:0;width:44px;height:44px;color:#fff;cursor:pointer;align-items:center;justify-content:center;padding:0;position:relative;z-index:210}
+.mt-toggle span{display:block;width:22px;height:1.5px;background:#fff;position:relative;transition:all .3s}
+.mt-toggle span::before,.mt-toggle span::after{content:"";position:absolute;left:0;width:22px;height:1.5px;background:#fff;transition:all .3s}
+.mt-toggle span::before{top:-7px}
+.mt-toggle span::after{top:7px}
+body.mt-open .mt-toggle span{background:transparent}
+body.mt-open .mt-toggle span::before{top:0;transform:rotate(45deg)}
+body.mt-open .mt-toggle span::after{top:0;transform:rotate(-45deg)}
+.mt-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:190;display:none}
+@media(max-width:900px){
+  .mt-toggle{display:inline-flex}
+  .mt-backdrop{display:block}
+  body.mt-open .mt-backdrop{opacity:1;pointer-events:auto}
+  /* Slide the existing .nav-links drawer out on mobile */
+  nav .nav-links,.nav .nav-links{position:fixed !important;top:0 !important;right:0 !important;bottom:0 !important;left:auto !important;width:min(80vw,320px) !important;height:100vh !important;background:rgba(0,0,0,.97) !important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);flex-direction:column !important;gap:2rem !important;padding:5rem 2rem 3rem !important;transform:translateX(100%);transition:transform .35s ease;align-items:flex-start !important;z-index:200;margin:0 !important}
+  body.mt-open nav .nav-links,body.mt-open .nav .nav-links{transform:translateX(0)}
+  nav .nav-links a,.nav .nav-links a{font-size:1rem !important;letter-spacing:2px !important}
+  nav .nav-links li,.nav .nav-links li{width:100%}
+}
+
+/* un-hide any .hm (hidden-on-mobile) links inside the drawer; give each link its own row */
+@media(max-width:900px){
+  nav .nav-links .hm,.nav .nav-links .hm{display:block !important}
+  nav .nav-links li,.nav .nav-links li{width:100%;padding:0 !important;border-bottom:1px solid rgba(255,255,255,.06)}
+  nav .nav-links li:last-child,.nav .nav-links li:last-child{border-bottom:none}
+  nav .nav-links li a,.nav .nav-links li a{display:block;padding:1rem 0;width:100%}
+  nav .nav-links li a.nav-cta,.nav .nav-links li a.nav-cta{display:inline-block;padding:.9rem 1.4rem;margin-top:.5rem;width:auto}
+}
+</style>
 </head>
 <body>
 
@@ -108,6 +140,7 @@ body{background:#000;color:#fff;font-family:'Barlow',sans-serif;-webkit-font-smo
 
 <nav class="nav" id="nav">
   <a href="#s0" class="nav-mark">DRIVE <span>AI</span> SALES INC.</a>
+  <button class="mt-toggle" aria-label="Menu" aria-expanded="false" id="mtToggle"><span></span></button><div class="mt-backdrop" id="mtBackdrop"></div>
   <ul class="nav-links">
     <li><a href="#s1" class="hm">Problem</a></li>
     <li><a href="#s2" class="hm">Engine</a></li>
@@ -656,6 +689,22 @@ document.querySelectorAll('.btn-liquid').forEach(function(btn){
     renderer.render(scene,camera);
   }
   animate();
+})();
+</script>
+
+<script>
+(function(){
+  var btn=document.getElementById('mtToggle');
+  var bd=document.getElementById('mtBackdrop');
+  if(!btn) return;
+  var body=document.body;
+  function setOpen(o){body.classList.toggle('mt-open',o);btn.setAttribute('aria-expanded',String(o));btn.setAttribute('aria-label',o?'Close menu':'Menu');}
+  btn.addEventListener('click',function(){setOpen(!body.classList.contains('mt-open'));});
+  if(bd) bd.addEventListener('click',function(){setOpen(false);});
+  document.addEventListener('click',function(e){
+    if(e.target.tagName==='A' && e.target.closest('.nav-links')) setOpen(false);
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&body.classList.contains('mt-open')) setOpen(false);});
 })();
 </script>
 </body>
